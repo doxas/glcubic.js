@@ -1,4 +1,3 @@
-glcubic.js
-==========
+# glcubic.js
 
-webgl helper library
+webgl helper library (仮)
