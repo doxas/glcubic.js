@@ -1,3 +1,4 @@
-# glcubic.js
+# gl<sup>3</sup>.js
 
-webgl helper library (仮)
+webgl helper library glcubic.js
+
