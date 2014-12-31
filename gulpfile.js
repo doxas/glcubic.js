@@ -12,6 +12,7 @@ var bsync  = require('browser-sync');
 gulp.task('lint', function(){
 	gulp.src([
 		'build/glcubic.js',
+		'build/glcubic.min.js',
 		'src/*.js'
 	])
 	.pipe(jshint())
