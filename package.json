@@ -22,7 +22,9 @@
     "url": "http://wgld.org"
   },
   "devDependencies": {
-    "browser-sync": "^1.8.2"
+    "browser-sync": "^1.8.2",
+    "gulp-jshint": "^1.9.0",
+    "jshint-stylish": "^1.0.0"
   },
   "license": "MIT"
 }

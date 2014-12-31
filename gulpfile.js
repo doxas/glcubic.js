@@ -1,6 +1,14 @@
 
 var gulp = require('gulp');
 var bsync = require('browser-sync');
+var jshint = require('gulp-jshint');
+
+// jshint
+gulp.task('lint', function () {
+  return gulp.src(['./glcubic.js', 'app/script/*.js'])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+});
 
 // browser sync
 gulp.task('bs-sync', function(){
