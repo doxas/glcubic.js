@@ -1,0 +1,28 @@
+{
+  "name": "glcubic",
+  "version": "0.0.0",
+  "description": "webgl helper library",
+  "keywords": [
+    "webgl",
+    "glsl"
+  ],
+  "main": "glcubic.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node glcubic.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doxas/glcubic.js.git"
+  },
+  "bugs": "https://github.com/doxas/glcubic.js/issues",
+  "author": {
+    "name": "@doxas",
+    "email": "admin@wgld.org",
+    "url": "http://wgld.org"
+  },
+  "devDependencies": {
+    "browser-sync": "^1.8.2"
+  },
+  "license": "MIT"
+}
