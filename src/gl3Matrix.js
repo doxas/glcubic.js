@@ -1,11 +1,11 @@
 
-gl3.mat = function(){};
+gl3.m4 = function(){};
 
-gl3.mat.prototype.create = function(){
+gl3.m4.prototype.create = function(){
 	return new Float32Array(16);
 };
 
-gl3.mat.prototype.identity = function(dest){
+gl3.m4.prototype.identity = function(dest){
 	dest[0]  = 1; dest[1]  = 0; dest[2]  = 0; dest[3]  = 0;
 	dest[4]  = 0; dest[5]  = 1; dest[6]  = 0; dest[7]  = 0;
 	dest[8]  = 0; dest[9]  = 0; dest[10] = 1; dest[11] = 0;
@@ -13,7 +13,7 @@ gl3.mat.prototype.identity = function(dest){
 	return dest;
 };
 
-gl3.mat.prototype.multiply = function(mat1, mat2, dest){
+gl3.m4.prototype.multiply = function(mat1, mat2, dest){
 	var a = mat1[0],  b = mat1[1],  c = mat1[2],  d = mat1[3],
 		e = mat1[4],  f = mat1[5],  g = mat1[6],  h = mat1[7],
 		i = mat1[8],  j = mat1[9],  k = mat1[10], l = mat1[11],
@@ -41,7 +41,7 @@ gl3.mat.prototype.multiply = function(mat1, mat2, dest){
 	return dest;
 };
 
-gl3.mat.prototype.scale = function(mat, vec, dest){
+gl3.m4.prototype.scale = function(mat, vec, dest){
 	dest[0]  = mat[0]  * vec[0];
 	dest[1]  = mat[1]  * vec[0];
 	dest[2]  = mat[2]  * vec[0];
@@ -61,7 +61,7 @@ gl3.mat.prototype.scale = function(mat, vec, dest){
 	return dest;
 };
 
-gl3.mat.prototype.translate = function(mat, vec, dest){
+gl3.m4.prototype.translate = function(mat, vec, dest){
 	dest[0] = mat[0]; dest[1] = mat[1]; dest[2]  = mat[2];  dest[3]  = mat[3];
 	dest[4] = mat[4]; dest[5] = mat[5]; dest[6]  = mat[6];  dest[7]  = mat[7];
 	dest[8] = mat[8]; dest[9] = mat[9]; dest[10] = mat[10]; dest[11] = mat[11];
@@ -72,7 +72,7 @@ gl3.mat.prototype.translate = function(mat, vec, dest){
 	return dest;
 };
 
-gl3.mat.prototype.rotate = function(mat, angle, axis, dest){
+gl3.m4.prototype.rotate = function(mat, angle, axis, dest){
 	var sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
 	if(!sq){return null;}
 	var a = axis[0], b = axis[1], c = axis[2];
@@ -113,7 +113,7 @@ gl3.mat.prototype.rotate = function(mat, angle, axis, dest){
 	return dest;
 };
 
-gl3.mat.prototype.lookAt = function(eye, center, up, dest){
+gl3.m4.prototype.lookAt = function(eye, center, up, dest){
 	var eyeX    = eye[0],    eyeY    = eye[1],    eyeZ    = eye[2],
 		upX     = up[0],     upY     = up[1],     upZ     = up[2],
 		centerX = center[0], centerY = center[1], centerZ = center[2];
@@ -150,7 +150,7 @@ gl3.mat.prototype.lookAt = function(eye, center, up, dest){
 	return dest;
 };
 
-gl3.mat.prototype.perspective = function(fovy, aspect, near, far, dest){
+gl3.m4.prototype.perspective = function(fovy, aspect, near, far, dest){
 	var t = near * Math.tan(fovy * Math.PI / 360);
 	var r = t * aspect;
 	var a = r * 2, b = t * 2, c = far - near;
@@ -173,7 +173,7 @@ gl3.mat.prototype.perspective = function(fovy, aspect, near, far, dest){
 	return dest;
 };
 
-gl3.mat.prototype.ortho = function(left, right, top, bottom, near, far, dest) {
+gl3.m4.prototype.ortho = function(left, right, top, bottom, near, far, dest) {
 	var h = (right - left);
 	var v = (top - bottom);
 	var d = (far - near);
@@ -196,7 +196,7 @@ gl3.mat.prototype.ortho = function(left, right, top, bottom, near, far, dest) {
 	return dest;
 };
 
-gl3.mat.prototype.transpose = function(mat, dest){
+gl3.m4.prototype.transpose = function(mat, dest){
 	dest[0]  = mat[0];  dest[1]  = mat[4];
 	dest[2]  = mat[8];  dest[3]  = mat[12];
 	dest[4]  = mat[1];  dest[5]  = mat[5];
@@ -208,7 +208,7 @@ gl3.mat.prototype.transpose = function(mat, dest){
 	return dest;
 };
 
-gl3.mat.prototype.inverse = function(mat, dest){
+gl3.m4.prototype.inverse = function(mat, dest){
 	var a = mat[0],  b = mat[1],  c = mat[2],  d = mat[3],
 		e = mat[4],  f = mat[5],  g = mat[6],  h = mat[7],
 		i = mat[8],  j = mat[9],  k = mat[10], l = mat[11],
@@ -239,3 +239,4 @@ gl3.mat.prototype.inverse = function(mat, dest){
 	return dest;
 };
 
+gl3.mat4 = new gl3.m4();

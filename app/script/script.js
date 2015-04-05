@@ -4,7 +4,7 @@ gl3.init('c');
 if(!gl3.ready){alert('initialize error'); return;}
 
 // program
-var prg = gl3.generate_program(
+var prg = gl3.create_program(
 	'vs',
 	'fs',
 	['position', 'normal', 'color', 'texCoord'],
@@ -14,6 +14,7 @@ var prg = gl3.generate_program(
 );
 
 // mesh data
+// new でインスタンスを生成してVBOやIBOをプロパティとして持つ状態にする。これをprgに食わせるだけでいいようにする
 var torusData = gl3.mesh.torus(16, 16, 0.25, 0.75);
 var torusVBO = [
 	gl3.create_vbo(torusData.position),
@@ -24,16 +25,19 @@ var torusVBO = [
 var torusIBO = gl3.create_ibo(torusData.index);
 
 // matrix
-var mat = new gl3.mat();
-var mMatrix = mat.identity(mat.create());
-var vMatrix = mat.identity(mat.create());
-var pMatrix = mat.identity(mat.create());
-var vpMatrix = mat.identity(mat.create());
-var mvpMatrix = mat.identity(mat.create());
+var mMatrix   = gl3.mat4.identity(gl3.mat4.create());
+var vMatrix   = gl3.mat4.identity(gl3.mat4.create());
+var pMatrix   = gl3.mat4.identity(gl3.mat4.create());
+var vpMatrix  = gl3.mat4.identity(gl3.mat4.create());
+var mvpMatrix = gl3.mat4.identity(gl3.mat4.create());
 
 
 // camera
-var cameraPosition = [0.0, 0.0, 5.0];
+// シーンオブジェクトを作って、それにカメラを食わせる仕様にする
+var cameraPosition    = [0.0, 0.0, 5.0];
+var cameraCenter      = [0.0, 0.0, 0.0];
+var cameraUpDirection = [0.0, 1.0, 0.0];
+var camera = new gl3.camera(cameraPosition, cameraCenter, cameraUpDirection);
 
 var count = 0;
 

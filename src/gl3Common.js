@@ -12,7 +12,7 @@ gl3.init = function(canvasId, options){
 	}
 };
 
-gl3.generate_program = function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
+gl3.create_program = function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
 	if(this.gl == null){return null;}
 	var i;
 	var w = new gl3.program(this.gl);

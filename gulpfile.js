@@ -30,10 +30,12 @@ gulp.task('concat', function(){
 		'src/gl3Core.js',
 		'src/gl3Common.js',
 		'src/gl3Util.js',
-		'src/gl3Mesh.js',
 		'src/gl3Vector.js',
 		'src/gl3Matrix.js',
 		'src/gl3Quaternion.js',
+		'src/gl3Camera.js',
+		'src/gl3Light.js',
+		'src/gl3Mesh.js',
 		'src/gl3Audio.js'
 	])
 	.pipe(concat('glcubic.js'))

@@ -1,16 +1,16 @@
 
-gl3.qtn = function(){};
+gl3.q4 = function(){};
 
-gl3.qtn.prototype.create = function(){
+gl3.q4.prototype.create = function(){
 	return new Float32Array(4);
 };
 
-gl3.qtn.prototype.identity = function(dest){
+gl3.q4.prototype.identity = function(dest){
 	dest[0] = 0; dest[1] = 0; dest[2] = 0; dest[3] = 1;
 	return dest;
 };
 
-gl3.qtn.prototype.inverse = function(qtn, dest){
+gl3.q4.prototype.inverse = function(qtn, dest){
 	dest[0] = -qtn[0];
 	dest[1] = -qtn[1];
 	dest[2] = -qtn[2];
@@ -18,7 +18,7 @@ gl3.qtn.prototype.inverse = function(qtn, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.normalize = function(dest){
+gl3.q4.prototype.normalize = function(dest){
 	var x = dest[0], y = dest[1], z = dest[2], w = dest[3];
 	var l = Math.sqrt(x * x + y * y + z * z + w * w);
 	if(l === 0){
@@ -36,7 +36,7 @@ gl3.qtn.prototype.normalize = function(dest){
 	return dest;
 };
 
-gl3.qtn.prototype.multiply = function(qtn1, qtn2, dest){
+gl3.q4.prototype.multiply = function(qtn1, qtn2, dest){
 	var ax = qtn1[0], ay = qtn1[1], az = qtn1[2], aw = qtn1[3];
 	var bx = qtn2[0], by = qtn2[1], bz = qtn2[2], bw = qtn2[3];
 	dest[0] = ax * bw + aw * bx + ay * bz - az * by;
@@ -46,7 +46,7 @@ gl3.qtn.prototype.multiply = function(qtn1, qtn2, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.rotate = function(angle, axis, dest){
+gl3.q4.prototype.rotate = function(angle, axis, dest){
 	var sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
 	if(!sq){return null;}
 	var a = axis[0], b = axis[1], c = axis[2];
@@ -59,7 +59,7 @@ gl3.qtn.prototype.rotate = function(angle, axis, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.toVecIII = function(vec, qtn, dest){
+gl3.q4.prototype.toVecIII = function(vec, qtn, dest){
 	var qp = create();
 	var qq = create();
 	var qr = create();
@@ -75,7 +75,7 @@ gl3.qtn.prototype.toVecIII = function(vec, qtn, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.toMatIV = function(qtn, dest){
+gl3.q4.prototype.toMatIV = function(qtn, dest){
 	var x = qtn[0], y = qtn[1], z = qtn[2], w = qtn[3];
 	var x2 = x + x, y2 = y + y, z2 = z + z;
 	var xx = x * x2, xy = x * y2, xz = x * z2;
@@ -100,7 +100,7 @@ gl3.qtn.prototype.toMatIV = function(qtn, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.slerp = function(qtn1, qtn2, time, dest){
+gl3.q4.prototype.slerp = function(qtn1, qtn2, time, dest){
 	var ht = qtn1[0] * qtn2[0] + qtn1[1] * qtn2[1] + qtn1[2] * qtn2[2] + qtn1[3] * qtn2[3];
 	var hs = 1.0 - ht * ht;
 	if(hs <= 0.0){
@@ -129,3 +129,4 @@ gl3.qtn.prototype.slerp = function(qtn1, qtn2, time, dest){
 	return dest;
 };
 
+gl3.qtn = new gl3.q4();
