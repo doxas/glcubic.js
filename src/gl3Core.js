@@ -1,4 +1,4 @@
-'use strict';
+
 var gl3 = gl3 || {};
 
 // const

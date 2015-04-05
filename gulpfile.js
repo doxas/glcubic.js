@@ -69,8 +69,8 @@ gulp.task('bs-reload', function(){
 
 // default task
 gulp.task('default', ['bs-sync'], function(){
-	runsqc(['concat', 'copy']);
-	gulp.watch('.app/*.*',    ['bs-reload']);
-	gulp.watch('.app/**/*.*', ['bs-reload']);
+	runsqc('concat', 'copy');
+	gulp.watch('app/*.*',    ['bs-reload']);
+	gulp.watch('app/**/*.*', ['bs-reload']);
 });
 

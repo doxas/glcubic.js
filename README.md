@@ -6,9 +6,6 @@ webgl helper library glcubic.js
 
 ## todo
 
-* コンストラクタ方式に変更
-* 
-* 
-* 
-* 
+* 描画命令
+* gulpfile.js 見直し
 

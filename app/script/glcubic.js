@@ -1,4 +1,4 @@
-'use strict';
+
 var gl3 = gl3 || {};
 
 // const
@@ -7,24 +7,29 @@ gl3.PI2 = 1.57079632679489661923132169163975144;
 gl3.PI4 = 0.78539816339744830961566084581987572;
 gl3.BPI = 6.28318530717958647692528676655900576;
 
-// property
-gl3.ready = false;
+function radian(){
+	this.rad = new Array();
+	this.sin = new Array();
+	this.cos = new Array();
+	for(var i = 0; i < 360; i++){
+		this.rad.push(i * Math.PI / 180);
+		this.sin.push(Math.sin(this.rad[i]));
+		this.cos.push(Math.cos(this.rad[i]));
+	}
+}
 
-// initialize
-(function(){
 
-})();
+'use strict';
 
-function wgld(){}
+gl3.ready   = false;
+gl3.canvas  = null;
+gl3.gl      = null;
+gl3.texture = null;
 
-wgld.prototype.ready   = false;
-wgld.prototype.canvas  = null;
-wgld.prototype.gl      = null;
-wgld.prototype.texture = null;
-
-wgld.prototype.init = function(canvas, options){
+gl3.initGL = function(canvasId, options){
 	var opt = options || {};
-	this.canvas = canvas;
+	this.canvas = document.getElementById(canvasId);
+	if(this.canvas == null){return;}
 	this.gl = this.canvas.getContext('webgl', opt)
 		   || this.canvas.getContext('experimental-webgl', opt);
 	if(this.gl != null){
@@ -33,29 +38,23 @@ wgld.prototype.init = function(canvas, options){
 	}
 };
 
-wgld.prototype.generate_program = function(vShader, fShader, attLocation, attStride, uniLocation, uniType){
-	if(this.gl == null){return null;}
-	var i;
-	var w = new wgldPrg();
-	w.parent = this.gl;
-	w.vs = w.create_shader(vShader);
-	w.fs = w.create_shader(fShader);
-	w.prg = w.create_program(w.vs, w.fs);
-	w.attL = new Array(attLocation.length);
-	w.attS = new Array(attLocation.length);
-	for(i = 0; i < attLocation.length; i++){
-		w.attL[i] = this.gl.getAttribLocation(w.prg, attLocation[i]);
-		w.attS[i] = attStride[i];
-	}
-	w.uniL = new Array(uniLocation.length);
-	for(i = 0; i < uniLocation.length; i++){
-		w.uniL[i] = this.gl.getUniformLocation(w.prg, uniLocation[i]);
-	}
-	w.uniT = uniType;
-	return w;
+gl3.clearGL = function(color, depth){
+	this.gl.clearColor(color[0], color[1], color[2], color[3]);
+	this.gl.clearDepth(depth);
+	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 };
 
-wgld.prototype.create_vbo = function(data){
+gl3.fullCanvas = function(camera){
+	var w = window.innerWidth;
+	var h = window.innerHeight;
+	this.canvas.width = w;
+	this.canvas.height = h;
+	this.gl.viewport(0, 0, w, h);
+	if(camera != null){camera.aspect = w / h;}
+};
+
+// creaters
+gl3.create_vbo = function(data){
 	var vbo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
 	this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
@@ -63,7 +62,7 @@ wgld.prototype.create_vbo = function(data){
 	return vbo;
 };
 
-wgld.prototype.create_ibo = function(data){
+gl3.create_ibo = function(data){
 	var ibo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 	this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), this.gl.STATIC_DRAW);
@@ -71,7 +70,7 @@ wgld.prototype.create_ibo = function(data){
 	return ibo;
 };
 
-wgld.prototype.create_texture = function(source, number){
+gl3.create_texture = function(source, number){
 	var img = new Image();
 	var w = this;
 	var gl = this.gl;
@@ -90,7 +89,7 @@ wgld.prototype.create_texture = function(source, number){
 	img.src = source;
 };
 
-wgld.prototype.create_texture_canvas = function(canvas, number){
+gl3.create_texture_canvas = function(canvas, number){
 	var tex = this.gl.createTexture();
 	this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
 	this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, canvas);
@@ -103,7 +102,7 @@ wgld.prototype.create_texture_canvas = function(canvas, number){
 	this.gl.bindTexture(this.gl.TEXTURE_2D, null);
 };
 
-wgld.prototype.create_framebuffer = function(width, height){
+gl3.create_framebuffer = function(width, height){
 	var frameBuffer = this.gl.createFramebuffer();
 	this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
 	var depthRenderBuffer = this.gl.createRenderbuffer();
@@ -125,7 +124,7 @@ wgld.prototype.create_framebuffer = function(width, height){
 };
 
 
-wgld.prototype.create_framebuffer_cube = function(width, height, target){
+gl3.create_framebuffer_cube = function(width, height, target){
 	var frameBuffer = this.gl.createFramebuffer();
 	this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
 	var depthRenderBuffer = this.gl.createRenderbuffer();
@@ -147,7 +146,7 @@ wgld.prototype.create_framebuffer_cube = function(width, height, target){
 	return {f : frameBuffer, d : depthRenderBuffer, t : fTexture};
 };
 
-wgld.prototype.create_cube_texture = function(source, target, number){
+gl3.create_cube_texture = function(source, target, number){
 	var cImg = new Array();
 	var gl = this.gl;
 	for(var i = 0; i < source.length; i++){
@@ -185,94 +184,117 @@ wgld.prototype.create_cube_texture = function(source, target, number){
 	}
 };
 
-// ------------------------------------------------------------------------------------------------
-// wgldPrg
-// ------------------------------------------------------------------------------------------------
-function wgldPrg(){}
+gl3.program = {
+	create: function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
+		if(gl3.gl == null){return null;}
+		var i;
+		var mng = new gl3.programManager(gl3.gl);
+		mng.vs = mng.create_shader(vsId);
+		mng.fs = mng.create_shader(fsId);
+		mng.prg = mng.create_program(mng.vs, mng.fs);
+		mng.attL = new Array(attLocation.length);
+		mng.attS = new Array(attLocation.length);
+		for(i = 0; i < attLocation.length; i++){
+			mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
+			mng.attS[i] = attStride[i];
+		}
+		mng.uniL = new Array(uniLocation.length);
+		for(i = 0; i < uniLocation.length; i++){
+			mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
+		}
+		mng.uniT = uniType;
+		return mng;
+	}
+};
 
-wgldPrg.prototype.parent = null;
-wgldPrg.prototype.vs     = null;
-wgldPrg.prototype.fs     = null;
-wgldPrg.prototype.prg    = null;
-wgldPrg.prototype.attL   = null;
-wgldPrg.prototype.attS   = null;
-wgldPrg.prototype.uniL   = null;
-wgldPrg.prototype.uniT   = null;
+gl3.programManager = function(webglContext){
+	this.gl = webglContext;
+};
 
-wgldPrg.prototype.create_shader = function(id){
+gl3.programManager.prototype.gl   = null;
+gl3.programManager.prototype.vs   = null;
+gl3.programManager.prototype.fs   = null;
+gl3.programManager.prototype.prg  = null;
+gl3.programManager.prototype.attL = null;
+gl3.programManager.prototype.attS = null;
+gl3.programManager.prototype.uniL = null;
+gl3.programManager.prototype.uniT = null;
+
+gl3.programManager.prototype.create_shader = function(id){
 	var shader;
 	var scriptElement = document.getElementById(id);
 	if(!scriptElement){return;}
 	switch(scriptElement.type){
 		case 'x-shader/x-vertex':
-			shader = this.parent.createShader(this.parent.VERTEX_SHADER);
+			shader = this.gl.createShader(this.gl.VERTEX_SHADER);
 			break;
 		case 'x-shader/x-fragment':
-			shader = this.parent.createShader(this.parent.FRAGMENT_SHADER);
+			shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 			break;
 		default :
 			return;
 	}
-	this.parent.shaderSource(shader, scriptElement.text);
-	this.parent.compileShader(shader);
-	if(this.parent.getShaderParameter(shader, this.parent.COMPILE_STATUS)){
+	this.gl.shaderSource(shader, scriptElement.text);
+	this.gl.compileShader(shader);
+	if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
 		return shader;
 	}else{
-		alert(this.parent.getShaderInfoLog(shader));
+		alert(this.gl.getShaderInfoLog(shader));
 	}
 };
 
-wgldPrg.prototype.create_program = function(vs, fs){
-	var program = this.parent.createProgram();
-	this.parent.attachShader(program, vs);
-	this.parent.attachShader(program, fs);
-	this.parent.linkProgram(program);
-	if(this.parent.getProgramParameter(program, this.parent.LINK_STATUS)){
-		this.parent.useProgram(program);
+gl3.programManager.prototype.create_program = function(vs, fs){
+	var program = this.gl.createProgram();
+	this.gl.attachShader(program, vs);
+	this.gl.attachShader(program, fs);
+	this.gl.linkProgram(program);
+	if(this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
+		this.gl.useProgram(program);
 		return program;
 	}else{
-		alert(this.parent.getProgramInfoLog(program));
+		alert(this.gl.getProgramInfoLog(program));
 	}
 };
 
-wgldPrg.prototype.set_program = function(){
-	this.parent.useProgram(this.prg);
+gl3.programManager.prototype.set_program = function(){
+	this.gl.useProgram(this.prg);
 };
 
-wgldPrg.prototype.set_attribute = function(vbo){
+gl3.programManager.prototype.set_attribute = function(vbo, ibo){
 	for(var i in vbo){
-		this.parent.bindBuffer(this.parent.ARRAY_BUFFER, vbo[i]);
-		this.parent.enableVertexAttribArray(this.attL[i]);
-		this.parent.vertexAttribPointer(this.attL[i], this.attS[i], this.parent.FLOAT, false, 0, 0);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo[i]);
+		this.gl.enableVertexAttribArray(this.attL[i]);
+		this.gl.vertexAttribPointer(this.attL[i], this.attS[i], this.gl.FLOAT, false, 0, 0);
 	}
+	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 };
 
-wgldPrg.prototype.push_shader = function(any){
+gl3.programManager.prototype.push_shader = function(any){
 	for(var i = 0, l = this.uniT.length; i < l; i++){
 		switch(this.uniT[i]){
 			case 'matrix4fv':
-				this.parent.uniformMatrix4fv(this.uniL[i], false, any[i]);
+				this.gl.uniformMatrix4fv(this.uniL[i], false, any[i]);
 				break;
 			case '4fv':
-				this.parent.uniform4fv(this.uniL[i], any[i]);
+				this.gl.uniform4fv(this.uniL[i], any[i]);
 				break;
 			case '3fv':
-				this.parent.uniform3fv(this.uniL[i], any[i]);
+				this.gl.uniform3fv(this.uniL[i], any[i]);
 				break;
 			case '2fv':
-				this.parent.uniform2fv(this.uniL[i], any[i]);
+				this.gl.uniform2fv(this.uniL[i], any[i]);
 				break;
 			case '1fv':
-				this.parent.uniform1fv(this.uniL[i], any[i]);
+				this.gl.uniform1fv(this.uniL[i], any[i]);
 				break;
 			case '1f':
-				this.parent.uniform1f(this.uniL[i], any[i]);
+				this.gl.uniform1f(this.uniL[i], any[i]);
 				break;
 			case '1iv':
-				this.parent.uniform1iv(this.uniL[i], any[i]);
+				this.gl.uniform1iv(this.uniL[i], any[i]);
 				break;
 			case '1i':
-				this.parent.uniform1i(this.uniL[i], any[i]);
+				this.gl.uniform1i(this.uniL[i], any[i]);
 				break;
 			default :
 				break;
@@ -280,204 +302,54 @@ wgldPrg.prototype.push_shader = function(any){
 	}
 };
 
-// ------------------------------------------------------------------------------------------------
-// util
-// ------------------------------------------------------------------------------------------------
-
-function mesh(){
-	this.position;
-	this.normal;
-	this.color;
-	this.texCoord;
-	this.index;
-}
-
-function radian(){
-	this.rad = new Array();
-	this.sin = new Array();
-	this.cos = new Array();
-	for(var i = 0; i < 360; i++){
-		this.rad.push(i * Math.PI / 180);
-		this.sin.push(Math.sin(this.rad[i]));
-		this.cos.push(Math.cos(this.rad[i]));
-	}
-}
 
 
 
-gl3.util = function(){};
-
-gl3.util.prototype.hsva = function(h, s, v, a){
-	if(s > 1 || v > 1 || a > 1){return;}
-	var th = h % 360;
-	var i = Math.floor(th / 60);
-	var f = th / 60 - i;
-	var m = v * (1 - s);
-	var n = v * (1 - s * f);
-	var k = v * (1 - s * (1 - f));
-	var color = new Array();
-	if(!s > 0 && !s < 0){
-		color.push(v, v, v, a); 
-	} else {
-		var r = new Array(v, n, m, m, k, v);
-		var g = new Array(k, v, v, n, m, m);
-		var b = new Array(m, m, k, v, v, n);
-		color.push(r[i], g[i], b[i], a);
-	}
-	return color;
-};
-
-// easing
-gl3.util.prototype.easeLiner = function(t){
-	return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-};
-
-gl3.util.prototype.easeOutCubic = function(t){
-	return (t = t / 1 - 1) * t * t + 1;
-};
-
-gl3.util.prototype.easeQuintic = function(t){
-	var ts = (t = t / 1) * t;
-	var tc = ts * t;
-	return (tc * ts);
-};
-
-
-
-gl3.mesh = function(){};
-
-gl3.mesh.prototype.torus = function(row, column, irad, orad, color){
-	var i, j, tc;
-	var pos = new Array(), nor = new Array(),
-		col = new Array(), st  = new Array(), idx = new Array();
-	for(i = 0; i <= row; i++){
-		var r = Math.PI * 2 / row * i;
-		var rr = Math.cos(r);
-		var ry = Math.sin(r);
-		for(j = 0; j <= column; j++){
-			var tr = Math.PI * 2 / column * j;
-			var tx = (rr * irad + orad) * Math.cos(tr);
-			var ty = ry * irad;
-			var tz = (rr * irad + orad) * Math.sin(tr);
-			var rx = rr * Math.cos(tr);
-			var rz = rr * Math.sin(tr);
-			if(color){
-				tc = color;
-			}else{
-				tc = hsva(360 / column * j, 1, 1, 1);
-			}
-			var rs = 1 / column * j;
-			var rt = 1 / row * i + 0.5;
-			if(rt > 1.0){rt -= 1.0;}
-			rt = 1.0 - rt;
-			pos.push(tx, ty, tz);
-			nor.push(rx, ry, rz);
-			col.push(tc[0], tc[1], tc[2], tc[3]);
-			st.push(rs, rt);
+gl3.util = {
+	hsva: function(h, s, v, a){
+		if(s > 1 || v > 1 || a > 1){return;}
+		var th = h % 360;
+		var i = Math.floor(th / 60);
+		var f = th / 60 - i;
+		var m = v * (1 - s);
+		var n = v * (1 - s * f);
+		var k = v * (1 - s * (1 - f));
+		var color = new Array();
+		if(!s > 0 && !s < 0){
+			color.push(v, v, v, a); 
+		} else {
+			var r = new Array(v, n, m, m, k, v);
+			var g = new Array(k, v, v, n, m, m);
+			var b = new Array(m, m, k, v, v, n);
+			color.push(r[i], g[i], b[i], a);
 		}
-	}
-	for(i = 0; i < row; i++){
-		for(j = 0; j < column; j++){
-			r = (column + 1) * i + j;
-			idx.push(r, r + column + 1, r + 1);
-			idx.push(r + column + 1, r + column + 2, r + 1);
-		}
-	}
-	return {p : pos, n : nor, c : col, t : st, i : idx};
-};
+		return color;
+	},
 
-gl3.mesh.prototype.sphere = function(row, column, rad, color){
-	var i, j, tc;
-	var pos = new Array(), nor = new Array(),
-		col = new Array(), st  = new Array(), idx = new Array();
-	for(i = 0; i <= row; i++){
-		var r = Math.PI / row * i;
-		var ry = Math.cos(r);
-		var rr = Math.sin(r);
-		for(j = 0; j <= column; j++){
-			var tr = Math.PI * 2 / column * j;
-			var tx = rr * rad * Math.cos(tr);
-			var ty = ry * rad;
-			var tz = rr * rad * Math.sin(tr);
-			var rx = rr * Math.cos(tr);
-			var rz = rr * Math.sin(tr);
-			if(color){
-				tc = color;
-			}else{
-				tc = hsva(360 / row * i, 1, 1, 1);
-			}
-			pos.push(tx, ty, tz);
-			nor.push(rx, ry, rz);
-			col.push(tc[0], tc[1], tc[2], tc[3]);
-			st.push(1 - 1 / column * j, 1 / row * i);
-		}
-	}
-	r = 0;
-	for(i = 0; i < row; i++){
-		for(j = 0; j < column; j++){
-			r = (column + 1) * i + j;
-			idx.push(r, r + 1, r + column + 2);
-			idx.push(r, r + column + 2, r + column + 1);
-		}
-	}
-	return {p : pos, n : nor, c : col, t : st, i : idx};
-};
+	easeLiner: function(t){
+		return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+	},
 
-gl3.mesh.prototype.cube = function(side, color){
-	var tc, hs = side * 0.5;
-	var pos = [
-		-hs, -hs,  hs,  hs, -hs,  hs,  hs,  hs,  hs, -hs,  hs,  hs,
-		-hs, -hs, -hs, -hs,  hs, -hs,  hs,  hs, -hs,  hs, -hs, -hs,
-		-hs,  hs, -hs, -hs,  hs,  hs,  hs,  hs,  hs,  hs,  hs, -hs,
-		-hs, -hs, -hs,  hs, -hs, -hs,  hs, -hs,  hs, -hs, -hs,  hs,
-		 hs, -hs, -hs,  hs,  hs, -hs,  hs,  hs,  hs,  hs, -hs,  hs,
-		-hs, -hs, -hs, -hs, -hs,  hs, -hs,  hs,  hs, -hs,  hs, -hs
-	];
-	var nor = [
-		-1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0,  1.0,  1.0,
-		-1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
-		-1.0,  1.0, -1.0, -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0,
-		-1.0, -1.0, -1.0,  1.0, -1.0, -1.0,  1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
-		 1.0, -1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0,  1.0,
-		-1.0, -1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0
-	];
-	var col = new Array();
-	for(var i = 0; i < pos.length / 3; i++){
-		if(color){
-			tc = color;
-		}else{
-			tc = hsva(360 / pos.length / 3 * i, 1, 1, 1);
-		}
-		col.push(tc[0], tc[1], tc[2], tc[3]);
+	easeOutCubic: function(t){
+		return (t = t / 1 - 1) * t * t + 1;
+	},
+
+	easeQuintic: function(t){
+		var ts = (t = t / 1) * t;
+		var tc = ts * t;
+		return (tc * ts);
 	}
-	var st = [
-		0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
-		0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
-		0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
-		0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
-		0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
-		0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0
-	];
-	var idx = [
-		 0,  1,  2,  0,  2,  3,
-		 4,  5,  6,  4,  6,  7,
-		 8,  9, 10,  8, 10, 11,
-		12, 13, 14, 12, 14, 15,
-		16, 17, 18, 16, 18, 19,
-		20, 21, 22, 20, 22, 23
-	];
-	return {p : pos, n : nor, c : col, t : st, i : idx};
 };
 
 
 
-gl3.vec3 = function(){};
+gl3.v3 = function(){};
 
-gl3.vec3.prototype.create = function(){
+gl3.v3.prototype.create = function(){
 	return new Float32Array(3);
 };
 
-gl3.vec3.prototype.normalize = function(v){
+gl3.v3.prototype.normalize = function(v){
 	var n = this.create();
 	var l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 	if(l > 0){
@@ -489,11 +361,11 @@ gl3.vec3.prototype.normalize = function(v){
 	return n;
 };
 
-gl3.vec3.prototype.dot = function(v0, v1){
+gl3.v3.prototype.dot = function(v0, v1){
 	return v0[0] * v1[0] + v0[1] * v1[1] + v0[2] * v1[2]; 
 };
 
-gl3.vec3.prototype.cross = function(v0, v1){
+gl3.v3.prototype.cross = function(v0, v1){
 	var n = this.create();
 	n[0] = v0[1] * v1[2] - v0[2] * v1[1];
 	n[1] = v0[2] * v1[0] - v0[0] * v1[2];
@@ -501,7 +373,7 @@ gl3.vec3.prototype.cross = function(v0, v1){
 	return n;
 };
 
-gl3.vec3.prototype.faceNormal = function(v0, v1, v2){
+gl3.v3.prototype.faceNormal = function(v0, v1, v2){
 	var n = this.create();
 	var vec1 = [v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]];
 	var vec2 = [v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2]];
@@ -511,14 +383,16 @@ gl3.vec3.prototype.faceNormal = function(v0, v1, v2){
 	return this.normalize(n);
 };
 
+gl3.vec3 = new gl3.v3();
 
-gl3.mat = function(){};
 
-gl3.mat.prototype.create = function(){
+gl3.m4 = function(){};
+
+gl3.m4.prototype.create = function(){
 	return new Float32Array(16);
 };
 
-gl3.mat.prototype.identity = function(dest){
+gl3.m4.prototype.identity = function(dest){
 	dest[0]  = 1; dest[1]  = 0; dest[2]  = 0; dest[3]  = 0;
 	dest[4]  = 0; dest[5]  = 1; dest[6]  = 0; dest[7]  = 0;
 	dest[8]  = 0; dest[9]  = 0; dest[10] = 1; dest[11] = 0;
@@ -526,7 +400,7 @@ gl3.mat.prototype.identity = function(dest){
 	return dest;
 };
 
-gl3.mat.prototype.multiply = function(mat1, mat2, dest){
+gl3.m4.prototype.multiply = function(mat1, mat2, dest){
 	var a = mat1[0],  b = mat1[1],  c = mat1[2],  d = mat1[3],
 		e = mat1[4],  f = mat1[5],  g = mat1[6],  h = mat1[7],
 		i = mat1[8],  j = mat1[9],  k = mat1[10], l = mat1[11],
@@ -554,7 +428,7 @@ gl3.mat.prototype.multiply = function(mat1, mat2, dest){
 	return dest;
 };
 
-gl3.mat.prototype.scale = function(mat, vec, dest){
+gl3.m4.prototype.scale = function(mat, vec, dest){
 	dest[0]  = mat[0]  * vec[0];
 	dest[1]  = mat[1]  * vec[0];
 	dest[2]  = mat[2]  * vec[0];
@@ -574,7 +448,7 @@ gl3.mat.prototype.scale = function(mat, vec, dest){
 	return dest;
 };
 
-gl3.mat.prototype.translate = function(mat, vec, dest){
+gl3.m4.prototype.translate = function(mat, vec, dest){
 	dest[0] = mat[0]; dest[1] = mat[1]; dest[2]  = mat[2];  dest[3]  = mat[3];
 	dest[4] = mat[4]; dest[5] = mat[5]; dest[6]  = mat[6];  dest[7]  = mat[7];
 	dest[8] = mat[8]; dest[9] = mat[9]; dest[10] = mat[10]; dest[11] = mat[11];
@@ -585,7 +459,7 @@ gl3.mat.prototype.translate = function(mat, vec, dest){
 	return dest;
 };
 
-gl3.mat.prototype.rotate = function(mat, angle, axis, dest){
+gl3.m4.prototype.rotate = function(mat, angle, axis, dest){
 	var sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
 	if(!sq){return null;}
 	var a = axis[0], b = axis[1], c = axis[2];
@@ -626,7 +500,7 @@ gl3.mat.prototype.rotate = function(mat, angle, axis, dest){
 	return dest;
 };
 
-gl3.mat.prototype.lookAt = function(eye, center, up, dest){
+gl3.m4.prototype.lookAt = function(eye, center, up, dest){
 	var eyeX    = eye[0],    eyeY    = eye[1],    eyeZ    = eye[2],
 		upX     = up[0],     upY     = up[1],     upZ     = up[2],
 		centerX = center[0], centerY = center[1], centerZ = center[2];
@@ -663,7 +537,7 @@ gl3.mat.prototype.lookAt = function(eye, center, up, dest){
 	return dest;
 };
 
-gl3.mat.prototype.perspective = function(fovy, aspect, near, far, dest){
+gl3.m4.prototype.perspective = function(fovy, aspect, near, far, dest){
 	var t = near * Math.tan(fovy * Math.PI / 360);
 	var r = t * aspect;
 	var a = r * 2, b = t * 2, c = far - near;
@@ -686,7 +560,7 @@ gl3.mat.prototype.perspective = function(fovy, aspect, near, far, dest){
 	return dest;
 };
 
-gl3.mat.prototype.ortho = function(left, right, top, bottom, near, far, dest) {
+gl3.m4.prototype.ortho = function(left, right, top, bottom, near, far, dest) {
 	var h = (right - left);
 	var v = (top - bottom);
 	var d = (far - near);
@@ -709,7 +583,7 @@ gl3.mat.prototype.ortho = function(left, right, top, bottom, near, far, dest) {
 	return dest;
 };
 
-gl3.mat.prototype.transpose = function(mat, dest){
+gl3.m4.prototype.transpose = function(mat, dest){
 	dest[0]  = mat[0];  dest[1]  = mat[4];
 	dest[2]  = mat[8];  dest[3]  = mat[12];
 	dest[4]  = mat[1];  dest[5]  = mat[5];
@@ -721,7 +595,7 @@ gl3.mat.prototype.transpose = function(mat, dest){
 	return dest;
 };
 
-gl3.mat.prototype.inverse = function(mat, dest){
+gl3.m4.prototype.inverse = function(mat, dest){
 	var a = mat[0],  b = mat[1],  c = mat[2],  d = mat[3],
 		e = mat[4],  f = mat[5],  g = mat[6],  h = mat[7],
 		i = mat[8],  j = mat[9],  k = mat[10], l = mat[11],
@@ -752,20 +626,27 @@ gl3.mat.prototype.inverse = function(mat, dest){
 	return dest;
 };
 
+gl3.m4.prototype.vpFromCamera = function(cam, vmat, pmat, dest){
+	this.lookAt(cam.position, cam.centerPoint, cam.upDirection, vmat);
+	this.perspective(cam.fovy, cam.aspect, cam.near, cam.far, pmat);
+	this.multiply(pmat, vmat, dest);
+};
+
+gl3.mat4 = new gl3.m4();
 
 
-gl3.qtn = function(){};
+gl3.q4 = function(){};
 
-gl3.qtn.prototype.create = function(){
+gl3.q4.prototype.create = function(){
 	return new Float32Array(4);
 };
 
-gl3.qtn.prototype.identity = function(dest){
+gl3.q4.prototype.identity = function(dest){
 	dest[0] = 0; dest[1] = 0; dest[2] = 0; dest[3] = 1;
 	return dest;
 };
 
-gl3.qtn.prototype.inverse = function(qtn, dest){
+gl3.q4.prototype.inverse = function(qtn, dest){
 	dest[0] = -qtn[0];
 	dest[1] = -qtn[1];
 	dest[2] = -qtn[2];
@@ -773,7 +654,7 @@ gl3.qtn.prototype.inverse = function(qtn, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.normalize = function(dest){
+gl3.q4.prototype.normalize = function(dest){
 	var x = dest[0], y = dest[1], z = dest[2], w = dest[3];
 	var l = Math.sqrt(x * x + y * y + z * z + w * w);
 	if(l === 0){
@@ -791,7 +672,7 @@ gl3.qtn.prototype.normalize = function(dest){
 	return dest;
 };
 
-gl3.qtn.prototype.multiply = function(qtn1, qtn2, dest){
+gl3.q4.prototype.multiply = function(qtn1, qtn2, dest){
 	var ax = qtn1[0], ay = qtn1[1], az = qtn1[2], aw = qtn1[3];
 	var bx = qtn2[0], by = qtn2[1], bz = qtn2[2], bw = qtn2[3];
 	dest[0] = ax * bw + aw * bx + ay * bz - az * by;
@@ -801,7 +682,7 @@ gl3.qtn.prototype.multiply = function(qtn1, qtn2, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.rotate = function(angle, axis, dest){
+gl3.q4.prototype.rotate = function(angle, axis, dest){
 	var sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
 	if(!sq){return null;}
 	var a = axis[0], b = axis[1], c = axis[2];
@@ -814,7 +695,7 @@ gl3.qtn.prototype.rotate = function(angle, axis, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.toVecIII = function(vec, qtn, dest){
+gl3.q4.prototype.toVecIII = function(vec, qtn, dest){
 	var qp = create();
 	var qq = create();
 	var qr = create();
@@ -830,7 +711,7 @@ gl3.qtn.prototype.toVecIII = function(vec, qtn, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.toMatIV = function(qtn, dest){
+gl3.q4.prototype.toMatIV = function(qtn, dest){
 	var x = qtn[0], y = qtn[1], z = qtn[2], w = qtn[3];
 	var x2 = x + x, y2 = y + y, z2 = z + z;
 	var xx = x * x2, xy = x * y2, xz = x * z2;
@@ -855,7 +736,7 @@ gl3.qtn.prototype.toMatIV = function(qtn, dest){
 	return dest;
 };
 
-gl3.qtn.prototype.slerp = function(qtn1, qtn2, time, dest){
+gl3.q4.prototype.slerp = function(qtn1, qtn2, time, dest){
 	var ht = qtn1[0] * qtn2[0] + qtn1[1] * qtn2[1] + qtn1[2] * qtn2[2] + qtn1[3] * qtn2[3];
 	var hs = 1.0 - ht * ht;
 	if(hs <= 0.0){
@@ -882,6 +763,187 @@ gl3.qtn.prototype.slerp = function(qtn1, qtn2, time, dest){
 		}
 	}
 	return dest;
+};
+
+gl3.qtn = new gl3.q4();
+
+
+gl3.camera = {
+	create: function(position, centerPoint, upDirection, fovy, aspect, near, far){
+		var c = new gl3.cam();
+		var n = gl3.vec3.create();
+		n[0] = upDirection[0];
+		n[1] = upDirection[1];
+		n[2] = upDirection[2];
+		n = gl3.vec3.normalize(n);
+		c.init(position, centerPoint, n, fovy, aspect, near, far);
+		return c;
+	}
+};
+
+gl3.cam = function(){};
+
+gl3.cam.prototype.position        = gl3.vec3.create();
+gl3.cam.prototype.centerPoint     = gl3.vec3.create();
+gl3.cam.prototype.upDirection     = gl3.vec3.create();
+gl3.cam.prototype.basePosition    = gl3.vec3.create();
+gl3.cam.prototype.baseCenterPoint = gl3.vec3.create();
+gl3.cam.prototype.baseUpDirection = gl3.vec3.create();
+
+gl3.cam.prototype.fovy   = 45;
+gl3.cam.prototype.aspect = 1.0;
+gl3.cam.prototype.near   = 0.1;
+gl3.cam.prototype.far    = 1.0;
+
+gl3.cam.prototype.init = function(position, centerPoint, upDirection, fovy, aspect, near, far){
+	this.position[0]    = this.basePosition[0]    = position[0];
+	this.position[1]    = this.basePosition[1]    = position[1];
+	this.position[2]    = this.basePosition[2]    = position[2];
+	this.centerPoint[0] = this.baseCenterPoint[0] = centerPoint[0];
+	this.centerPoint[1] = this.baseCenterPoint[1] = centerPoint[1];
+	this.centerPoint[2] = this.baseCenterPoint[2] = centerPoint[2];
+	this.upDirection[0] = this.baseUpDirection[0] = upDirection[0];
+	this.upDirection[1] = this.baseUpDirection[1] = upDirection[1];
+	this.upDirection[2] = this.baseUpDirection[2] = upDirection[2];
+	this.fovy   = fovy;
+	this.aspect = aspect;
+	this.near   = near;
+	this.far    = far;
+};
+
+gl3.cam.prototype.get_canvas_aspect = function(){
+	if(!gl3.canvas){return;}
+	return gl3.canvas.width / gl3.canvas.height;
+};
+
+
+
+
+
+
+gl3.mesh = {
+	torus: function(row, column, irad, orad, color){
+		var i, j, tc;
+		var pos = [], nor = [],
+			col = [], st  = [], idx = [];
+		for(i = 0; i <= row; i++){
+			var r = Math.PI * 2 / row * i;
+			var rr = Math.cos(r);
+			var ry = Math.sin(r);
+			for(j = 0; j <= column; j++){
+				var tr = Math.PI * 2 / column * j;
+				var tx = (rr * irad + orad) * Math.cos(tr);
+				var ty = ry * irad;
+				var tz = (rr * irad + orad) * Math.sin(tr);
+				var rx = rr * Math.cos(tr);
+				var rz = rr * Math.sin(tr);
+				if(color){
+					tc = color;
+				}else{
+					tc = gl3.util.hsva(360 / column * j, 1, 1, 1);
+				}
+				var rs = 1 / column * j;
+				var rt = 1 / row * i + 0.5;
+				if(rt > 1.0){rt -= 1.0;}
+				rt = 1.0 - rt;
+				pos.push(tx, ty, tz);
+				nor.push(rx, ry, rz);
+				col.push(tc[0], tc[1], tc[2], tc[3]);
+				st.push(rs, rt);
+			}
+		}
+		for(i = 0; i < row; i++){
+			for(j = 0; j < column; j++){
+				r = (column + 1) * i + j;
+				idx.push(r, r + column + 1, r + 1);
+				idx.push(r + column + 1, r + column + 2, r + 1);
+			}
+		}
+		return {position: pos, normal: nor, color: col, texCoord: st, index: idx};
+	},
+
+	sphere: function(row, column, rad, color){
+		var i, j, tc;
+		var pos = [], nor = [],
+			col = [], st  = [], idx = [];
+		for(i = 0; i <= row; i++){
+			var r = Math.PI / row * i;
+			var ry = Math.cos(r);
+			var rr = Math.sin(r);
+			for(j = 0; j <= column; j++){
+				var tr = Math.PI * 2 / column * j;
+				var tx = rr * rad * Math.cos(tr);
+				var ty = ry * rad;
+				var tz = rr * rad * Math.sin(tr);
+				var rx = rr * Math.cos(tr);
+				var rz = rr * Math.sin(tr);
+				if(color){
+					tc = color;
+				}else{
+					tc = gl3.util.hsva(360 / row * i, 1, 1, 1);
+				}
+				pos.push(tx, ty, tz);
+				nor.push(rx, ry, rz);
+				col.push(tc[0], tc[1], tc[2], tc[3]);
+				st.push(1 - 1 / column * j, 1 / row * i);
+			}
+		}
+		r = 0;
+		for(i = 0; i < row; i++){
+			for(j = 0; j < column; j++){
+				r = (column + 1) * i + j;
+				idx.push(r, r + 1, r + column + 2);
+				idx.push(r, r + column + 2, r + column + 1);
+			}
+		}
+		return {position: pos, normal: nor, color: col, texCoord: st, index: idx};
+	},
+
+	cube: function(side, color){
+		var tc, hs = side * 0.5;
+		var pos = [
+			-hs, -hs,  hs,  hs, -hs,  hs,  hs,  hs,  hs, -hs,  hs,  hs,
+			-hs, -hs, -hs, -hs,  hs, -hs,  hs,  hs, -hs,  hs, -hs, -hs,
+			-hs,  hs, -hs, -hs,  hs,  hs,  hs,  hs,  hs,  hs,  hs, -hs,
+			-hs, -hs, -hs,  hs, -hs, -hs,  hs, -hs,  hs, -hs, -hs,  hs,
+			 hs, -hs, -hs,  hs,  hs, -hs,  hs,  hs,  hs,  hs, -hs,  hs,
+			-hs, -hs, -hs, -hs, -hs,  hs, -hs,  hs,  hs, -hs,  hs, -hs
+		];
+		var nor = [
+			-1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0,  1.0,  1.0,
+			-1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
+			-1.0,  1.0, -1.0, -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0,
+			-1.0, -1.0, -1.0,  1.0, -1.0, -1.0,  1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
+			 1.0, -1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0,  1.0,
+			-1.0, -1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0
+		];
+		var col = [];
+		for(var i = 0; i < pos.length / 3; i++){
+			if(color){
+				tc = color;
+			}else{
+				tc = gl3.util.hsva(360 / pos.length / 3 * i, 1, 1, 1);
+			}
+			col.push(tc[0], tc[1], tc[2], tc[3]);
+		}
+		var st = [
+			0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0
+		];
+		var idx = [
+			 0,  1,  2,  0,  2,  3,
+			 4,  5,  6,  4,  6,  7,
+			 8,  9, 10,  8, 10, 11,
+			12, 13, 14, 12, 14, 15,
+			16, 17, 18, 16, 18, 19,
+			20, 21, 22, 20, 22, 23
+		];
+		return {position: pos, normal: nor, color: col, texCoord: st, index: idx};
+	}
 };
 
 

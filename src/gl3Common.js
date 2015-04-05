@@ -1,3 +1,4 @@
+'use strict';
 
 gl3.ready   = false;
 gl3.canvas  = null;
@@ -6,7 +7,7 @@ gl3.texture = null;
 
 gl3.initGL = function(canvasId, options){
 	var opt = options || {};
-	this.canvas = document.getElementById(id);
+	this.canvas = document.getElementById(canvasId);
 	if(this.canvas == null){return;}
 	this.gl = this.canvas.getContext('webgl', opt)
 		   || this.canvas.getContext('experimental-webgl', opt);
@@ -164,21 +165,21 @@ gl3.create_cube_texture = function(source, target, number){
 
 gl3.program = {
 	create: function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
-		if(this.gl == null){return null;}
+		if(gl3.gl == null){return null;}
 		var i;
-		var mng = new gl3.programManager(this.gl);
+		var mng = new gl3.programManager(gl3.gl);
 		mng.vs = mng.create_shader(vsId);
 		mng.fs = mng.create_shader(fsId);
 		mng.prg = mng.create_program(mng.vs, mng.fs);
 		mng.attL = new Array(attLocation.length);
 		mng.attS = new Array(attLocation.length);
 		for(i = 0; i < attLocation.length; i++){
-			mng.attL[i] = this.gl.getAttribLocation(mng.prg, attLocation[i]);
+			mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
 			mng.attS[i] = attStride[i];
 		}
 		mng.uniL = new Array(uniLocation.length);
 		for(i = 0; i < uniLocation.length; i++){
-			mng.uniL[i] = this.gl.getUniformLocation(mng.prg, uniLocation[i]);
+			mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
 		}
 		mng.uniT = uniType;
 		return mng;
@@ -186,7 +187,7 @@ gl3.program = {
 };
 
 gl3.programManager = function(webglContext){
-	this.parent = webglContext;
+	this.gl = webglContext;
 };
 
 gl3.programManager.prototype.gl   = null;
