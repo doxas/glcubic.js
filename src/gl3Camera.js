@@ -1,26 +1,32 @@
 
-gl3.camera = function(position, centerPoint, upDirection){
-	var n = gl3.vec3.create();
-	n[0] = upDirection[0];
-	n[1] = upDirection[1];
-	n[2] = upDirection[2];
-	n = gl3.vec3.normalize(n);
-	this.set_position(position, centerPoint, n);
+gl3.camera = {
+	create: function(position, centerPoint, upDirection, fovy, aspect, near, far){
+		var c = new gl3.cam();
+		var n = gl3.vec3.create();
+		n[0] = upDirection[0];
+		n[1] = upDirection[1];
+		n[2] = upDirection[2];
+		n = gl3.vec3.normalize(n);
+		c.init(position, centerPoint, n, fovy, aspect, near, far);
+		return c;
+	}
 };
 
-gl3.camera.prototype.position    = gl3.vec3.create();
-gl3.camera.prototype.centerPoint = gl3.vec3.create();
-gl3.camera.prototype.upDirection = gl3.vec3.create();
-gl3.camera.prototype.basePosition    = gl3.vec3.create();
-gl3.camera.prototype.baseCenterPoint = gl3.vec3.create();
-gl3.camera.prototype.baseUpDirection = gl3.vec3.create();
+gl3.cam = function(){};
 
-gl3.camera.prototype.fovy   = 45;
-gl3.camera.prototype.aspect = 1.0;
-gl3.camera.prototype.near   = 0.1;
-gl3.camera.prototype.far    = 1.0;
+gl3.cam.prototype.position        = gl3.vec3.create();
+gl3.cam.prototype.centerPoint     = gl3.vec3.create();
+gl3.cam.prototype.upDirection     = gl3.vec3.create();
+gl3.cam.prototype.basePosition    = gl3.vec3.create();
+gl3.cam.prototype.baseCenterPoint = gl3.vec3.create();
+gl3.cam.prototype.baseUpDirection = gl3.vec3.create();
 
-gl3.camera.prototype.set_position = function(posiiton, centerPoint, upDirection){
+gl3.cam.prototype.fovy   = 45;
+gl3.cam.prototype.aspect = 1.0;
+gl3.cam.prototype.near   = 0.1;
+gl3.cam.prototype.far    = 1.0;
+
+gl3.cam.prototype.init = function(posiiton, centerPoint, upDirection, fovy, aspect, near, far){
 	this.position[0]    = this.basePosition[0]    = position[0];
 	this.position[1]    = this.basePosition[1]    = position[1];
 	this.position[2]    = this.basePosition[2]    = position[2];
@@ -30,16 +36,13 @@ gl3.camera.prototype.set_position = function(posiiton, centerPoint, upDirection)
 	this.upDirection[0] = this.baseUpDirection[0] = upDirection[0];
 	this.upDirection[1] = this.baseUpDirection[1] = upDirection[1];
 	this.upDirection[2] = this.baseUpDirection[2] = upDirection[2];
-};
-
-gl3.camera.prototype.set_view = function(fovy, aspect, near, far){
 	this.fovy   = fovy;
 	this.aspect = aspect;
 	this.near   = near;
 	this.far    = far;
 };
 
-gl3.camera.prototype.get_canvas_aspect = function(){
+gl3.cam.prototype.get_canvas_aspect = function(){
 	if(!gl3.canvas){return;}
 	return gl3.canvas.width / gl3.canvas.height;
 };

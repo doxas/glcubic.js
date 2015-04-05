@@ -239,4 +239,10 @@ gl3.m4.prototype.inverse = function(mat, dest){
 	return dest;
 };
 
+gl3.m4.prototype.vpFromCamera = function(cam, vmat, pmat, dest){
+	gl3.m4.lookAt(cam.position, cam.centerPoint, cam.upDirection, vmat);
+	gl3.m4.perspective(cam.fovy, cam.aspect, cam.near, cam.far, pmat);
+	gl3.m4.multiply(pmat, vmat, dest);
+};
+
 gl3.mat4 = new gl3.m4();

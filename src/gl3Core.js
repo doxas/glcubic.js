@@ -7,12 +7,6 @@ gl3.PI2 = 1.57079632679489661923132169163975144;
 gl3.PI4 = 0.78539816339744830961566084581987572;
 gl3.BPI = 6.28318530717958647692528676655900576;
 
-// property
-gl3.ready   = false;
-gl3.canvas  = null;
-gl3.gl      = null;
-gl3.texture = null;
-
 function radian(){
 	this.rad = new Array();
 	this.sin = new Array();

@@ -1,6 +1,10 @@
 
-// method
-gl3.init = function(canvasId, options){
+gl3.ready   = false;
+gl3.canvas  = null;
+gl3.gl      = null;
+gl3.texture = null;
+
+gl3.initGL = function(canvasId, options){
 	var opt = options || {};
 	this.canvas = document.getElementById(id);
 	if(this.canvas == null){return;}
@@ -12,27 +16,22 @@ gl3.init = function(canvasId, options){
 	}
 };
 
-gl3.create_program = function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
-	if(this.gl == null){return null;}
-	var i;
-	var w = new gl3.program(this.gl);
-	w.vs = w.create_shader(vsId);
-	w.fs = w.create_shader(fsId);
-	w.prg = w.create_program(w.vs, w.fs);
-	w.attL = new Array(attLocation.length);
-	w.attS = new Array(attLocation.length);
-	for(i = 0; i < attLocation.length; i++){
-		w.attL[i] = this.gl.getAttribLocation(w.prg, attLocation[i]);
-		w.attS[i] = attStride[i];
-	}
-	w.uniL = new Array(uniLocation.length);
-	for(i = 0; i < uniLocation.length; i++){
-		w.uniL[i] = this.gl.getUniformLocation(w.prg, uniLocation[i]);
-	}
-	w.uniT = uniType;
-	return w;
+gl3.clearGL = function(color, depth){
+	this.gl.clearColor(color[0], color[1], color[2], color[3]);
+	this.gl.clearDepth(depth);
+	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 };
 
+gl3.fullCanvas = function(camera){
+	var w = window.innerWidth;
+	var h = window.innerHeight;
+	this.canvas.width = w;
+	this.canvas.height = h;
+	this.gl.viewport(0, 0, w, h);
+	if(camera != null){camera.aspect = w / h;}
+};
+
+// creaters
 gl3.create_vbo = function(data){
 	var vbo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
@@ -163,20 +162,43 @@ gl3.create_cube_texture = function(source, target, number){
 	}
 };
 
-gl3.prgram = function(webglContext){
+gl3.program = {
+	create: function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
+		if(this.gl == null){return null;}
+		var i;
+		var mng = new gl3.programManager(this.gl);
+		mng.vs = mng.create_shader(vsId);
+		mng.fs = mng.create_shader(fsId);
+		mng.prg = mng.create_program(mng.vs, mng.fs);
+		mng.attL = new Array(attLocation.length);
+		mng.attS = new Array(attLocation.length);
+		for(i = 0; i < attLocation.length; i++){
+			mng.attL[i] = this.gl.getAttribLocation(mng.prg, attLocation[i]);
+			mng.attS[i] = attStride[i];
+		}
+		mng.uniL = new Array(uniLocation.length);
+		for(i = 0; i < uniLocation.length; i++){
+			mng.uniL[i] = this.gl.getUniformLocation(mng.prg, uniLocation[i]);
+		}
+		mng.uniT = uniType;
+		return mng;
+	}
+};
+
+gl3.programManager = function(webglContext){
 	this.parent = webglContext;
 };
 
-gl3.program.prototype.gl   = null;
-gl3.program.prototype.vs   = null;
-gl3.program.prototype.fs   = null;
-gl3.program.prototype.prg  = null;
-gl3.program.prototype.attL = null;
-gl3.program.prototype.attS = null;
-gl3.program.prototype.uniL = null;
-gl3.program.prototype.uniT = null;
+gl3.programManager.prototype.gl   = null;
+gl3.programManager.prototype.vs   = null;
+gl3.programManager.prototype.fs   = null;
+gl3.programManager.prototype.prg  = null;
+gl3.programManager.prototype.attL = null;
+gl3.programManager.prototype.attS = null;
+gl3.programManager.prototype.uniL = null;
+gl3.programManager.prototype.uniT = null;
 
-gl3.program.prototype.create_shader = function(id){
+gl3.programManager.prototype.create_shader = function(id){
 	var shader;
 	var scriptElement = document.getElementById(id);
 	if(!scriptElement){return;}
@@ -199,7 +221,7 @@ gl3.program.prototype.create_shader = function(id){
 	}
 };
 
-gl3.program.prototype.create_program = function(vs, fs){
+gl3.programManager.prototype.create_program = function(vs, fs){
 	var program = this.gl.createProgram();
 	this.gl.attachShader(program, vs);
 	this.gl.attachShader(program, fs);
@@ -212,11 +234,11 @@ gl3.program.prototype.create_program = function(vs, fs){
 	}
 };
 
-gl3.program.prototype.set_program = function(){
+gl3.programManager.prototype.set_program = function(){
 	this.gl.useProgram(this.prg);
 };
 
-gl3.program.prototype.set_attribute = function(vbo, ibo){
+gl3.programManager.prototype.set_attribute = function(vbo, ibo){
 	for(var i in vbo){
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo[i]);
 		this.gl.enableVertexAttribArray(this.attL[i]);
@@ -225,7 +247,7 @@ gl3.program.prototype.set_attribute = function(vbo, ibo){
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 };
 
-gl3.program.prototype.push_shader = function(any){
+gl3.programManager.prototype.push_shader = function(any){
 	for(var i = 0, l = this.uniT.length; i < l; i++){
 		switch(this.uniT[i]){
 			case 'matrix4fv':
