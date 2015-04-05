@@ -1,0 +1,24 @@
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/vertex-shader">
+attribute vec3 position;     // 頂点属性：頂点座標位置
+attribute vec2 texCoord;     // 頂点属性：テクスチャ座標
+uniform mat4 mvpMatrix;      // MVPマトリックス
+varying vec2 vTexCoord;      // テクスチャ座標用
+void main(){
+	vTexCoord = texCoord;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/fragment-shader">
+precision mediump float;
+uniform sampler2D texture;   // テクスチャユニット
+varying vec2 vTexCoord;      // テクスチャ座標
+void main(){
+	// テクスチャの色
+	vec4 texColor = texture2D(texture, vTexCoord);
+	// 最終出力の色
+	gl_FragColor = vec4(texColor.rgb, 0.5);
+}
+</script>
+<canvas id="c"></canvas>

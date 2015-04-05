@@ -8,23 +8,16 @@ gl3.PI4 = 0.78539816339744830961566084581987572;
 gl3.BPI = 6.28318530717958647692528676655900576;
 
 // property
-gl3.ready = false;
+gl3.ready   = false;
+gl3.canvas  = null;
+gl3.gl      = null;
+gl3.texture = null;
 
-// initialize
-(function(){
-
-})();
-
-function wgld(){}
-
-wgld.prototype.ready   = false;
-wgld.prototype.canvas  = null;
-wgld.prototype.gl      = null;
-wgld.prototype.texture = null;
-
-wgld.prototype.init = function(canvas, options){
+// method
+gl3.init = function(canvasId, options){
 	var opt = options || {};
-	this.canvas = canvas;
+	this.canvas = document.getElementById(id);
+	if(this.canvas == null){return;}
 	this.gl = this.canvas.getContext('webgl', opt)
 		   || this.canvas.getContext('experimental-webgl', opt);
 	if(this.gl != null){
@@ -33,13 +26,12 @@ wgld.prototype.init = function(canvas, options){
 	}
 };
 
-wgld.prototype.generate_program = function(vShader, fShader, attLocation, attStride, uniLocation, uniType){
+gl3.generate_program = function(vsId, fsId, attLocation, attStride, uniLocation, uniType){
 	if(this.gl == null){return null;}
 	var i;
-	var w = new wgldPrg();
-	w.parent = this.gl;
-	w.vs = w.create_shader(vShader);
-	w.fs = w.create_shader(fShader);
+	var w = new gl3.program(this.gl);
+	w.vs = w.create_shader(vsId);
+	w.fs = w.create_shader(fsId);
 	w.prg = w.create_program(w.vs, w.fs);
 	w.attL = new Array(attLocation.length);
 	w.attS = new Array(attLocation.length);
@@ -55,7 +47,7 @@ wgld.prototype.generate_program = function(vShader, fShader, attLocation, attStr
 	return w;
 };
 
-wgld.prototype.create_vbo = function(data){
+gl3.create_vbo = function(data){
 	var vbo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
 	this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
@@ -63,7 +55,7 @@ wgld.prototype.create_vbo = function(data){
 	return vbo;
 };
 
-wgld.prototype.create_ibo = function(data){
+gl3.create_ibo = function(data){
 	var ibo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 	this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), this.gl.STATIC_DRAW);
@@ -71,7 +63,7 @@ wgld.prototype.create_ibo = function(data){
 	return ibo;
 };
 
-wgld.prototype.create_texture = function(source, number){
+gl3.create_texture = function(source, number){
 	var img = new Image();
 	var w = this;
 	var gl = this.gl;
@@ -90,7 +82,7 @@ wgld.prototype.create_texture = function(source, number){
 	img.src = source;
 };
 
-wgld.prototype.create_texture_canvas = function(canvas, number){
+gl3.create_texture_canvas = function(canvas, number){
 	var tex = this.gl.createTexture();
 	this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
 	this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, canvas);
@@ -103,7 +95,7 @@ wgld.prototype.create_texture_canvas = function(canvas, number){
 	this.gl.bindTexture(this.gl.TEXTURE_2D, null);
 };
 
-wgld.prototype.create_framebuffer = function(width, height){
+gl3.create_framebuffer = function(width, height){
 	var frameBuffer = this.gl.createFramebuffer();
 	this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
 	var depthRenderBuffer = this.gl.createRenderbuffer();
@@ -125,7 +117,7 @@ wgld.prototype.create_framebuffer = function(width, height){
 };
 
 
-wgld.prototype.create_framebuffer_cube = function(width, height, target){
+gl3.create_framebuffer_cube = function(width, height, target){
 	var frameBuffer = this.gl.createFramebuffer();
 	this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
 	var depthRenderBuffer = this.gl.createRenderbuffer();
@@ -147,7 +139,7 @@ wgld.prototype.create_framebuffer_cube = function(width, height, target){
 	return {f : frameBuffer, d : depthRenderBuffer, t : fTexture};
 };
 
-wgld.prototype.create_cube_texture = function(source, target, number){
+gl3.create_cube_texture = function(source, target, number){
 	var cImg = new Array();
 	var gl = this.gl;
 	for(var i = 0; i < source.length; i++){
@@ -185,121 +177,97 @@ wgld.prototype.create_cube_texture = function(source, target, number){
 	}
 };
 
-// ------------------------------------------------------------------------------------------------
-// wgldPrg
-// ------------------------------------------------------------------------------------------------
-function wgldPrg(){}
+gl3.prgram = function(webglContext){
+	this.parent = webglContext;
+};
 
-wgldPrg.prototype.parent = null;
-wgldPrg.prototype.vs     = null;
-wgldPrg.prototype.fs     = null;
-wgldPrg.prototype.prg    = null;
-wgldPrg.prototype.attL   = null;
-wgldPrg.prototype.attS   = null;
-wgldPrg.prototype.uniL   = null;
-wgldPrg.prototype.uniT   = null;
+gl3.program.prototype.gl   = null;
+gl3.program.prototype.vs   = null;
+gl3.program.prototype.fs   = null;
+gl3.program.prototype.prg  = null;
+gl3.program.prototype.attL = null;
+gl3.program.prototype.attS = null;
+gl3.program.prototype.uniL = null;
+gl3.program.prototype.uniT = null;
 
-wgldPrg.prototype.create_shader = function(id){
+gl3.program.prototype.create_shader = function(id){
 	var shader;
 	var scriptElement = document.getElementById(id);
 	if(!scriptElement){return;}
 	switch(scriptElement.type){
 		case 'x-shader/x-vertex':
-			shader = this.parent.createShader(this.parent.VERTEX_SHADER);
+			shader = this.gl.createShader(this.gl.VERTEX_SHADER);
 			break;
 		case 'x-shader/x-fragment':
-			shader = this.parent.createShader(this.parent.FRAGMENT_SHADER);
+			shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 			break;
 		default :
 			return;
 	}
-	this.parent.shaderSource(shader, scriptElement.text);
-	this.parent.compileShader(shader);
-	if(this.parent.getShaderParameter(shader, this.parent.COMPILE_STATUS)){
+	this.gl.shaderSource(shader, scriptElement.text);
+	this.gl.compileShader(shader);
+	if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
 		return shader;
 	}else{
-		alert(this.parent.getShaderInfoLog(shader));
+		alert(this.gl.getShaderInfoLog(shader));
 	}
 };
 
-wgldPrg.prototype.create_program = function(vs, fs){
-	var program = this.parent.createProgram();
-	this.parent.attachShader(program, vs);
-	this.parent.attachShader(program, fs);
-	this.parent.linkProgram(program);
-	if(this.parent.getProgramParameter(program, this.parent.LINK_STATUS)){
-		this.parent.useProgram(program);
+gl3.program.prototype.create_program = function(vs, fs){
+	var program = this.gl.createProgram();
+	this.gl.attachShader(program, vs);
+	this.gl.attachShader(program, fs);
+	this.gl.linkProgram(program);
+	if(this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
+		this.gl.useProgram(program);
 		return program;
 	}else{
-		alert(this.parent.getProgramInfoLog(program));
+		alert(this.gl.getProgramInfoLog(program));
 	}
 };
 
-wgldPrg.prototype.set_program = function(){
-	this.parent.useProgram(this.prg);
+gl3.program.prototype.set_program = function(){
+	this.gl.useProgram(this.prg);
 };
 
-wgldPrg.prototype.set_attribute = function(vbo){
+gl3.program.prototype.set_attribute = function(vbo){
 	for(var i in vbo){
-		this.parent.bindBuffer(this.parent.ARRAY_BUFFER, vbo[i]);
-		this.parent.enableVertexAttribArray(this.attL[i]);
-		this.parent.vertexAttribPointer(this.attL[i], this.attS[i], this.parent.FLOAT, false, 0, 0);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo[i]);
+		this.gl.enableVertexAttribArray(this.attL[i]);
+		this.gl.vertexAttribPointer(this.attL[i], this.attS[i], this.gl.FLOAT, false, 0, 0);
 	}
 };
 
-wgldPrg.prototype.push_shader = function(any){
+gl3.program.prototype.push_shader = function(any){
 	for(var i = 0, l = this.uniT.length; i < l; i++){
 		switch(this.uniT[i]){
 			case 'matrix4fv':
-				this.parent.uniformMatrix4fv(this.uniL[i], false, any[i]);
+				this.gl.uniformMatrix4fv(this.uniL[i], false, any[i]);
 				break;
 			case '4fv':
-				this.parent.uniform4fv(this.uniL[i], any[i]);
+				this.gl.uniform4fv(this.uniL[i], any[i]);
 				break;
 			case '3fv':
-				this.parent.uniform3fv(this.uniL[i], any[i]);
+				this.gl.uniform3fv(this.uniL[i], any[i]);
 				break;
 			case '2fv':
-				this.parent.uniform2fv(this.uniL[i], any[i]);
+				this.gl.uniform2fv(this.uniL[i], any[i]);
 				break;
 			case '1fv':
-				this.parent.uniform1fv(this.uniL[i], any[i]);
+				this.gl.uniform1fv(this.uniL[i], any[i]);
 				break;
 			case '1f':
-				this.parent.uniform1f(this.uniL[i], any[i]);
+				this.gl.uniform1f(this.uniL[i], any[i]);
 				break;
 			case '1iv':
-				this.parent.uniform1iv(this.uniL[i], any[i]);
+				this.gl.uniform1iv(this.uniL[i], any[i]);
 				break;
 			case '1i':
-				this.parent.uniform1i(this.uniL[i], any[i]);
+				this.gl.uniform1i(this.uniL[i], any[i]);
 				break;
 			default :
 				break;
 		}
 	}
 };
-
-// ------------------------------------------------------------------------------------------------
-// util
-// ------------------------------------------------------------------------------------------------
-
-function mesh(){
-	this.position;
-	this.normal;
-	this.color;
-	this.texCoord;
-	this.index;
-}
-
-function radian(){
-	this.rad = new Array();
-	this.sin = new Array();
-	this.cos = new Array();
-	for(var i = 0; i < 360; i++){
-		this.rad.push(i * Math.PI / 180);
-		this.sin.push(Math.sin(this.rad[i]));
-		this.cos.push(Math.cos(this.rad[i]));
-	}
-}
 

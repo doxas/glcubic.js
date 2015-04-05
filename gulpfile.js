@@ -9,11 +9,16 @@ var runsqc = require('run-sequence');
 var bsync  = require('browser-sync');
 
 // jshint
-gulp.task('lint', function(){
+gulp.task('lintsrc', function(){
+	gulp.src(['src/*.js'])
+	.pipe(jshint())
+	.pipe(jshint.reporter('jshint-stylish'));
+});
+
+gulp.task('lintbuild', function(){
 	gulp.src([
 		'build/glcubic.js',
-		'build/glcubic.min.js',
-		'src/*.js'
+		'build/glcubic.min.js'
 	])
 	.pipe(jshint())
 	.pipe(jshint.reporter('jshint-stylish'));
@@ -23,6 +28,7 @@ gulp.task('lint', function(){
 gulp.task('concat', function(){
 	gulp.src([
 		'src/gl3Core.js',
+		'src/gl3Common.js',
 		'src/gl3Util.js',
 		'src/gl3Mesh.js',
 		'src/gl3Vector.js',
@@ -37,15 +43,14 @@ gulp.task('concat', function(){
 	.pipe(gulp.dest('build/'));
 });
 
-// build
-gulp.task('build', function(){
-	runsqc('concat');
+gulp.task('copy', function(){
+	gulp.src('build/glcubic.js').pipe(gulp.dest('app/script/'));
 });
 
 // browser sync
 gulp.task('bs-sync', function(){
 	bsync.init(
-		['app/scirpt/*.js', 'app/css/*.css', 'app/*.html'],
+		['app/index.html', 'app/scirpt/*.js', 'app/css/*.css', 'app/*.html'],
 		{
 			port: 8888,
 			server: {
@@ -62,6 +67,7 @@ gulp.task('bs-reload', function(){
 
 // default task
 gulp.task('default', ['bs-sync'], function(){
+	runsqc(['concat', 'copy']);
 	gulp.watch('.app/*.*',    ['bs-reload']);
 	gulp.watch('.app/**/*.*', ['bs-reload']);
 });
