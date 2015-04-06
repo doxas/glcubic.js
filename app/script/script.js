@@ -27,21 +27,14 @@ window.onload = function(){
 	var torusIBO = gl3.create_ibo(torusData.index);
 
 	// camera
-	var cameraPosition    = [0.0, 0.0, 5.0];
-	var cameraCenter      = [0.0, 0.0, 0.0];
-	var cameraUpDirection = [0.0, 1.0, 0.0];
-	var cameraFovy   = 45;
-	var cameraAspect = 1.0;
-	var cameraNear   = 0.1;
-	var cameraFar    = 1.0;
 	var camera = gl3.camera.create(
-		cameraPosition,
-		cameraCenter,
-		cameraUpDirection,
-		cameraFovy,
-		cameraAspect,
-		cameraNear,
-		cameraFar
+		[0.0, 0.0, 5.0],
+		[0.0, 0.0, 0.0],
+		[0.0, 1.0, 0.0],
+		45,
+		1.0,
+		0.1,
+		10.0
 	);
 
 	// matrix
@@ -61,18 +54,19 @@ window.onload = function(){
 
 		var rad = (count % 360) * gl3.PI / 180;
 
-		gl3.clearGL([0.7, 0.7, 0.7, 1.0], 1.0);
-		gl3.fullCanvas(camera);
+		gl3.sceneClear([0.7, 0.7, 0.7, 1.0], 1.0);
+		gl3.sceneView(camera, null, null);
+		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 
 		prg.set_program();
 		prg.set_attribute(torusVBO, torusIBO);
 
-		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 		gl3.mat4.identity(mMatrix);
 		gl3.mat4.rotate(mMatrix, rad, [0.0, 1.0, 1.0], mMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
 
 		prg.push_shader([mvpMatrix, 0]);
+		gl3.drawElements(torusData.index.length);
 
 		requestAnimationFrame(render);
 	}

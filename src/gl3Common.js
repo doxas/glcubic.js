@@ -17,19 +17,37 @@ gl3.initGL = function(canvasId, options){
 	}
 };
 
-gl3.clearGL = function(color, depth){
+gl3.sceneClear = function(color, depth){
+	var flg = this.gl.COLOR_BUFFER_BIT;
 	this.gl.clearColor(color[0], color[1], color[2], color[3]);
-	this.gl.clearDepth(depth);
-	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+	if(depth != null){
+		this.gl.clearDepth(depth);
+		this.gl.enable(this.gl.DEPTH_TEST);
+		flg = flg | this.gl.DEPTH_BUFFER_BIT; 
+	}
+	this.gl.clear(flg);
 };
 
-gl3.fullCanvas = function(camera){
-	var w = window.innerWidth;
-	var h = window.innerHeight;
+gl3.sceneView = function(camera, width, height){
+	var w, h;
+	if(width != null){
+		w = width;
+	}else{
+		w = window.innerWidth;
+	}
+	if(height != null){
+		h = height;
+	}else{
+		h = window.innerHeight;
+	}
 	this.canvas.width = w;
 	this.canvas.height = h;
 	this.gl.viewport(0, 0, w, h);
 	if(camera != null){camera.aspect = w / h;}
+};
+
+gl3.drawElements = function(indexLength){
+	this.gl.drawElements(this.gl.TRIANGLES, indexLength, this.gl.UNSIGNED_SHORT, 0);
 };
 
 // creaters
@@ -241,9 +259,11 @@ gl3.programManager.prototype.set_program = function(){
 
 gl3.programManager.prototype.set_attribute = function(vbo, ibo){
 	for(var i in vbo){
-		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo[i]);
-		this.gl.enableVertexAttribArray(this.attL[i]);
-		this.gl.vertexAttribPointer(this.attL[i], this.attS[i], this.gl.FLOAT, false, 0, 0);
+		if(this.attL[i] >= 0){
+			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo[i]);
+			this.gl.enableVertexAttribArray(this.attL[i]);
+			this.gl.vertexAttribPointer(this.attL[i], this.attS[i], this.gl.FLOAT, false, 0, 0);
+		}
 	}
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 };

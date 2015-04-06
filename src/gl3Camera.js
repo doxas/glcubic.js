@@ -27,6 +27,12 @@ gl3.cam.prototype.near   = 0.1;
 gl3.cam.prototype.far    = 1.0;
 
 gl3.cam.prototype.init = function(position, centerPoint, upDirection, fovy, aspect, near, far){
+	this.position    = gl3.vec3.create();
+	this.centerPoint = gl3.vec3.create();
+	this.upDirection = gl3.vec3.create();
+	this.basePosition    = gl3.vec3.create();
+	this.baseCenterPoint = gl3.vec3.create();
+	this.baseUpDirection = gl3.vec3.create();
 	this.position[0]    = this.basePosition[0]    = position[0];
 	this.position[1]    = this.basePosition[1]    = position[1];
 	this.position[2]    = this.basePosition[2]    = position[2];
