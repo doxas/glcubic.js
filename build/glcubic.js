@@ -38,7 +38,7 @@ gl3.initGL = function(canvasId, options){
 	}
 };
 
-gl3.sceneClear = function(color, depth){
+gl3.scene_clear = function(color, depth){
 	var flg = this.gl.COLOR_BUFFER_BIT;
 	this.gl.clearColor(color[0], color[1], color[2], color[3]);
 	if(depth != null){
@@ -49,7 +49,7 @@ gl3.sceneClear = function(color, depth){
 	this.gl.clear(flg);
 };
 
-gl3.sceneView = function(camera, width, height){
+gl3.scene_view = function(camera, width, height){
 	var w, h;
 	if(width != null){
 		w = width;
@@ -67,8 +67,13 @@ gl3.sceneView = function(camera, width, height){
 	if(camera != null){camera.aspect = w / h;}
 };
 
-gl3.drawElements = function(indexLength){
+gl3.draw_elements = function(indexLength){
 	this.gl.drawElements(this.gl.TRIANGLES, indexLength, this.gl.UNSIGNED_SHORT, 0);
+};
+
+gl3.bind_texture = function(num){
+	this.gl.activeTexture(33984 + num);
+	this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture[num]);
 };
 
 // creaters
