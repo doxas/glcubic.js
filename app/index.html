@@ -28,7 +28,7 @@ varying vec4 vColor;
 varying vec2 vTexCoord;
 void main(){
 	vec3 invLight = (invMatrix * vec4(normalize(lightDirection), 1.0)).xyz;
-	float diff = clamp(dot(vNormal, invLight), 0.1, 1.0);
+	float diff = clamp(dot(vNormal, invLight), 0.2, 1.0);
 	vec4 texColor = texture2D(texture, vTexCoord);
 	gl_FragColor = vec4(texColor.rgb * diff, texColor.a) * vColor;
 }
