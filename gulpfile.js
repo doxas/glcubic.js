@@ -29,6 +29,7 @@ gulp.task('concat', function(){
 	gulp.src([
 		'src/gl3Core.js',
 		'src/gl3Common.js',
+		'src/gl3Creater.js',
 		'src/gl3Util.js',
 		'src/gl3Vector.js',
 		'src/gl3Matrix.js',
@@ -68,8 +69,8 @@ gulp.task('bs-reload', function(){
 });
 
 // default task
-gulp.task('default', ['bs-sync'], function(){
-	runsqc('concat', 'copy');
+gulp.task('default', function(){
+	runsqc('concat', 'copy', 'bs-sync');
 	gulp.watch('app/*.*',    ['bs-reload']);
 	gulp.watch('app/**/*.*', ['bs-reload']);
 });
