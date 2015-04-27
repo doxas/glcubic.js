@@ -1,5 +1,45 @@
 
 gl3.mesh = {
+	plane: function(width, height, color){
+		var w, h, tc;
+		w = width / 2;
+		h = height / 2;
+		if(color){
+			tc = color;
+		}else{
+			tc = [1.0, 1.0, 1.0, 1.0];
+		}
+		var pos = [
+			-w,  h,  0.0,
+			 w,  h,  0.0,
+			-w, -h,  0.0,
+			 w, -h,  0.0
+		];
+		var nor = [
+			0.0, 0.0, 1.0,
+			0.0, 0.0, 1.0,
+			0.0, 0.0, 1.0,
+			0.0, 0.0, 1.0
+		];
+		var col = [
+			tc[0], tc[1], tc[2], tc[3],
+			tc[0], tc[1], tc[2], tc[3],
+			tc[0], tc[1], tc[2], tc[3],
+			tc[0], tc[1], tc[2], tc[3]
+		];
+		var st  = [
+			0.0, 0.0,
+			1.0, 0.0,
+			0.0, 1.0,
+			1.0, 1.0
+		];
+		var idx = [
+			0, 1, 2,
+			2, 1, 3
+		];
+		return {position: pos, normal: nor, color: col, texCoord: st, index: idx};
+	},
+
 	torus: function(row, column, irad, orad, color){
 		var i, j, tc;
 		var pos = [], nor = [],

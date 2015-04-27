@@ -91,7 +91,7 @@ gl3.create_framebuffer_cube = function(width, height, target){
 };
 
 gl3.create_cube_texture = function(source, target, number){
-	var cImg = new Array();
+	var cImg = [];
 	var gl = this.gl;
 	for(var i = 0; i < source.length; i++){
 		cImg[i] = new cubeMapImage();

@@ -1,15 +1,26 @@
 
 window.onload = function(){
-	var run = true;
-	window.addEventListener('keydown', function(e){
-		run = (e.keyCode !== 27);
-	}, true);
-
+	// initialize webgl
 	gl3.initGL('c');
 	if(!gl3.ready){
 		console.log('initialize error');
 		return;
 	}
+
+	// variables
+	var mouseX, mouseY;
+	mouseX = mouseY = 0;
+
+	// event init
+	window.addEventListener('keydown', function(eve){
+		run = (eve.keyCode !== 27);
+	}, true);
+	window.addEventListener('mousemove', function(eve){
+		var w = window.innerWidth / 2;
+		var h = window.innerHeight / 2;
+		mouseX = eve.clientX / w - 1.0;
+		mouseY = (2.0 - eve.clientY / h) - 1.0;
+	});
 
 	// program
 	var prg = gl3.program.create(
@@ -54,6 +65,7 @@ window.onload = function(){
 	var invMatrix = gl3.mat4.identity(gl3.mat4.create());
 
 	// variable initialize
+	var run = true;
 	var count = 0;
 	var lightDirection = [1.0, 1.0, 1.0];
 

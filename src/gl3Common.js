@@ -1,4 +1,3 @@
-'use strict';
 
 gl3.ready   = false;
 gl3.canvas  = null;
