@@ -29,7 +29,7 @@ gulp.task('concat', function(){
 	gulp.src([
 		'src/gl3Core.js',
 		'src/gl3Common.js',
-		'src/gl3Creater.js',
+		'src/gl3Creator.js',
 		'src/gl3Util.js',
 		'src/gl3Vector.js',
 		'src/gl3Matrix.js',
