@@ -4,38 +4,21 @@
 <script src="script/script.js"></script>
 <script id="vs" type="x-shader/x-vertex">
 attribute vec3 position;
-attribute vec3 normal;
-attribute vec4 color;
-attribute vec2 texCoord;
-uniform mat4 mvpMatrix;
-varying vec3 vNormal;
-varying vec4 vColor;
-varying vec2 vTexCoord;
+
 void main(){
-	vNormal = normal;
-	vColor = color;
-	vTexCoord = texCoord;
-	gl_Position = mvpMatrix * vec4(position, 1.0);
+	gl_Position = vec4(position, 1.0);
 }
 </script>
 <script id="fs" type="x-shader/x-fragment">
 precision mediump float;
-uniform mat4 invMatrix;
-uniform vec3 lightDirection;
-uniform sampler2D texture;
-varying vec3 vNormal;
-varying vec4 vColor;
-varying vec2 vTexCoord;
+
 void main(){
-	vec3 invLight = (invMatrix * vec4(normalize(lightDirection), 1.0)).xyz;
-	float diff = clamp(dot(vNormal, invLight), 0.2, 1.0);
-	vec4 texColor = texture2D(texture, vTexCoord);
-	gl_FragColor = vec4(texColor.rgb * diff, texColor.a) * vColor;
+	gl_FragColor = vec4(1.0);
 }
 </script>
 <link rel="stylesheet" href="css/style.css">
-<title>test</title>
+<title>sample.001</title>
 </head>
 <body>
-	<canvas id="c"></canvas>
+	<canvas id="canvas"></canvas>
 </body></html>

@@ -164,7 +164,7 @@ gl3.programManager.prototype.set_attribute = function(vbo, ibo){
 			this.gl.vertexAttribPointer(this.attL[i], this.attS[i], this.gl.FLOAT, false, 0, 0);
 		}
 	}
-	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
+	if(ibo != null){this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);}
 };
 
 gl3.programManager.prototype.push_shader = function(any){
