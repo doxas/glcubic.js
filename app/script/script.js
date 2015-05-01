@@ -52,20 +52,6 @@ window.onload = function(){
 	];
 	var torusIBO = gl3.create_ibo(torusData.index);
 
-	// texture
-	gl3.create_texture('image/sample.png', 0);
-
-	// camera
-	var camera = gl3.camera.create(
-		[0.0, 0.0, 5.0],
-		[0.0, 0.0, 0.0],
-		[0.0, 1.0, 0.0],
-		45,
-		1.0,
-		0.1,
-		10.0
-	);
-
 	// matrix
 	var mMatrix   = gl3.mat4.identity(gl3.mat4.create());
 	var vMatrix   = gl3.mat4.identity(gl3.mat4.create());
@@ -74,12 +60,30 @@ window.onload = function(){
 	var mvpMatrix = gl3.mat4.identity(gl3.mat4.create());
 	var invMatrix = gl3.mat4.identity(gl3.mat4.create());
 
+	// texture
+	gl3.create_texture('image/sample.png', 0);
+
+	// camera
+	var camera = gl3.camera.create(
+		[0.0, 0.0, 5.0],
+		[0.0, 0.0, 0.0],
+		[0.0, 1.0, 0.0],
+		45, 1.0, 0.1, 10.0
+	);
+
 	// variable initialize
 	var run = true;
 	var count = 0;
 	var lightDirection = [1.0, 1.0, 1.0];
 
-	render();
+	// image load check and run
+	(function loadCheck(){
+		if(gl3.texture_loaded()){
+			render();
+		}else{
+			setTimeout(loadCheck, 100);
+		}
+	})();
 
 	function render(){
 		count++;

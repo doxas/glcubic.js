@@ -59,11 +59,24 @@ gl3.draw_elements = function(primitive, indexLength){
 	this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, 0);
 };
 
-// texture setting
+// binding texture
 gl3.bind_texture = function(unit, number){
 	if(this.textures[number] == null){return;}
 	this.gl.activeTexture(33984 + unit);
 	this.gl.bindTexture(this.textures[number].type, this.textures[number].texture);
+};
+
+// load check for texture
+gl3.texture_loaded = function(){
+	var i, j, f, g;
+	f = true; g = false;
+	for(i = 0, j = this.textures.length; i < j; i++){
+		if(this.textures[i] != null){
+			g = true;
+			f = f && this.textures[i].loaded;
+		}
+	}
+	if(g){return f;}else{return false;}
 };
 
 // program object -------------------------------------------------------------

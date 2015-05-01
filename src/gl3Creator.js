@@ -22,6 +22,7 @@ gl3.create_texture = function(source, number){
 	var img = new Image();
 	var self = this;
 	var gl = this.gl;
+	this.textures[number] = {texture: null, type: null, loaded: false};
 	img.onload = function(){
 		var tex = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -31,7 +32,9 @@ gl3.create_texture = function(source, number){
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-		self.textures[number] = {texture: tex, type: gl.TEXTURE_2D};
+		self.textures[number].texture = tex;
+		self.textures[number].type = gl.TEXTURE_2D;
+		self.textures[number].loaded = true;
 		console.log('%c◆%c texture number: %c' + number + '%c, image loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	};
@@ -42,6 +45,7 @@ gl3.create_texture_canvas = function(canvas, number){
 	if(canvas == null || number == null){return;}
 	var gl = this.gl;
 	var tex = gl.createTexture();
+	this.textures[number] = {texture: null, type: null, loaded: false};
 	gl.bindTexture(gl.TEXTURE_2D, tex);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	gl.generateMipmap(gl.TEXTURE_2D);
@@ -49,7 +53,9 @@ gl3.create_texture_canvas = function(canvas, number){
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-	this.textures[number] = {texture: tex, type: gl.TEXTURE_2D};
+	this.textures[number].texture = tex;
+	this.textures[number].type = gl.TEXTURE_2D;
+	this.textures[number].loaded = true;
 	console.log('%c◆%c texture number: %c' + number + '%c, canvas attached', 'color: crimson', '', 'color: blue', '');
 	gl.bindTexture(gl.TEXTURE_2D, null);
 };
@@ -57,6 +63,7 @@ gl3.create_texture_canvas = function(canvas, number){
 gl3.create_framebuffer = function(width, height, number){
 	if(width == null || height == null || number == null){return;}
 	var gl = this.gl;
+	this.textures[number] = {texture: null, type: null, loaded: false};
 	var frameBuffer = gl.createFramebuffer();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
 	var depthRenderBuffer = gl.createRenderbuffer();
@@ -74,13 +81,17 @@ gl3.create_framebuffer = function(width, height, number){
 	gl.bindTexture(gl.TEXTURE_2D, null);
 	gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	this.texture[number] = {texture: fTexture, type: gl.TEXTURE_2D};
-	return {framebuffer : frameBuffer, depthRenderbuffer : depthRenderBuffer, texture : fTexture};
+	this.textures[number].texture = fTexture;
+	this.textures[number].type = gl.TEXTURE_2D;
+	this.textures[number].loaded = true;
+	console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created', 'color: crimson', '', 'color: blue', '');
+	return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
 };
 
 gl3.create_framebuffer_cube = function(width, height, target, number){
 	if(width == null || height == null || target == null || number == null){return;}
 	var gl = this.gl;
+	this.textures[number] = {texture: null, type: null, loaded: false};
 	var frameBuffer = gl.createFramebuffer();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
 	var depthRenderBuffer = gl.createRenderbuffer();
@@ -99,14 +110,19 @@ gl3.create_framebuffer_cube = function(width, height, target, number){
 	gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 	gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	this.texture[number] = {texture: fTexture, type: gl.TEXTURE_CUBE_MAP};
-	return {framebuffer : frameBuffer, depthRenderbuffer : depthRenderBuffer, texture : fTexture};
+	this.textures[number].texture = fTexture;
+	this.textures[number].type = gl.TEXTURE_CUBE_MAP;
+	this.textures[number].loaded = true;
+	console.log('%c◆%c texture number: %c' + number + '%c, framebuffer cube created', 'color: crimson', '', 'color: blue', '');
+	return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
 };
 
-gl3.create_cube_texture = function(source, target, number){
+gl3.create_texture_cube = function(source, target, number){
 	if(source == null || target == null || number == null){return;}
 	var cImg = [];
 	var gl = this.gl;
+	var self = this;
+	this.textures[number] = {texture: null, type: null, loaded: false};
 	for(var i = 0; i < source.length; i++){
 		cImg[i] = new cubeMapImage();
 		cImg[i].data.src = source[i];
@@ -137,7 +153,9 @@ gl3.create_cube_texture = function(source, target, number){
 		gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		this.texture[number] = {texture: tex, type: gl.TEXTURE_CUBE_MAP};
+		self.textures[number].texture = tex;
+		self.textures[number].type = gl.TEXTURE_CUBE_MAP;
+		self.textures[number].loaded = true;
 		console.log('%c◆%c texture number: %c' + number + '%c, image loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 	}
