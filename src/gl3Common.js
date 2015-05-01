@@ -1,62 +1,69 @@
 
-gl3.ready   = false;
-gl3.canvas  = null;
-gl3.gl      = null;
-gl3.texture = null;
+gl3.ready = false;
+gl3.canvas = null;
+gl3.gl = null;
+gl3.textures = null;
+gl3.textureUnitCount = null;
 
 // initialize webgl
 gl3.initGL = function(canvasId, options){
 	var opt = options || {};
+	this.ready = false;
 	this.canvas = document.getElementById(canvasId);
-	if(this.canvas == null){return;}
+	if(this.canvas == null){return false;}
 	this.gl = this.canvas.getContext('webgl', opt)
 		   || this.canvas.getContext('experimental-webgl', opt);
 	if(this.gl != null){
 		this.ready = true;
-		this.texture = new Array(this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+		this.textureUnitCount = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		this.textures = new Array(this.textureUnitCount);
 	}
+	return this.ready;
 };
 
 // clear canvas
-gl3.scene_clear = function(color, depth){
-	var flg = this.gl.COLOR_BUFFER_BIT;
-	this.gl.clearColor(color[0], color[1], color[2], color[3]);
+gl3.scene_clear = function(color, depth, stencil){
+	var gl = this.gl;
+	var flg = gl.COLOR_BUFFER_BIT;
+	gl.clearColor(color[0], color[1], color[2], color[3]);
 	if(depth != null){
-		this.gl.clearDepth(depth);
-		this.gl.enable(this.gl.DEPTH_TEST);
-		flg = flg | this.gl.DEPTH_BUFFER_BIT; 
+		gl.clearDepth(depth);
+		gl.enable(gl.DEPTH_TEST);
+		flg = flg | gl.DEPTH_BUFFER_BIT; 
 	}
-	this.gl.clear(flg);
+	if(stencil != null){
+		gl.clearStencil(stencil);
+		gl.enable(gl.STENCIL_TEST);
+		flg = flg | gl.STENCIL_BUFFER_BIT; 
+	}
+	gl.clear(flg);
 };
 
 // view setting
-gl3.scene_view = function(camera, width, height){
-	var w, h;
-	if(width != null){
-		w = width;
-	}else{
-		w = window.innerWidth;
-	}
-	if(height != null){
-		h = height;
-	}else{
-		h = window.innerHeight;
-	}
-	this.canvas.width = w;
-	this.canvas.height = h;
-	this.gl.viewport(0, 0, w, h);
+gl3.scene_view = function(camera, x, y, width, height){
+	var X = x || 0;
+	var Y = y || 0;
+	var w = width  || window.innerWidth;
+	var h = height || window.innerHeight;
+	this.gl.viewport(X, Y, w, h);
 	if(camera != null){camera.aspect = w / h;}
 };
 
+// array buffer draw
+gl3.draw_arrays = function(primitive, vertexCount){
+	this.gl.drawArrays(primitive, 0, vertexCount);
+};
+
 // index buffer draw
-gl3.draw_elements = function(indexLength){
-	this.gl.drawElements(this.gl.TRIANGLES, indexLength, this.gl.UNSIGNED_SHORT, 0);
+gl3.draw_elements = function(primitive, indexLength){
+	this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, 0);
 };
 
 // texture setting
-gl3.bind_texture = function(num){
-	this.gl.activeTexture(33984 + num);
-	this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture[num]);
+gl3.bind_texture = function(unit, number){
+	if(this.textures[number] == null){return;}
+	this.gl.activeTexture(33984 + unit);
+	this.gl.bindTexture(this.textures[number].type, this.textures[number].texture);
 };
 
 // program object -------------------------------------------------------------
@@ -115,7 +122,7 @@ gl3.programManager.prototype.create_shader = function(id){
 	if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
 		return shader;
 	}else{
-		alert(this.gl.getShaderInfoLog(shader));
+		console.log(this.gl.getShaderInfoLog(shader));
 	}
 };
 
@@ -128,7 +135,7 @@ gl3.programManager.prototype.create_program = function(vs, fs){
 		this.gl.useProgram(program);
 		return program;
 	}else{
-		alert(this.gl.getProgramInfoLog(program));
+		console.log(this.gl.getProgramInfoLog(program));
 	}
 };
 

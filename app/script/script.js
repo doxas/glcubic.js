@@ -8,7 +8,8 @@ window.onload = function(){
 	}
 
 	// variables
-	var mouseX, mouseY;
+	var qt, mouseX, mouseY;
+	qt = gl3.qtn.identity(gl3.qtn.create());
 	mouseX = mouseY = 0;
 
 	// event init
@@ -16,10 +17,19 @@ window.onload = function(){
 		run = (eve.keyCode !== 27);
 	}, true);
 	window.addEventListener('mousemove', function(eve){
+		var x, y;
+		x = y = 0;
 		var w = window.innerWidth / 2;
 		var h = window.innerHeight / 2;
 		mouseX = eve.clientX / w - 1.0;
 		mouseY = (2.0 - eve.clientY / h) - 1.0;
+		var r = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+		if(r !== 0){
+			x = mouseX / r;
+			y = mouseY / r;
+			gl3.qtn.identity(qt);
+			gl3.qtn.rotate(r, [-y, x, 0], qt);
+		}
 	});
 
 	// program
@@ -76,10 +86,13 @@ window.onload = function(){
 
 		var rad = (count % 360) * gl3.PI / 180;
 
+		camera.qtn_rotate(qt);
+		gl3.canvas.width = window.innerWidth;
+		gl3.canvas.height = window.innerHeight;
 		gl3.scene_clear([0.7, 0.7, 0.7, 1.0], 1.0);
-		gl3.scene_view(camera);
+		gl3.scene_view(camera, 0, 0, gl3.canvas.width, gl3.canvas.height);
 		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
-		gl3.bind_texture(0);
+		gl3.bind_texture(0, 0);
 
 		prg.set_program();
 		prg.set_attribute(torusVBO, torusIBO);
@@ -90,10 +103,9 @@ window.onload = function(){
 		gl3.mat4.inverse(mMatrix, invMatrix);
 
 		prg.push_shader([mvpMatrix, invMatrix, lightDirection, 0]);
-		gl3.draw_elements(torusData.index.length);
+		gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
 
 		if(run){requestAnimationFrame(render);}
 	}
-
 };
 

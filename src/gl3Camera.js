@@ -48,6 +48,11 @@ gl3.cam.prototype.init = function(position, centerPoint, upDirection, fovy, aspe
 	this.far    = far;
 };
 
+gl3.cam.prototype.qtn_rotate = function(qtn){
+	gl3.qtn.toVecIII(this.basePosition, qtn, this.position);
+	gl3.qtn.toVecIII(this.baseUpDirection, qtn, this.upDirection);
+};
+
 gl3.cam.prototype.get_canvas_aspect = function(){
 	if(!gl3.canvas){return;}
 	return gl3.canvas.width / gl3.canvas.height;

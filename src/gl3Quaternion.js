@@ -60,15 +60,15 @@ gl3.q4.prototype.rotate = function(angle, axis, dest){
 };
 
 gl3.q4.prototype.toVecIII = function(vec, qtn, dest){
-	var qp = create();
-	var qq = create();
-	var qr = create();
-	inverse(qtn, qr);
+	var qp = this.create();
+	var qq = this.create();
+	var qr = this.create();
+	this.inverse(qtn, qr);
 	qp[0] = vec[0];
 	qp[1] = vec[1];
 	qp[2] = vec[2];
-	multiply(qr, qp, qq);
-	multiply(qq, qtn, qr);
+	this.multiply(qr, qp, qq);
+	this.multiply(qq, qtn, qr);
 	dest[0] = qr[0];
 	dest[1] = qr[1];
 	dest[2] = qr[2];

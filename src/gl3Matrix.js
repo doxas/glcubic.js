@@ -22,16 +22,16 @@ gl3.m4.prototype.multiply = function(mat1, mat2, dest){
 		E = mat2[4],  F = mat2[5],  G = mat2[6],  H = mat2[7],
 		I = mat2[8],  J = mat2[9],  K = mat2[10], L = mat2[11],
 		M = mat2[12], N = mat2[13], O = mat2[14], P = mat2[15];
-	dest[0] = A * a + B * e + C * i + D * m;
-	dest[1] = A * b + B * f + C * j + D * n;
-	dest[2] = A * c + B * g + C * k + D * o;
-	dest[3] = A * d + B * h + C * l + D * p;
-	dest[4] = E * a + F * e + G * i + H * m;
-	dest[5] = E * b + F * f + G * j + H * n;
-	dest[6] = E * c + F * g + G * k + H * o;
-	dest[7] = E * d + F * h + G * l + H * p;
-	dest[8] = I * a + J * e + K * i + L * m;
-	dest[9] = I * b + J * f + K * j + L * n;
+	dest[0]  = A * a + B * e + C * i + D * m;
+	dest[1]  = A * b + B * f + C * j + D * n;
+	dest[2]  = A * c + B * g + C * k + D * o;
+	dest[3]  = A * d + B * h + C * l + D * p;
+	dest[4]  = E * a + F * e + G * i + H * m;
+	dest[5]  = E * b + F * f + G * j + H * n;
+	dest[6]  = E * c + F * g + G * k + H * o;
+	dest[7]  = E * d + F * h + G * l + H * p;
+	dest[8]  = I * a + J * e + K * i + L * m;
+	dest[9]  = I * b + J * f + K * j + L * n;
 	dest[10] = I * c + J * g + K * k + L * o;
 	dest[11] = I * d + J * h + K * l + L * p;
 	dest[12] = M * a + N * e + O * i + P * m;
