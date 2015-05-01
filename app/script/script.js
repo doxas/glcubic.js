@@ -1,10 +1,7 @@
 window.onload = function(){
 	// initialize
 	gl3.initGL('canvas');
-	if(!gl3.ready){
-		console.log('initialize error');
-		return;
-	}
+	if(!gl3.ready){console.log('initialize error'); return;}
 
 	// canvas size
 	var canvasSize = Math.min(window.innerWidth, window.innerHeight);
@@ -15,8 +12,8 @@ window.onload = function(){
 	var prg = gl3.program.create(
 		'vs',
 		'fs',
-		['position'],
-		[3],
+		['position', 'color'],
+		[3, 4],
 		[],
 		[]
 	);
@@ -27,10 +24,16 @@ window.onload = function(){
 		 0.5, -0.5,  0.0,
 		-0.5, -0.5,  0.0,
 	];
+	var color = [
+		1.0, 0.0, 0.0, 1.0,
+		0.0, 1.0, 0.0, 1.0,
+		0.0, 0.0, 1.0, 1.0
+	];
 
 	// vertex buffer object
 	var VBO = [
-		gl3.create_vbo(position)
+		gl3.create_vbo(position),
+		gl3.create_vbo(color)
 	];
 
 	// rendering
