@@ -54,12 +54,10 @@ gl3.scene_clear = function(color, depth, stencil){
 	gl.clearColor(color[0], color[1], color[2], color[3]);
 	if(depth != null){
 		gl.clearDepth(depth);
-		gl.enable(gl.DEPTH_TEST);
 		flg = flg | gl.DEPTH_BUFFER_BIT; 
 	}
 	if(stencil != null){
 		gl.clearStencil(stencil);
-		gl.enable(gl.STENCIL_TEST);
 		flg = flg | gl.STENCIL_BUFFER_BIT; 
 	}
 	gl.clear(flg);

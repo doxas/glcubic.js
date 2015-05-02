@@ -37,6 +37,11 @@ window.onload = function(){
 	vpMatrix = gl3.mat4.identity(gl3.mat4.create());
 	mvpMatrix = gl3.mat4.identity(gl3.mat4.create());
 
+	// depth test
+	gl3.gl.enable(gl3.gl.DEPTH_TEST);
+	gl3.gl.depthFunc(gl3.gl.LEQUAL);
+	gl3.gl.clearDepth(1.0);
+
 	// rendering
 	var count = 0;
 	render();
@@ -50,7 +55,7 @@ window.onload = function(){
 			[0.0, 1.0, 0.0],
 			45, 1.0, 0.1, 10.0
 		);
-		gl3.scene_clear([0.7, 0.7, 0.7, 1.0]);
+		gl3.scene_clear([0.7, 0.7, 0.7, 1.0], 1.0);
 		gl3.scene_view(camera, 0, 0, gl3.canvas.width, gl3.canvas.height);
 		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 
