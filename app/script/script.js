@@ -55,38 +55,43 @@ window.onload = function(){
 	pMatrix = gl3.mat4.identity(gl3.mat4.create());
 	vpMatrix = gl3.mat4.identity(gl3.mat4.create());
 	mvpMatrix = gl3.mat4.identity(gl3.mat4.create());
-	gl3.mat4.lookAt([0.0, 0.0, 2.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], vMatrix);
-	gl3.mat4.perspective(60, 1.0, 0.1, 5.0, pMatrix);
 
 	// rendering
+	var count = 0;
 	render();
 
 	function render(){
+		count++;
+
 		gl3.scene_clear([0.7, 0.7, 0.7, 1.0], 1.0);
 		gl3.scene_view(null, 0, 0, gl3.canvas.width, gl3.canvas.height);
 
 		prg.set_program();
 		prg.set_attribute(VBO, IBO);
 
-		// var offset = [0.5, 0.5, 0.0];
-		// gl3.mat4.translate(mMatrix, offset, mMatrix);
-		// gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
-		// gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+		var cameraPosition = [0.0, 0.0, 2.0];
+		var centerPoint    = [0.0, 0.0, 0.0];
+		var cameraUp       = [0.0, 1.0, 0.0];
+		gl3.mat4.lookAt(cameraPosition, centerPoint, cameraUp, vMatrix);
 
-		var radian = gl3.TRI.rad[45];
+		var fovy = 60;
+		var aspect = 1.0;
+		var near = 0.1;
+		var far = 5.0;
+		gl3.mat4.perspective(fovy, aspect, near, far, pMatrix);
+
+		var radian = gl3.TRI.rad[count % 360];
 		var axis = [0.0, 0.0, 1.0];
+		gl3.mat4.identity(mMatrix);
 		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
 		gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
 
-		// var scale = [0.5, 0.5, 0.5];
-		// gl3.mat4.scale(mMatrix, scale, mMatrix);
-		// gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
-		// gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
-
 		prg.push_shader([mvpMatrix]);
 
 		gl3.draw_elements(gl3.gl.TRIANGLES, index.length);
+
+		requestAnimationFrame(render);
 	}
 };
 
