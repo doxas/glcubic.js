@@ -68,10 +68,22 @@ window.onload = function(){
 		prg.set_program();
 		prg.set_attribute(VBO, IBO);
 
-		var offset = [0.5, 0.5, 0.0];
-		gl3.mat4.translate(mMatrix, offset, mMatrix);
+		// var offset = [0.5, 0.5, 0.0];
+		// gl3.mat4.translate(mMatrix, offset, mMatrix);
+		// gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
+		// gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+
+		var radian = gl3.TRI.rad[45];
+		var axis = [0.0, 0.0, 1.0];
+		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
 		gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+
+		// var scale = [0.5, 0.5, 0.5];
+		// gl3.mat4.scale(mMatrix, scale, mMatrix);
+		// gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
+		// gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+
 		prg.push_shader([mvpMatrix]);
 
 		gl3.draw_elements(gl3.gl.TRIANGLES, index.length);
