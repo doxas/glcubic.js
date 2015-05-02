@@ -63,7 +63,7 @@ window.onload = function(){
 	function render(){
 		count++;
 
-		gl3.scene_clear([0.7, 0.7, 0.7, 1.0], 1.0);
+		gl3.scene_clear([0.7, 0.7, 0.7, 1.0]);
 		gl3.scene_view(null, 0, 0, gl3.canvas.width, gl3.canvas.height);
 
 		prg.set_program();
