@@ -25,7 +25,7 @@ window.onload = function(){
 	var position = [
 		 0.0,  0.5,  0.0,
 		 0.5, -0.5,  0.0,
-		-0.5, -0.5,  0.0,
+		-0.5, -0.5,  0.0
 	];
 
 	// vertex buffer object

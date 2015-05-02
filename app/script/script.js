@@ -23,8 +23,14 @@ window.onload = function(){
 		 0.0,  0.5,  0.0,
 		 0.5, -0.5,  0.0,
 		-0.5, -0.5,  0.0,
+		 0.0, -0.5,  0.0,
+		 0.5,  0.5,  0.0,
+		-0.5,  0.5,  0.0
 	];
 	var color = [
+		1.0, 0.0, 0.0, 1.0,
+		0.0, 1.0, 0.0, 1.0,
+		0.0, 0.0, 1.0, 1.0,
 		1.0, 0.0, 0.0, 1.0,
 		0.0, 1.0, 0.0, 1.0,
 		0.0, 0.0, 1.0, 1.0
@@ -46,7 +52,7 @@ window.onload = function(){
 		prg.set_program();
 		prg.set_attribute(VBO);
 
-		gl3.draw_arrays(gl3.gl.TRIANGLES, 3);
+		gl3.draw_arrays(gl3.gl.TRIANGLES, 6);
 	}
 };
 
