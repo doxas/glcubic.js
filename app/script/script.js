@@ -14,8 +14,8 @@ window.onload = function(){
 		'fs',
 		['position', 'color'],
 		[3, 4],
-		[],
-		[]
+		['mvpMatrix'],
+		['matrix4fv']
 	);
 
 	// mesh data
@@ -49,6 +49,15 @@ window.onload = function(){
 	];
 	var IBO = gl3.create_ibo(index);
 
+	// matrix
+	mMatrix = gl3.mat4.identity(gl3.mat4.create());
+	vMatrix = gl3.mat4.identity(gl3.mat4.create());
+	pMatrix = gl3.mat4.identity(gl3.mat4.create());
+	vpMatrix = gl3.mat4.identity(gl3.mat4.create());
+	mvpMatrix = gl3.mat4.identity(gl3.mat4.create());
+	gl3.mat4.lookAt([0.0, 0.0, 2.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], vMatrix);
+	gl3.mat4.perspective(60, 1.0, 0.1, 5.0, pMatrix);
+
 	// rendering
 	render();
 
@@ -58,6 +67,12 @@ window.onload = function(){
 
 		prg.set_program();
 		prg.set_attribute(VBO, IBO);
+
+		var offset = [0.5, 0.5, 0.0];
+		gl3.mat4.translate(mMatrix, offset, mMatrix);
+		gl3.mat4.multiply(pMatrix, vMatrix, vpMatrix);
+		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+		prg.push_shader([mvpMatrix]);
 
 		gl3.draw_elements(gl3.gl.TRIANGLES, index.length);
 	}
