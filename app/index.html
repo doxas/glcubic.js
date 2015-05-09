@@ -11,7 +11,7 @@ uniform mat4 mvpMatrix;
 varying vec4 vColor;
 
 void main(){
-	gl_PointSize = 5.0;
+	gl_PointSize = 1.0;
 	vColor = color;
 	gl_Position = mvpMatrix * vec4(position, 1.0);
 }
@@ -26,7 +26,7 @@ void main(){
 }
 </script>
 <link rel="stylesheet" href="css/style.css">
-<title>sample.011</title>
+<title>sample.012</title>
 </head>
 <body>
 	<canvas id="canvas"></canvas>

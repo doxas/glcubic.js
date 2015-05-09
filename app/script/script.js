@@ -1,4 +1,18 @@
 window.onload = function(){
+	var size = 256;
+	var c = document.createElement('canvas');
+	c.width = size;
+	c.height = size;
+	var cx = c.getContext('2d');
+	var img = new Image();
+	img.onload = function(){
+		cx.drawImage(img, 0, 0, size, size);
+		init(cx.getImageData(0, 0, size, size));
+	}
+	img.src = 'image/sample.png';
+};
+
+function init(data){
 	// initialize
 	gl3.initGL('canvas');
 	if(!gl3.ready){console.log('initialize error'); return;}
@@ -18,13 +32,32 @@ window.onload = function(){
 		['matrix4fv']
 	);
 
-	// mesh data
-	var sphereData = gl3.mesh.sphere(16, 16, 1.0);
+	// mesh data from imageData
+	var position = [];
+	var color = [];
+	(function(){
+		var i, j, k, l, m;
+		var x, y, z;
+		var size = 1 / 256;
+		var w = data.width;
+		var h = data.height;
+		var d = data.data;
+		for(i = 0; i < h; i++){
+			y = 0.5 - i * size;
+			for(j = 0; j < w; j++){
+				x = j * size - 0.5;
+				k = (i * w + j) * 4;
+				z = (d[k] + d[k + 1] + d[k + 2]) / (255 * 3);
+				position.push(x, y, z);
+				color.push(1.0, 1.0, 1.0, 1.0);
+			}
+		}
+	})();
 
 	// vertex buffer object
 	var VBO = [
-		gl3.create_vbo(sphereData.position),
-		gl3.create_vbo(sphereData.color)
+		gl3.create_vbo(position),
+		gl3.create_vbo(color)
 	];
 
 	// matrix
@@ -52,7 +85,7 @@ window.onload = function(){
 			[0.0, 1.0, 0.0],
 			45, 1.0, 0.1, 10.0
 		);
-		gl3.scene_clear([0.7, 0.7, 0.7, 1.0], 1.0);
+		gl3.scene_clear([0.3, 0.3, 0.3, 1.0], 1.0);
 		gl3.scene_view(camera, 0, 0, gl3.canvas.width, gl3.canvas.height);
 		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 
@@ -60,16 +93,15 @@ window.onload = function(){
 		prg.set_attribute(VBO);
 
 		var radian = gl3.TRI.rad[count % 360];
-		var axis = [1.0, 1.0, 0.0];
+		var axis = [0.0, 1.0, 0.0];
 		gl3.mat4.identity(mMatrix);
 		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
 
 		prg.push_shader([mvpMatrix]);
 
-		gl3.draw_arrays(gl3.gl.POINTS, sphereData.position.length / 3);
+		gl3.draw_arrays(gl3.gl.POINTS, position.length / 3);
 
 		requestAnimationFrame(render);
 	}
 };
-
