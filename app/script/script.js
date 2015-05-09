@@ -1,3 +1,6 @@
+var qt = gl3.qtn.create();
+gl3.qtn.identity(qt);
+
 window.onload = function(){
 	var size = 256;
 	var c = document.createElement('canvas');
@@ -21,6 +24,9 @@ function init(data){
 	var canvasSize = Math.min(window.innerWidth, window.innerHeight);
 	gl3.canvas.width  = canvasSize;
 	gl3.canvas.height = canvasSize;
+
+	// event
+	gl3.canvas.addEventListener('mousemove', mouseMove, true);
 
 	// program
 	var prg = gl3.program.create(
@@ -79,10 +85,14 @@ function init(data){
 	function render(){
 		count++;
 
+		var cameraPosition = [];
+		var cameraUpDirection = [];
+		gl3.qtn.toVecIII([0.0, 0.0, 5.0], qt, cameraPosition);
+		gl3.qtn.toVecIII([0.0, 1.0, 0.0], qt, cameraUpDirection);
 		var camera = gl3.camera.create(
-			[0.0, 0.0, 5.0],
+			cameraPosition,
 			[0.0, 0.0, 0.0],
-			[0.0, 1.0, 0.0],
+			cameraUpDirection,
 			45, 1.0, 0.1, 10.0
 		);
 		gl3.scene_clear([0.3, 0.3, 0.3, 1.0], 1.0);
@@ -105,3 +115,19 @@ function init(data){
 		requestAnimationFrame(render);
 	}
 };
+
+function mouseMove(eve) {
+	var cw = gl3.canvas.width;
+	var ch = gl3.canvas.height;
+	var wh = 1 / Math.sqrt(cw * cw + ch * ch);
+	var x = eve.clientX - gl3.canvas.offsetLeft - cw * 0.5;
+	var y = eve.clientY - gl3.canvas.offsetTop - ch * 0.5;
+	var sq = Math.sqrt(x * x + y * y);
+	var r = sq * 2.0 * Math.PI * wh;
+	if (sq != 1) {
+		sq = 1 / sq;
+		x *= sq;
+		y *= sq;
+	}
+	gl3.qtn.rotate(r, [y, x, 0.0], qt);
+}
