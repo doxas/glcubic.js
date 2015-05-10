@@ -4,6 +4,7 @@
 <script src="script/script.js"></script>
 <script id="vs" type="x-shader/x-vertex">
 attribute vec3 position;
+attribute vec3 normal;
 attribute vec4 color;
 
 uniform mat4 mvpMatrix;
@@ -11,8 +12,7 @@ uniform mat4 mvpMatrix;
 varying vec4 vColor;
 
 void main(){
-	gl_PointSize = 1.0;
-	vColor = color;
+	vColor = vec4(normal, 1.0);
 	gl_Position = mvpMatrix * vec4(position, 1.0);
 }
 </script>
@@ -26,7 +26,7 @@ void main(){
 }
 </script>
 <link rel="stylesheet" href="css/style.css">
-<title>sample.013</title>
+<title>sample.014</title>
 </head>
 <body>
 	<canvas id="canvas"></canvas>

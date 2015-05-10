@@ -114,7 +114,7 @@ function init(data){
 
 		requestAnimationFrame(render);
 	}
-};
+}
 
 function mouseMove(eve) {
 	var cw = gl3.canvas.width;

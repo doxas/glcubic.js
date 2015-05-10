@@ -2,20 +2,6 @@ var qt = gl3.qtn.create();
 gl3.qtn.identity(qt);
 
 window.onload = function(){
-	var size = 256;
-	var c = document.createElement('canvas');
-	c.width = size;
-	c.height = size;
-	var cx = c.getContext('2d');
-	var img = new Image();
-	img.onload = function(){
-		cx.drawImage(img, 0, 0, size, size);
-		init(cx.getImageData(0, 0, size, size));
-	}
-	img.src = 'image/sample.png';
-};
-
-function init(data){
 	// initialize
 	gl3.initGL('canvas');
 	if(!gl3.ready){console.log('initialize error'); return;}
@@ -32,39 +18,22 @@ function init(data){
 	var prg = gl3.program.create(
 		'vs',
 		'fs',
-		['position', 'color'],
-		[3, 4],
+		['position', 'normal', 'color'],
+		[3, 3, 4],
 		['mvpMatrix'],
 		['matrix4fv']
 	);
 
-	// mesh data from imageData
-	var position = [];
-	var color = [];
-	(function(){
-		var i, j, k, l, m;
-		var x, y, z;
-		var size = 1 / 256;
-		var w = data.width;
-		var h = data.height;
-		var d = data.data;
-		for(i = 0; i < h; i++){
-			y = 0.5 - i * size;
-			for(j = 0; j < w; j++){
-				x = j * size - 0.5;
-				k = (i * w + j) * 4;
-				z = (d[k] + d[k + 1] + d[k + 2]) / (255 * 3);
-				position.push(x, y, z);
-				color.push(1.0, 1.0, 1.0, 1.0);
-			}
-		}
-	})();
+	// mesh data
+	var torusData = gl3.mesh.torus(64, 64, 0.3, 0.7);
 
 	// vertex buffer object
 	var VBO = [
-		gl3.create_vbo(position),
-		gl3.create_vbo(color)
+		gl3.create_vbo(torusData.position),
+		gl3.create_vbo(torusData.normal),
+		gl3.create_vbo(torusData.color)
 	];
+	var IBO = gl3.create_ibo(torusData.index);
 
 	// matrix
 	mMatrix = gl3.mat4.identity(gl3.mat4.create());
@@ -100,7 +69,7 @@ function init(data){
 		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 
 		prg.set_program();
-		prg.set_attribute(VBO);
+		prg.set_attribute(VBO, IBO);
 
 		var radian = gl3.TRI.rad[count % 360];
 		var axis = [0.0, 1.0, 0.0];
@@ -110,7 +79,7 @@ function init(data){
 
 		prg.push_shader([mvpMatrix]);
 
-		gl3.draw_arrays(gl3.gl.POINTS, position.length / 3);
+		gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
 
 		requestAnimationFrame(render);
 	}

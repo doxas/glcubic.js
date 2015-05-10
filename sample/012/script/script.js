@@ -104,4 +104,4 @@ function init(data){
 
 		requestAnimationFrame(render);
 	}
-};
+}
