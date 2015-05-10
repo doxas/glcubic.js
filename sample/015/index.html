@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec4 color;
+
+uniform mat4 mvpMatrix;
+uniform mat4 invMatrix;
+
+varying vec4 vColor;
+
+void main(){
+	vec3 light = vec3(1.0, 1.0, 1.0);
+	vec4 invLight = invMatrix * vec4(normalize(light), 1.0);
+	float diff = clamp(dot(invLight.xyz, normal), 0.0, 1.0);
+
+	vColor = vec4(vec3(diff), 1.0) * color;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec4 vColor;
+
+void main(){
+	gl_FragColor = vColor;
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.015</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
