@@ -28,8 +28,8 @@ varying vec3 vNormal;
 varying vec4 vColor;
 
 void main(){
-	vec4 invLight = invMatrix * vec4(normalize(lightDirection), 1.0);
-	float diff = clamp(dot(invLight.xyz, vNormal), 0.0, 1.0);
+	vec3 invLight = normalize(invMatrix * vec4(lightDirection, 1.0)).xyz;
+	float diff = clamp(dot(invLight, vNormal), 0.0, 1.0);
 	gl_FragColor = vec4(vec3(diff), 1.0) * vColor;
 }
 </script>

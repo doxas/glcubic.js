@@ -20,8 +20,8 @@ window.onload = function(){
 		'fs',
 		['position', 'normal', 'color'],
 		[3, 3, 4],
-		['mvpMatrix', 'invMatrix', 'lightDirection'],
-		['matrix4fv', 'matrix4fv', '3fv']
+		['mvpMatrix', 'invMatrix', 'lightDirection', 'eyePosition', 'centerPoint'],
+		['matrix4fv', 'matrix4fv', '3fv', '3fv', '3fv']
 	);
 
 	// mesh data
@@ -57,12 +57,13 @@ window.onload = function(){
 
 		var lightDirection = [1.0, 1.0, 1.0];
 		var cameraPosition = [];
+		var centerPoint = [0.0, 0.0, 0.0];
 		var cameraUpDirection = [];
 		gl3.qtn.toVecIII([0.0, 0.0, 5.0], qt, cameraPosition);
 		gl3.qtn.toVecIII([0.0, 1.0, 0.0], qt, cameraUpDirection);
 		var camera = gl3.camera.create(
 			cameraPosition,
-			[0.0, 0.0, 0.0],
+			centerPoint,
 			cameraUpDirection,
 			45, 1.0, 0.1, 10.0
 		);
@@ -80,7 +81,13 @@ window.onload = function(){
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
 		gl3.mat4.inverse(mMatrix, invMatrix);
 
-		prg.push_shader([mvpMatrix, invMatrix, lightDirection]);
+		prg.push_shader([
+			mvpMatrix,
+			invMatrix,
+			lightDirection,
+			cameraPosition,
+			centerPoint
+		]);
 
 		gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
 
