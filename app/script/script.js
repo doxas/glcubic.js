@@ -20,8 +20,8 @@ window.onload = function(){
 		'fs',
 		['position', 'normal', 'color'],
 		[3, 3, 4],
-		['mvpMatrix'],
-		['matrix4fv']
+		['mvpMatrix', 'invMatrix'],
+		['matrix4fv', 'matrix4fv']
 	);
 
 	// mesh data
@@ -41,6 +41,7 @@ window.onload = function(){
 	pMatrix = gl3.mat4.identity(gl3.mat4.create());
 	vpMatrix = gl3.mat4.identity(gl3.mat4.create());
 	mvpMatrix = gl3.mat4.identity(gl3.mat4.create());
+	invMatrix = gl3.mat4.identity(gl3.mat4.create());
 
 	// depth test
 	gl3.gl.enable(gl3.gl.DEPTH_TEST);
@@ -76,8 +77,9 @@ window.onload = function(){
 		gl3.mat4.identity(mMatrix);
 		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+		gl3.mat4.inverse(mMatrix, invMatrix);
 
-		prg.push_shader([mvpMatrix]);
+		prg.push_shader([mvpMatrix, invMatrix]);
 
 		gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
 
