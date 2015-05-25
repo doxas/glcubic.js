@@ -87,8 +87,8 @@ function init(){
 	// 	gl3.gl.ONE
 	// );
 	// gl3.gl.blendEquationSeparate(
-	// 	gl3.gl.ADD,
-	// 	gl3.gl.ADD
+	// 	gl3.gl.FUNC_ADD,
+	// 	gl3.gl.FUNC_ADD
 	// );
 
 	// rendering
