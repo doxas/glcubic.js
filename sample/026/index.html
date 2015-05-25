@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec4 color;
+attribute vec2 texCoord;
+
+uniform mat4 mvpMatrix;
+
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	vColor = color;
+	vTexCoord = texCoord;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform int textureUnit;
+uniform sampler2D texture;
+uniform sampler2D texture2;
+
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	if(textureUnit == 0){
+		gl_FragColor = vColor * texture2D(texture, vTexCoord);
+	}else{
+		gl_FragColor = vColor * texture2D(texture2, vTexCoord);
+	}
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.026</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
