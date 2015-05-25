@@ -54,12 +54,10 @@ gl3.scene_clear = function(color, depth, stencil){
 	gl.clearColor(color[0], color[1], color[2], color[3]);
 	if(depth != null){
 		gl.clearDepth(depth);
-		gl.enable(gl.DEPTH_TEST);
 		flg = flg | gl.DEPTH_BUFFER_BIT; 
 	}
 	if(stencil != null){
 		gl.clearStencil(stencil);
-		gl.enable(gl.STENCIL_TEST);
 		flg = flg | gl.STENCIL_BUFFER_BIT; 
 	}
 	gl.clear(flg);
@@ -247,7 +245,7 @@ gl3.create_ibo = function(data){
 	return ibo;
 };
 
-gl3.create_texture = function(source, number){
+gl3.create_texture = function(source, number, callback){
 	if(source == null || number == null){return;}
 	var img = new Image();
 	var self = this;
@@ -267,6 +265,7 @@ gl3.create_texture = function(source, number){
 		self.textures[number].loaded = true;
 		console.log('%c◆%c texture number: %c' + number + '%c, image loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
 		gl.bindTexture(gl.TEXTURE_2D, null);
+		if(callback != null){callback(number);}
 	};
 	img.src = source;
 };

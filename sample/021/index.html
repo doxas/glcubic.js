@@ -6,6 +6,7 @@
 attribute vec3 position;
 attribute vec3 normal;
 attribute vec4 color;
+attribute vec2 texCoord;
 
 uniform mat4 mMatrix;
 uniform mat4 mvpMatrix;
@@ -13,11 +14,13 @@ uniform mat4 mvpMatrix;
 varying vec3 vPosition;
 varying vec3 vNormal;
 varying vec4 vColor;
+varying vec2 vTexCoord;
 
 void main(){
 	vPosition = (mMatrix * vec4(position, 1.0)).xyz;
 	vNormal = normal;
 	vColor = color;
+	vTexCoord = texCoord;
 	gl_Position = mvpMatrix * vec4(position, 1.0);
 }
 </script>
@@ -29,24 +32,40 @@ uniform vec3 lightPosition;
 uniform vec3 eyePosition;
 uniform vec3 centerPoint;
 uniform vec4 ambientColor;
+uniform sampler2D texture;
 
 varying vec3 vPosition;
 varying vec3 vNormal;
 varying vec4 vColor;
+varying vec2 vTexCoord;
+
+const float attStart = 1.0;
+const float attEnd = 4.0;
 
 void main(){
+	// lighting
 	vec3 light    = lightPosition - vPosition;
 	vec3 invLight = normalize(invMatrix * vec4(light, 1.0)).xyz;
 	vec3 invEye   = normalize(invMatrix * vec4(eyePosition - centerPoint, 1.0)).xyz;
 	vec3 halfVec  = normalize(invLight + invEye);
-	float diff = clamp(dot(invLight, vNormal), 0.0, 1.0);
+	float atten = 1.0 - smoothstep(attStart, attEnd, length(light));
+	float diff = clamp(dot(invLight, vNormal), 0.0, 1.0) * atten;
 	float spec = clamp(dot(halfVec, vNormal), 0.0, 1.0);
-	spec = pow(spec, 10.0);
+	spec = pow(spec, 10.0) * atten;
+
+	// texture sampling
+	vec4 smpColor = texture2D(texutre, vTexCoord);
+
+	// finish
+	vec4 destColor = vColor;
+	destColor *= vec4(vec3(diff), 1.0);
+	destColor *= smpColor;
+	destColor += ambientColor + vec4(vec3(spec), 0.0);
 	gl_FragColor = vec4(vec3(diff), 1.0) * vColor + ambientColor + vec4(vec3(spec), 0.0);
 }
 </script>
 <link rel="stylesheet" href="css/style.css">
-<title>sample.019</title>
+<title>sample.021</title>
 </head>
 <body>
 	<canvas id="canvas"></canvas>

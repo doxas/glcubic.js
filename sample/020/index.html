@@ -46,7 +46,7 @@ void main(){
 	float diff = clamp(dot(invLight, vNormal), 0.0, 1.0) * atten;
 	float spec = clamp(dot(halfVec, vNormal), 0.0, 1.0);
 	spec = pow(spec, 10.0) * atten;
-	gl_FragColor = vec4(vec3(diff), 1.0) * vColor + ambientColor + vec4(vec3(spec), 1.0);
+	gl_FragColor = vec4(vec3(diff), 1.0) * vColor + ambientColor + vec4(vec3(spec), 0.0);
 }
 </script>
 <link rel="stylesheet" href="css/style.css">
