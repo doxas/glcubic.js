@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec4 color;
+attribute vec2 texCoord;
+
+uniform mat4 mMatrix;
+uniform mat4 mvpMatrix;
+
+varying vec3 vPosition;
+varying vec3 vNormal;
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	vPosition = (mMatrix * vec4(position, 1.0)).xyz;
+	vNormal = normal;
+	vColor = color;
+	vTexCoord = texCoord;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform mat4 invMatrix;
+uniform vec3 lightPosition;
+uniform vec3 eyePosition;
+uniform vec3 centerPoint;
+uniform vec4 ambientColor;
+uniform sampler2D texture;
+uniform sampler2D texture2;
+
+varying vec3 vPosition;
+varying vec3 vNormal;
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+const float attStart = 1.0;
+const float attEnd = 5.0;
+
+void main(){
+	// lighting
+	vec3 light    = lightPosition - vPosition;
+	vec3 invLight = normalize(invMatrix * vec4(light, 1.0)).xyz;
+	vec3 invEye   = normalize(invMatrix * vec4(eyePosition - centerPoint, 1.0)).xyz;
+	vec3 halfVec  = normalize(invLight + invEye);
+	float atten = max(1.0 - smoothstep(attStart, attEnd, length(light)), 0.1);
+	float diff = clamp(dot(invLight, vNormal), 0.1, 1.0) * atten;
+	float spec = clamp(dot(halfVec, vNormal), 0.0, 1.0);
+	spec = pow(spec, 10.0) * atten;
+
+	// texture sampling
+	vec4 smpColor = texture2D(texture, vTexCoord);
+	vec4 smp2Color = texture2D(texture2, vTexCoord);
+
+	// finish
+	vec4 destColor = vColor;
+	destColor *= vec4(vec3(diff), 1.0);
+	destColor *= smpColor * smp2Color;
+	destColor += ambientColor + vec4(vec3(spec), 0.0);
+	gl_FragColor = destColor;
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.022</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
