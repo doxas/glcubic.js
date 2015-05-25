@@ -40,7 +40,7 @@ varying vec4 vColor;
 varying vec2 vTexCoord;
 
 const float attStart = 1.0;
-const float attEnd = 4.0;
+const float attEnd = 5.0;
 
 void main(){
 	// lighting
@@ -48,20 +48,20 @@ void main(){
 	vec3 invLight = normalize(invMatrix * vec4(light, 1.0)).xyz;
 	vec3 invEye   = normalize(invMatrix * vec4(eyePosition - centerPoint, 1.0)).xyz;
 	vec3 halfVec  = normalize(invLight + invEye);
-	float atten = 1.0 - smoothstep(attStart, attEnd, length(light));
-	float diff = clamp(dot(invLight, vNormal), 0.0, 1.0) * atten;
+	float atten = max(1.0 - smoothstep(attStart, attEnd, length(light)), 0.1);
+	float diff = clamp(dot(invLight, vNormal), 0.1, 1.0) * atten;
 	float spec = clamp(dot(halfVec, vNormal), 0.0, 1.0);
 	spec = pow(spec, 10.0) * atten;
 
 	// texture sampling
-	vec4 smpColor = texture2D(texutre, vTexCoord);
+	vec4 smpColor = texture2D(texture, vTexCoord);
 
 	// finish
 	vec4 destColor = vColor;
 	destColor *= vec4(vec3(diff), 1.0);
 	destColor *= smpColor;
 	destColor += ambientColor + vec4(vec3(spec), 0.0);
-	gl_FragColor = vec4(vec3(diff), 1.0) * vColor + ambientColor + vec4(vec3(spec), 0.0);
+	gl_FragColor = destColor;
 }
 </script>
 <link rel="stylesheet" href="css/style.css">

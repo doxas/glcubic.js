@@ -19,32 +19,35 @@ window.onload = function(){
 };
 
 function init(){
+	// texture
+	gl3.gl.bindTexture(gl3.gl.TEXTURE_2D, gl3.textures[0].texture);
+
 	// program
 	var prg = gl3.program.create(
 		'vs',
 		'fs',
-		['position', 'normal', 'color'],
-		[3, 3, 4],
+		['position', 'normal', 'color', 'texCoord'],
+		[3, 3, 4, 2],
 		['mMatrix', 'mvpMatrix', 'invMatrix', 'lightPosition', 'eyePosition', 'centerPoint', 'ambientColor', 'texture'],
 		['matrix4fv', 'matrix4fv', 'matrix4fv', '3fv', '3fv', '3fv', '4fv', '1i']
 	);
 
-	// cube mesh
-	var cubeData = gl3.mesh.cube(2.0, [1.0, 1.0, 1.0, 1.0]);
-	var cubeVBO = [
-		gl3.create_vbo(cubeData.position),
-		gl3.create_vbo(cubeData.normal),
-		gl3.create_vbo(cubeData.color)
-		gl3.create_vbo(cubeData.texCoord)
+	// torus mesh
+	var torusData = gl3.mesh.torus(32, 32, 0.3, 0.7, [1.0, 1.0, 1.0, 1.0]);
+	var torusVBO = [
+		gl3.create_vbo(torusData.position),
+		gl3.create_vbo(torusData.normal),
+		gl3.create_vbo(torusData.color),
+		gl3.create_vbo(torusData.texCoord)
 	];
-	var cubeIBO = gl3.create_ibo(cubeData.index);
+	var torusIBO = gl3.create_ibo(torusData.index);
 
 	// sphere mesh
-	var sphereData = gl3.mesh.sphere(32, 32, 0.25);
+	var sphereData = gl3.mesh.sphere(32, 32, 1.0, [1.0, 1.0, 1.0, 1.0]);
 	var sphereVBO = [
 		gl3.create_vbo(sphereData.position),
 		gl3.create_vbo(sphereData.normal),
-		gl3.create_vbo(sphereData.color)
+		gl3.create_vbo(sphereData.color),
 		gl3.create_vbo(sphereData.texCoord)
 	];
 	var sphereIBO = gl3.create_ibo(sphereData.index);
@@ -69,8 +72,7 @@ function init(){
 	function render(){
 		count++;
 
-		var sin = gl3.TRI.sin[count % 360] * 4.0;
-		var lightPosition = [0.0, sin, 0.0];
+		var lightPosition = [0.0, 2.0, 0.0];
 		var cameraPosition = [];
 		var centerPoint = [0.0, 0.0, 0.0];
 		var cameraUpDirection = [];
@@ -86,12 +88,12 @@ function init(){
 		gl3.scene_view(camera, 0, 0, gl3.canvas.width, gl3.canvas.height);
 		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 
-		// cube rendering
+		// torus rendering
 		prg.set_program();
-		prg.set_attribute(cubeVBO, cubeIBO);
+		prg.set_attribute(torusVBO, torusIBO);
 		var radian = gl3.TRI.rad[count % 360];
 		var axis = [0.0, 1.0, 1.0];
-		var offset = [3.0, 0.0, 0.0];
+		var offset = [2.0, 0.0, 0.0];
 		gl3.mat4.identity(mMatrix);
 		gl3.mat4.translate(mMatrix, offset, mMatrix);
 		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
@@ -99,12 +101,12 @@ function init(){
 		gl3.mat4.inverse(mMatrix, invMatrix);
 		var ambientColor = [0.1, 0.1, 0.1, 0.0];
 		prg.push_shader([mMatrix, mvpMatrix, invMatrix, lightPosition, cameraPosition, centerPoint, ambientColor, 0]);
-		gl3.draw_elements(gl3.gl.TRIANGLES, cubeData.index.length);
+		gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
 
 		// sphere rendering
 		prg.set_program();
 		prg.set_attribute(sphereVBO, sphereIBO);
-		offset = [-3.0, 0.0, 0.0];
+		offset = [-2.0, 0.0, 0.0];
 		gl3.mat4.identity(mMatrix);
 		gl3.mat4.translate(mMatrix, offset, mMatrix);
 		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
