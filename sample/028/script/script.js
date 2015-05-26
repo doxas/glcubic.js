@@ -4,18 +4,18 @@ gl3.qtn.identity(qt);
 window.onload = function(){
 	// initialize
 	gl3.initGL('canvas');
-	if(!gl3.ready){console.log('initialize error'); return;}
+	if(!gl3.ready){console.log('initialize error');return;}
 
 	// canvas size
 	var canvasSize = Math.min(window.innerWidth, window.innerHeight);
-	gl3.canvas.width  = canvasSize;
+	gl3.canvas.width = canvasSize;
 	gl3.canvas.height = canvasSize;
 
 	// event
 	gl3.canvas.addEventListener('mousemove', mouseMove, true);
 
 	// texture load
-	gl3.create_texture('image/earth.png',  0, loadCheck);
+	gl3.create_texture('image/earth.png', 0, loadCheck);
 	gl3.create_texture('image/cloud.png', 1, loadCheck);
 
 	// load check function
@@ -129,7 +129,7 @@ function init(){
 	}
 }
 
-function mouseMove(eve) {
+function mouseMove(eve){
 	var cw = gl3.canvas.width;
 	var ch = gl3.canvas.height;
 	var wh = 1 / Math.sqrt(cw * cw + ch * ch);
@@ -137,7 +137,7 @@ function mouseMove(eve) {
 	var y = eve.clientY - gl3.canvas.offsetTop - ch * 0.5;
 	var sq = Math.sqrt(x * x + y * y);
 	var r = sq * 2.0 * Math.PI * wh;
-	if (sq != 1) {
+	if(sq != 1){
 		sq = 1 / sq;
 		x *= sq;
 		y *= sq;
