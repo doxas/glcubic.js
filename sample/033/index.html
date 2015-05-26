@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec4 color;
+attribute vec2 texCoord;
+
+uniform mat4 mMatrix;
+uniform mat4 mvpMatrix;
+uniform mat4 invMatrix;
+uniform vec3 lightPosition;
+uniform vec3 eyePosition;
+
+varying vec4 vColor;
+varying vec2 vTexCoord;
+varying vec3 vLightDirection;
+varying vec3 vEyeDirection;
+
+void main(){
+	vec3 pos = (mMatrix * vec4(position, 1.0)).xyz;
+	vec3 invLight = (invMatrix * vec4(lightPosition, 1.0)).xyz;
+	vec3 invEye   = (invMatrix * vec4(eyePosition, 1.0)).xyz;
+	vec3 lightVector = invLight - pos;
+	vec3 eyeVector = invEye - pos;
+
+	// normal, tangent, binormal
+	vec3 N = normalize(normal);
+	vec3 T = normalize(cross(N, vec3(0.0, 1.0, 0.0)));
+	vec3 B = normalize(cross(N, T));
+
+	// light vector transform
+	vLightDirection.x = dot(T, lightVector);
+	vLightDirection.y = dot(B, lightVector);
+	vLightDirection.z = dot(N, lightVector);
+
+	// eye vector transform
+	vEyeDirection.x = dot(T, eyeVector);
+	vEyeDirection.y = dot(B, eyeVector);
+	vEyeDirection.z = dot(N, eyeVector);
+
+	vColor = color;
+	vTexCoord = texCoord;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D normalMapTexture;
+
+varying vec4 vColor;
+varying vec2 vTexCoord;
+varying vec3 vLightDirection;
+varying vec3 vEyeDirection;
+
+void main(){
+	vec3 smpColor = texture2D(normalMapTexture, vTexCoord).rgb;
+	vec3 N = normalize(smpColor * 2.0 - 1.0);
+	vec3 L = normalize(vLightDirection);
+	vec3 E = normalize(vEyeDirection);
+	vec3 H = normalize(L + E);
+	float diff = clamp(dot(N, H), 0.1, 1.0);
+	float spec = pow(clamp(dot(N, H), 0.0, 1.0), 10.0);
+	gl_FragColor = vColor * vec4(vec3(diff), 1.0) + vec4(vec3(spec), 0.0);
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.033</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
