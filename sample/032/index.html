@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec4 color;
+
+uniform mat4 mvpMatrix;
+uniform mat4 invMatrix;
+uniform vec3 lightDirection;
+
+varying float vDiffuse;
+varying vec4 vColor;
+
+void main(){
+	vec3 invLight = normalize(invMatrix * vec4(lightDirection, 1.0)).xyz;
+	vDiffuse = clamp(dot(invLight, normal), 0.0, 1.0);
+	vColor = color;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+varying float vDiffuse;
+varying vec4 vColor;
+
+void main(){
+	vec2 scaleCoord = gl_FragCoord.xy * 150.0;
+	float line = sin(scaleCoord.x + scaleCoord.y);
+	//line += sin(scaleCoord.x - scaleCoord.y); // dot version
+	if(vDiffuse < 0.1){
+		line -= 0.7;
+	}else if(vDiffuse < 0.3){
+		line -= 0.1;
+	}else if(vDiffuse < 0.6){
+		line += 0.5;
+	}else{
+		line += 0.975;
+	}
+	gl_FragColor = vColor * vec4(vec3(line), 1.0);
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.032</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
