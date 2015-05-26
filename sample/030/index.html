@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec4 color;
+attribute vec2 texCoord;
+
+uniform mat4 mvpMatrix;
+uniform mat4 invMatrix;
+uniform vec3 lightDirection;
+
+varying float vDiffuse;
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	vec3 invLight = normalize(invMatrix * vec4(lightDirection, 1.0)).xyz;
+	vDiffuse = clamp(dot(invLight, normal), 0.0, 1.0);
+	vColor = color;
+	vTexCoord = texCoord;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D earthTexture;
+uniform sampler2D shadeTexture;
+
+varying float vDiffuse;
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	vec4 smpColor = texture2D(earthTexture, vTexCoord);
+	vec4 shadeColor = texture2D(shadeTexture, vec2(vDiffuse, 0.0));
+	gl_FragColor = vColor * smpColor * shadeColor;
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.030</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
