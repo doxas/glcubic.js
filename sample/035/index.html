@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html><head>
+<script src="script/glcubic.js"></script>
+<script src="script/script.js"></script>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec4 color;
+attribute vec2 texCoord;
+
+uniform mat4 mvpMatrix;
+
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	vColor = color;
+	vTexCoord = texCoord;
+	gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D texture;
+
+varying vec4 vColor;
+varying vec2 vTexCoord;
+
+void main(){
+	gl_FragColor = vColor * texture2D(texture, vTexCoord);
+}
+</script>
+<script id="ortho_vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec2 texCoord;
+
+uniform mat4 orthoMatrix;
+
+varying vec2 vTexCoord;
+
+void main(){
+	vTexCoord = vec2(texCoord.x, 1.0 - texCoord.y);
+	gl_Position = orthoMatrix * vec4(position, 1.0);
+}
+</script>
+<script id="ortho_fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D texture;
+
+varying vec2 vTexCoord;
+
+void main(){
+	vec4 smpColor = texture2D(texture, vTexCoord);
+	gl_FragColor = vec4(vec3(1.0 - smpColor.rgb), 1.0);
+}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<title>sample.035</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body></html>
