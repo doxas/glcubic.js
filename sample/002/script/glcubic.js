@@ -346,7 +346,7 @@ gl3.create_framebuffer_cube = function(width, height, target, number){
 	return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
 };
 
-gl3.create_texture_cube = function(source, target, number){
+gl3.create_texture_cube = function(source, target, number, callback){
 	if(source == null || target == null || number == null){return;}
 	var cImg = [];
 	var gl = this.gl;
@@ -387,6 +387,7 @@ gl3.create_texture_cube = function(source, target, number){
 		self.textures[number].loaded = true;
 		console.log('%c◆%c texture number: %c' + number + '%c, image loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+		if(callback != null){callback(number);}
 	}
 };
 
