@@ -17,7 +17,7 @@ varying vec4 vTexCoord;
 void main(){
 	vec4 pos = mMatrix * vec4(position, 1.0);
 	vColor = color;
-	vTexCoord = tMatrix * pos;
+	vTexCoord = tMatrix * vec4(pos.xyz, 1.0);
 	gl_Position = mvpMatrix * vec4(position, 1.0);
 }
 </script>
@@ -35,7 +35,7 @@ void main(){
 }
 </script>
 <link rel="stylesheet" href="css/style.css">
-<title>sample.036</title>
+<title>sample.039</title>
 </head>
 <body>
 	<canvas id="canvas"></canvas>

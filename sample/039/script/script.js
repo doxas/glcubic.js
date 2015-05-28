@@ -30,7 +30,7 @@ function init(){
 	);
 
 	// torus mesh
-	var torusData = gl3.mesh.torus(64, 64, 0.7, 2.1, [1.0, 1.0, 1.0, 1.0]);
+	var torusData = gl3.mesh.torus(32, 32, 0.2, 0.6, [1.0, 1.0, 1.0, 1.0]);
 	var torusVBO = [
 		gl3.create_vbo(torusData.position),
 		gl3.create_vbo(torusData.color),
@@ -97,18 +97,19 @@ function init(){
 	render();
 
 	function render(){
+		var i, j, s, c;
 		count++;
 
 		var cameraPosition = [];
 		var centerPoint = [0.0, 0.0, 0.0];
 		var cameraUpDirection = [];
-		gl3.qtn.toVecIII([0.0, 0.0, 10.0], qt, cameraPosition);
+		gl3.qtn.toVecIII([0.0, 0.0, 15.0], qt, cameraPosition);
 		gl3.qtn.toVecIII([0.0, 1.0, 0.0], qt, cameraUpDirection);
 		var camera = gl3.camera.create(
 			cameraPosition,
 			centerPoint,
 			cameraUpDirection,
-			45, 1.0, 0.1, 20.0
+			45, 1.0, 0.1, 30.0
 		);
 		gl3.scene_clear([0.3, 0.3, 0.3, 1.0], 1.0);
 		gl3.scene_view(camera, 0, 0, gl3.canvas.width, gl3.canvas.height);
@@ -118,7 +119,7 @@ function init(){
 		prg.set_program();
 		prg.set_attribute(planeVBO, planeIBO);
 		gl3.mat4.identity(mMatrix);
-		gl3.mat4.translate(mMatrix, [0.0, -3.0, 0.0], mMatrix);
+		gl3.mat4.translate(mMatrix, [0.0, -1.0, 0.0], mMatrix);
 		gl3.mat4.rotate(mMatrix, Math.PI / 2, [1.0, 0.0, 0.0], mMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
 		prg.push_shader([mMatrix, mvpMatrix, tvpMatrix, 0]);
@@ -128,11 +129,18 @@ function init(){
 		prg.set_attribute(torusVBO, torusIBO);
 		var radius = gl3.TRI.rad[count % 360];
 		var axis = [0.0, 1.0, 1.0];
-		gl3.mat4.identity(mMatrix);
-		gl3.mat4.rotate(mMatrix, radius, axis, mMatrix);
-		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
-		prg.push_shader([mMatrix, mvpMatrix, tvpMatrix, 0]);
-		gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
+		for(i = 0; i < 8; i++){
+			j = i * 45;
+			s = gl3.TRI.sin[j] * 3.5;
+			c = gl3.TRI.cos[j] * 3.5;
+			var offset = [c, 0.0, s];
+			gl3.mat4.identity(mMatrix);
+			gl3.mat4.translate(mMatrix, offset,  mMatrix);
+			gl3.mat4.rotate(mMatrix, radius, axis, mMatrix);
+			gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+			prg.push_shader([mMatrix, mvpMatrix, tvpMatrix, 0]);
+			gl3.draw_elements(gl3.gl.TRIANGLES, torusData.index.length);
+		}
 
 		requestAnimationFrame(render);
 	}
