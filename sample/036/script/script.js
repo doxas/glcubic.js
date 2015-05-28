@@ -14,42 +14,39 @@ window.onload = function(){
 	// event
 	gl3.canvas.addEventListener('mousemove', mouseMove, true);
 
-	// texture load
-	gl3.create_texture('image/earth.png',  0, loadCheck);
-	gl3.create_texture('image/cloud.png', 1, loadCheck);
-
-	// load check function
-	function loadCheck(){
-		var load = true;
-		for(var i = 0; i < 2; i++){
-			if(gl3.textures[i] != null){
-				load = load && gl3.textures[i].loaded;
-			}else{
-				load = false;
-				break;
-			}
-		}
-		if(load){init();}
-	}
+	// cube texture load
+	var source = [
+		'image/cube_PX.png',
+		'image/cube_PY.png',
+		'image/cube_PZ.png',
+		'image/cube_NX.png',
+		'image/cube_NY.png',
+		'image/cube_NZ.png'
+	]
+	var target = [
+		gl3.gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+		gl3.gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+		gl3.gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+		gl3.gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+		gl3.gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		gl3.gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+	]
+	gl3.create_texture_cube(source, target, 0, init);
 };
 
 function init(){
 	// texture unit zero
 	gl3.gl.activeTexture(gl3.gl.TEXTURE0);
-	gl3.gl.bindTexture(gl3.gl.TEXTURE_2D, gl3.textures[0].texture);
-
-	// texture unit one
-	gl3.gl.activeTexture(gl3.gl.TEXTURE1);
-	gl3.gl.bindTexture(gl3.gl.TEXTURE_2D, gl3.textures[1].texture);
+	gl3.gl.bindTexture(gl3.gl.TEXTURE_CUBE_MAP, gl3.textures[0].texture);
 
 	// program
 	var prg = gl3.program.create(
 		'vs',
 		'fs',
-		['position', 'normal', 'color', 'texCoord'],
-		[3, 3, 4, 2],
-		['mMatrix', 'mvpMatrix', 'invMatrix', 'lightPosition', 'eyePosition', 'centerPoint', 'ambientColor', 'textureUnit', 'texture', 'texture2'],
-		['matrix4fv', 'matrix4fv', 'matrix4fv', '3fv', '3fv', '3fv', '4fv', '1i', '1i', '1i']
+		['position', 'normal', 'color'],
+		[3, 3, 4],
+		['mMatrix', 'mvpMatrix', 'reflection', 'eyePosition', 'texture'],
+		['matrix4fv', 'matrix4fv', '1i', '3fv', '1i']
 	);
 
 	// sphere mesh
@@ -57,10 +54,18 @@ function init(){
 	var sphereVBO = [
 		gl3.create_vbo(sphereData.position),
 		gl3.create_vbo(sphereData.normal),
-		gl3.create_vbo(sphereData.color),
-		gl3.create_vbo(sphereData.texCoord)
+		gl3.create_vbo(sphereData.color)
 	];
 	var sphereIBO = gl3.create_ibo(sphereData.index);
+
+	// cube mesh
+	var cubeData = gl3.mesh.cube(20.0, [1.0, 1.0, 1.0, 1.0]);
+	var cubeVBO = [
+		gl3.create_vbo(cubeData.position),
+		gl3.create_vbo(cubeData.normal),
+		gl3.create_vbo(cubeData.color)
+	];
+	var cubeIBO = gl3.create_ibo(cubeData.index);
 
 	// matrix
 	mMatrix = gl3.mat4.identity(gl3.mat4.create());
@@ -85,49 +90,36 @@ function init(){
 	function render(){
 		count++;
 
-		var lightPosition = [0.0, 2.0, 0.0];
 		var cameraPosition = [];
 		var centerPoint = [0.0, 0.0, 0.0];
 		var cameraUpDirection = [];
-		gl3.qtn.toVecIII([0.0, 0.0, 10.0], qt, cameraPosition);
+		gl3.qtn.toVecIII([0.0, 0.0, 7.0], qt, cameraPosition);
 		gl3.qtn.toVecIII([0.0, 1.0, 0.0], qt, cameraUpDirection);
 		var camera = gl3.camera.create(
 			cameraPosition,
 			centerPoint,
 			cameraUpDirection,
-			45, 1.0, 0.1, 20.0
+			45, 1.0, 0.1, 30.0
 		);
 		gl3.scene_clear([0.3, 0.3, 0.3, 1.0], 1.0);
 		gl3.scene_view(camera, 0, 0, gl3.canvas.width, gl3.canvas.height);
 		gl3.mat4.vpFromCamera(camera, vMatrix, pMatrix, vpMatrix);
 
-		// sphere rendering
-		prg.set_program();
-		prg.set_attribute(sphereVBO, sphereIBO);
-		var ambientColor = [0.1, 0.1, 0.1, 0.0];
-		var radian = gl3.TRI.rad[count % 360];
-		var axis = [0.0, 1.0, 0.0];
-
-		// first
-		gl3.gl.cullFace(gl3.gl.BACK);
-		var offset = [2.0, 0.0, 0.0];
-		gl3.mat4.identity(mMatrix);
-		gl3.mat4.translate(mMatrix, offset, mMatrix);
-		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
-		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
-		gl3.mat4.inverse(mMatrix, invMatrix);
-		prg.push_shader([mMatrix, mvpMatrix, invMatrix, lightPosition, cameraPosition, centerPoint, ambientColor, 0, 0, 1]);
-		gl3.draw_elements(gl3.gl.TRIANGLES, sphereData.index.length);
-
-		// second
+		// cube rendering
 		gl3.gl.cullFace(gl3.gl.FRONT);
-		offset = [-2.0, 0.0, 0.0];
+		prg.set_program();
+		prg.set_attribute(cubeVBO, cubeIBO);
 		gl3.mat4.identity(mMatrix);
-		gl3.mat4.translate(mMatrix, offset, mMatrix);
-		gl3.mat4.rotate(mMatrix, radian, axis, mMatrix);
 		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
-		gl3.mat4.inverse(mMatrix, invMatrix);
-		prg.push_shader([mMatrix, mvpMatrix, invMatrix, lightPosition, cameraPosition, centerPoint, ambientColor, 1, 0, 1]);
+		prg.push_shader([mMatrix, mvpMatrix, false, cameraPosition, 0]);
+		gl3.draw_elements(gl3.gl.TRIANGLES, cubeData.index.length);
+
+		// sphere rendering
+		gl3.gl.cullFace(gl3.gl.BACK);
+		prg.set_attribute(sphereVBO, sphereIBO);
+		gl3.mat4.identity(mMatrix);
+		gl3.mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
+		prg.push_shader([mMatrix, mvpMatrix, true, cameraPosition, 0]);
 		gl3.draw_elements(gl3.gl.TRIANGLES, sphereData.index.length);
 
 		requestAnimationFrame(render);
