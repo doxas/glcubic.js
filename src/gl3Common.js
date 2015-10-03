@@ -28,11 +28,11 @@ gl3.scene_clear = function(color, depth, stencil){
     gl.clearColor(color[0], color[1], color[2], color[3]);
     if(depth != null){
         gl.clearDepth(depth);
-        flg = flg | gl.DEPTH_BUFFER_BIT; 
+        flg = flg | gl.DEPTH_BUFFER_BIT;
     }
     if(stencil != null){
         gl.clearStencil(stencil);
-        flg = flg | gl.STENCIL_BUFFER_BIT; 
+        flg = flg | gl.STENCIL_BUFFER_BIT;
     }
     gl.clear(flg);
 };
@@ -98,6 +98,28 @@ gl3.program = {
         }
         mng.uniT = uniType;
         return mng;
+    },
+    create_from_source: function(vs, fs, attLocation, attStride, uniLocation, uniType){
+        if(gl3.gl == null){return null;}
+        var i;
+        var mng = new gl3.programManager(gl3.gl);
+        mng.vs = mng.create_shader_from_source(vs, gl3.gl.VERTEX_SHADER);
+        mng.fs = mng.create_shader_from_source(fs, gl3.gl.FRAGMENT_SHADER);
+        mng.prg = mng.create_program(mng.vs, mng.fs);
+        mng.attL = new Array(attLocation.length);
+        mng.attS = new Array(attLocation.length);
+        for(i = 0; i < attLocation.length; i++){
+            mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
+            mng.attS[i] = attStride[i];
+        }
+        mng.uniL = new Array(uniLocation.length);
+        for(i = 0; i < uniLocation.length; i++){
+            mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
+        }
+        mng.uniT = uniType;
+        console.log(mng.attL);
+        console.log(mng.uniL);
+        return mng;
     }
 };
 
@@ -133,7 +155,28 @@ gl3.programManager.prototype.create_shader = function(id){
     if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
         return shader;
     }else{
-        console.log(this.gl.getShaderInfoLog(shader));
+        console.warn(this.gl.getShaderInfoLog(shader));
+    }
+};
+
+gl3.programManager.prototype.create_shader_from_source = function(source, type){
+    var shader;
+    switch(type){
+        case this.gl.VERTEX_SHADER:
+            shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+            break;
+        case this.gl.FRAGMENT_SHADER:
+            shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+            break;
+        default :
+            return;
+    }
+    this.gl.shaderSource(shader, scriptElement.text);
+    this.gl.compileShader(shader);
+    if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+        return shader;
+    }else{
+        console.warn(this.gl.getShaderInfoLog(shader));
     }
 };
 
@@ -146,7 +189,7 @@ gl3.programManager.prototype.create_program = function(vs, fs){
         this.gl.useProgram(program);
         return program;
     }else{
-        console.log(this.gl.getProgramInfoLog(program));
+        console.warn(this.gl.getProgramInfoLog(program));
     }
 };
 
