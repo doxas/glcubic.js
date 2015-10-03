@@ -3,7 +3,7 @@
 var gl3 = gl3 || {};
 
 // const
-gl3.VERSION = '0.0.1';
+gl3.VERSION = '0.0.2';
 gl3.PI  = 3.14159265358979323846264338327950288;
 gl3.PI2 = 1.57079632679489661923132169163975144;
 gl3.PI4 = 0.78539816339744830961566084581987572;
@@ -197,7 +197,7 @@ gl3.programManager.prototype.create_shader_from_source = function(source, type){
         default :
             return;
     }
-    this.gl.shaderSource(shader, scriptElement.text);
+    this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
     if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
         return shader;
