@@ -171,7 +171,7 @@ gl3.programManager.prototype.create_shader_from_source = function(source, type){
         default :
             return;
     }
-    this.gl.shaderSource(shader, scriptElement.text);
+    this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
     if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
         return shader;
