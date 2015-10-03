@@ -13,13 +13,13 @@ gl3.TRI = new radian();
 console.log('%c◆%c glCubic.js %c◆%c : version %c' + gl3.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
 
 function radian(){
-	this.rad = [];
-	this.sin = [];
-	this.cos = [];
-	for(var i = 0; i < 360; i++){
-		this.rad.push(i * Math.PI / 180);
-		this.sin.push(Math.sin(this.rad[i]));
-		this.cos.push(Math.cos(this.rad[i]));
-	}
+    this.rad = [];
+    this.sin = [];
+    this.cos = [];
+    for(var i = 0; i < 360; i++){
+        this.rad.push(i * Math.PI / 180);
+        this.sin.push(Math.sin(this.rad[i]));
+        this.cos.push(Math.cos(this.rad[i]));
+    }
 }
 
