@@ -1,5 +1,5 @@
 // step 1: var a = new AudioCtr(bgmGainValue, soundGainValue) <- float(0 to 1)
-// step 2: a.load(url, index, loop background) <- string, int, boolean, boolean
+// step 2: a.load(url, index, loop, background) <- string, int, boolean, boolean
 // step 3: a.src[index].loaded then a.src[index].play()
 
 // audio controler
@@ -35,7 +35,6 @@ AudioCtr.prototype.load = function(url, index, loop, background){
     var xml = new XMLHttpRequest();
     xml.open('GET', url, true);
     xml.responseType = 'arraybuffer';
-    
     xml.onload = function(){
         ctx.decodeAudioData(xml.response, function(buf){
             src[index] = new AudioSrc(ctx, gain, buf, loop);
