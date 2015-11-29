@@ -3,11 +3,11 @@
 var gl3 = gl3 || {};
 
 // const
-gl3.VERSION = '0.0.2';
-gl3.PI  = 3.14159265358979323846264338327950288;
-gl3.PI2 = 1.57079632679489661923132169163975144;
-gl3.PI4 = 0.78539816339744830961566084581987572;
-gl3.BPI = 6.28318530717958647692528676655900576;
+gl3.VERSION = '0.0.3';
+gl3.PI2  = 6.28318530717958647692528676655900576;
+gl3.PI   = 3.14159265358979323846264338327950288;
+gl3.PIH  = 1.57079632679489661923132169163975144;
+gl3.PIH2 = 0.78539816339744830961566084581987572;
 gl3.TRI = new radianPreset();
 
 console.log('%c◆%c glCubic.js %c◆%c : version %c' + gl3.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
@@ -147,10 +147,8 @@ gl3.program = {
         mng.location_check(attLocation, uniLocation);
         return mng;
     },
-    // create_from_file is sync
     create_from_file: function(vsUrl, fsUrl, attLocation, attStride, uniLocation, uniType, callback){
         if(gl3.gl == null){return null;}
-        var i;
         var mng = new gl3.programManager(gl3.gl);
         var src = {
             vs: {
@@ -166,26 +164,34 @@ gl3.program = {
         xhr(src.fs);
         function xhr(target){
             var xml = new XMLHttpRequest();
-            xml.open('GET', target.targetUrl, false);
+            xml.open('GET', target.targetUrl, true);
+            xml.onload = function(){
+                console.log('%c◆%c shader source loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                target.source = xml.responseText;
+                loadCheck();
+            };
             xml.send();
-            console.log('%c◆%c shader source loaded: %c' + targetUrl, 'color: crimson', '', 'color: goldenrod');
-            target.source = xml.responseText;
         }
-        mng.vs = mng.create_shader_from_source(src.vs.source, gl3.gl.VERTEX_SHADER);
-        mng.fs = mng.create_shader_from_source(src.fs.source, gl3.gl.FRAGMENT_SHADER);
-        mng.prg = mng.create_program(mng.vs, mng.fs);
-        mng.attL = new Array(attLocation.length);
-        mng.attS = new Array(attLocation.length);
-        for(i = 0; i < attLocation.length; i++){
-            mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
-            mng.attS[i] = attStride[i];
+        function loadCheck(){
+            if(src.vs.source == null || src.fs.source == null){return;}
+            var i;
+            mng.vs = mng.create_shader_from_source(src.vs.source, gl3.gl.VERTEX_SHADER);
+            mng.fs = mng.create_shader_from_source(src.fs.source, gl3.gl.FRAGMENT_SHADER);
+            mng.prg = mng.create_program(mng.vs, mng.fs);
+            mng.attL = new Array(attLocation.length);
+            mng.attS = new Array(attLocation.length);
+            for(i = 0; i < attLocation.length; i++){
+                mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
+                mng.attS[i] = attStride[i];
+            }
+            mng.uniL = new Array(uniLocation.length);
+            for(i = 0; i < uniLocation.length; i++){
+                mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
+            }
+            mng.uniT = uniType;
+            mng.location_check(attLocation, uniLocation);
+            callback();
         }
-        mng.uniL = new Array(uniLocation.length);
-        for(i = 0; i < uniLocation.length; i++){
-            mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
-        }
-        mng.uniT = uniType;
-        mng.location_check(attLocation, uniLocation);
         return mng;
     }
 };
@@ -318,12 +324,12 @@ gl3.programManager.prototype.location_check = function(attLocation, uniLocation)
     var i, l;
     for(i = 0, l = attLocation.length; i < l; i++){
         if(this.attL[i] == null || this.attL[i] < 0){
-            console.warn('◆ invalid attribute location: %c"' + attLocation[i] + '"%c', 'color:crimson');
+            console.warn('◆ invalid attribute location: %c"' + attLocation[i] + '"', 'color: crimson');
         }
     }
     for(i = 0, l = uniLocation.length; i < l; i++){
         if(this.uniL[i] == null || this.uniL[i] < 0){
-            console.warn('◆ invalid uniform location: %c"' + uniLocation[i] + '"%c', 'color:crimson');
+            console.warn('◆ invalid uniform location: %c"' + uniLocation[i] + '"', 'color: crimson');
         }
     }
 };

@@ -121,10 +121,8 @@ gl3.program = {
         mng.location_check(attLocation, uniLocation);
         return mng;
     },
-    // create_from_file is sync
     create_from_file: function(vsUrl, fsUrl, attLocation, attStride, uniLocation, uniType, callback){
         if(gl3.gl == null){return null;}
-        var i;
         var mng = new gl3.programManager(gl3.gl);
         var src = {
             vs: {
@@ -140,26 +138,34 @@ gl3.program = {
         xhr(src.fs);
         function xhr(target){
             var xml = new XMLHttpRequest();
-            xml.open('GET', target.targetUrl, false);
+            xml.open('GET', target.targetUrl, true);
+            xml.onload = function(){
+                console.log('%c◆%c shader source loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                target.source = xml.responseText;
+                loadCheck();
+            };
             xml.send();
-            console.log('%c◆%c shader source loaded: %c' + targetUrl, 'color: crimson', '', 'color: goldenrod');
-            target.source = xml.responseText;
         }
-        mng.vs = mng.create_shader_from_source(src.vs.source, gl3.gl.VERTEX_SHADER);
-        mng.fs = mng.create_shader_from_source(src.fs.source, gl3.gl.FRAGMENT_SHADER);
-        mng.prg = mng.create_program(mng.vs, mng.fs);
-        mng.attL = new Array(attLocation.length);
-        mng.attS = new Array(attLocation.length);
-        for(i = 0; i < attLocation.length; i++){
-            mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
-            mng.attS[i] = attStride[i];
+        function loadCheck(){
+            if(src.vs.source == null || src.fs.source == null){return;}
+            var i;
+            mng.vs = mng.create_shader_from_source(src.vs.source, gl3.gl.VERTEX_SHADER);
+            mng.fs = mng.create_shader_from_source(src.fs.source, gl3.gl.FRAGMENT_SHADER);
+            mng.prg = mng.create_program(mng.vs, mng.fs);
+            mng.attL = new Array(attLocation.length);
+            mng.attS = new Array(attLocation.length);
+            for(i = 0; i < attLocation.length; i++){
+                mng.attL[i] = gl3.gl.getAttribLocation(mng.prg, attLocation[i]);
+                mng.attS[i] = attStride[i];
+            }
+            mng.uniL = new Array(uniLocation.length);
+            for(i = 0; i < uniLocation.length; i++){
+                mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
+            }
+            mng.uniT = uniType;
+            mng.location_check(attLocation, uniLocation);
+            callback();
         }
-        mng.uniL = new Array(uniLocation.length);
-        for(i = 0; i < uniLocation.length; i++){
-            mng.uniL[i] = gl3.gl.getUniformLocation(mng.prg, uniLocation[i]);
-        }
-        mng.uniT = uniType;
-        mng.location_check(attLocation, uniLocation);
         return mng;
     }
 };
