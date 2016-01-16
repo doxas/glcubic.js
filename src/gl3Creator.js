@@ -22,8 +22,8 @@ gl3.create_texture = function(source, number, callback){
     var img = new Image();
     var self = this;
     var gl = this.gl;
-    this.textures[number] = {texture: null, type: null, loaded: false};
     img.onload = function(){
+        self.textures[number] = {texture: null, type: null, loaded: false};
         var tex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, tex);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
