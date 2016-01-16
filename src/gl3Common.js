@@ -127,11 +127,11 @@ gl3.program = {
         var src = {
             vs: {
                 targetUrl: vsUrl,
-                source: null,
+                source: null
             },
             fs: {
                 targetUrl: fsUrl,
-                source: null,
+                source: null
             }
         };
         xhr(src.vs);
