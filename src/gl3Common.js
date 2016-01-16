@@ -139,6 +139,8 @@ gl3.program = {
         function xhr(target){
             var xml = new XMLHttpRequest();
             xml.open('GET', target.targetUrl, true);
+            xml.setRequestHeader('Pragma', 'no-cache');
+            xml.setRequestHeader('Cache-Control', 'no-cache');
             xml.onload = function(){
                 console.log('%c◆%c shader source loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
                 target.source = xml.responseText;
