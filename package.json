@@ -1,29 +1,39 @@
 {
-  "name": "glcubicjs",
-  "version": "0.0.0",
+  "name": "glcubic.js",
+  "version": "0.0.6",
   "description": "webgl helper library",
   "keywords": [
     "webgl",
     "glsl"
   ],
+  "main": "./build/js/glcubic.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/doxas/glcubic.js.git"
   },
   "bugs": "https://github.com/doxas/glcubic.js/issues",
   "author": {
-    "name": "@doxas",
+    "name": "doxas",
     "email": "admin@wgld.org",
     "url": "http://wgld.org"
   },
   "devDependencies": {
-    "browser-sync": "^1.8.2",
-    "gulp-concat": "^2.4.3",
-    "gulp-jshint": "^1.9.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-uglify": "^1.0.2",
-    "jshint-stylish": "^1.0.0",
-    "run-sequence": "^1.0.2"
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "browser-sync": "^2.18.8",
+    "esdoc": "^0.5.2",
+    "esdoc-standard-plugin": "0.0.7",
+    "npm-run-all": "^4.0.2",
+    "webpack": "^2.4.1"
+  },
+  "scripts": {
+    "build": "webpack -p",
+    "jsdoc": "./node_modules/.bin/esdoc",
+    "browse": "browser-sync start --server ./build",
+    "dev:webpack": "webpack --debug -w",
+    "debug": "npm-run-all -p dev:webpack browse",
+    "start": "npm-run-all -s build browse"
   },
   "license": "MIT"
 }

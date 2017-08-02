@@ -1,0 +1,22 @@
+@charset "utf-8";
+
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+html, body {
+    background-color: black;
+    color: #eee;
+    font-family: 'Ricty Diminished', Monaco, consolas, monospace;
+    font-size: 9pt;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+svg {
+    user-select: none;
+    -webkit-user-select: none;
+}

@@ -1,2 +1,0 @@
-# glcubic.js sample app
-
