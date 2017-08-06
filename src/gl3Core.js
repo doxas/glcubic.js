@@ -1,6 +1,5 @@
 
 import audio      from './gl3Audio.js';
-import camera     from './gl3Camera.js';
 import common     from './gl3Common.js';
 import creator    from './gl3Creator.js';
 import light      from './gl3Light.js';
@@ -21,7 +20,6 @@ export default class gl3 {
         this.PIH2 = 0.78539816339744830961566084581987572;
 
         this.Audio      = audio;
-        this.Camera     = camera;
         this.Common     = common;
         this.Creator    = creator;
         this.Light      = light;

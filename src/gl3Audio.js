@@ -28,7 +28,7 @@ export default class AudioCtr {
         }else{
             return null;
         }
-    };
+    }
 
     load(url, index, loop, background, callback){
         let ctx = this.ctx;
@@ -49,7 +49,7 @@ export default class AudioCtr {
             }, (e) => {console.log(e);});
         };
         xml.send();
-    };
+    }
     loadComplete(){
         let i, f;
         f = true;
@@ -57,7 +57,7 @@ export default class AudioCtr {
             f = f && (this.src[i] != null) && this.src[i].loaded;
         }
         return f;
-    };
+    }
 }
 
 class AudioSrc {
@@ -77,7 +77,7 @@ class AudioSrc {
         this.analyser.smoothingTimeConstant = 0.8;
         this.analyser.fftSize               = this.fftLoop * 2;
         this.onData                         = new Uint8Array(this.analyser.frequencyBinCount);
-    };
+    }
 
     play(){
         let i, j, k;
@@ -127,11 +127,10 @@ class AudioSrc {
                 self.analyser.getByteFrequencyData(self.onData);
             }
         }
-    };
-
+    }
     stop(){
         this.bufferSource[this.activeBufferSource].stop(0);
         this.playnow = false;
-    };
+    }
 }
 
