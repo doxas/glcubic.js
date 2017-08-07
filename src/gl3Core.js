@@ -1,12 +1,9 @@
 
 import audio      from './gl3Audio.js';
 import creator    from './gl3Creator.js';
-import light      from './gl3Light.js';
-import matrix     from './gl3Matrix.js';
+import math       from './gl3Math.js';
 import mesh       from './gl3Mesh.js';
-import quaternion from './gl3Quaternion.js';
 import util       from './gl3Util.js';
-import vector     from './gl3Vector.js';
 
 export default class gl3 {
     constructor(){
@@ -25,14 +22,11 @@ export default class gl3 {
         this.textures = null;
         this.ext      = null;
 
-        this.Audio      = audio;
-        this.Creator    = creator;
-        this.Light      = light;
-        this.Matrix     = matrix;
-        this.Mesh       = mesh;
-        this.Quaternion = quaternion;
-        this.Util       = util;
-        this.Vector     = vector;
+        this.Audio   = audio;
+        this.Creator = creator;
+        this.Math    = math;
+        this.Mesh    = mesh;
+        this.Util    = util;
     }
 
     init(canvas, options){
