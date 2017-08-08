@@ -1,9 +1,9 @@
 
-import audio      from './gl3Audio.js';
-import creator    from './gl3Creator.js';
-import math       from './gl3Math.js';
-import mesh       from './gl3Mesh.js';
-import util       from './gl3Util.js';
+import audio   from './gl3Audio.js';
+import creator from './gl3Creator.js';
+import math    from './gl3Math.js';
+import mesh    from './gl3Mesh.js';
+import util    from './gl3Util.js';
 
 export default class gl3 {
     constructor(){

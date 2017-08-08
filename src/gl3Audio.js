@@ -40,7 +40,7 @@ export default class AudioCtr {
         xml.setRequestHeader('Pragma', 'no-cache');
         xml.setRequestHeader('Cache-Control', 'no-cache');
         xml.responseType = 'arraybuffer';
-        xml.onload(){
+        xml.onload = () => {
             ctx.decodeAudioData(xml.response, (buf) => {
                 src[index] = new AudioSrc(ctx, gain, buf, loop, background);
                 src[index].loaded = true;
@@ -106,7 +106,7 @@ class AudioSrc {
         this.bufferSource[k].loop = this.loop;
         this.bufferSource[k].playbackRate.value = 1.0;
         if(!this.loop){
-            this.bufferSource[k].onended(){
+            this.bufferSource[k].onended = () => {
                 this.stop(0);
                 this.playnow = false;
             };
@@ -115,7 +115,7 @@ class AudioSrc {
             this.bufferSource[k].connect(this.analyser);
             this.analyser.connect(this.node);
             this.node.connect(this.ctx.destination);
-            this.node.onaudioprocess(eve){onprocessEvent(eve);};
+            this.node.onaudioprocess = (eve) => {onprocessEvent(eve);};
         }
         this.bufferSource[k].connect(this.gain);
         this.bufferSource[k].start(0);
