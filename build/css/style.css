@@ -8,7 +8,7 @@
 html, body {
     background-color: black;
     color: #eee;
-    font-family: 'Ricty Diminished', Monaco, consolas, monospace;
+    font-family: 'Ricty Diminished', Ricty, Monaco, consolas, monospace;
     font-size: 9pt;
     text-align: center;
     width: 100%;
@@ -16,7 +16,3 @@ html, body {
     overflow: hidden;
 }
 
-svg {
-    user-select: none;
-    -webkit-user-select: none;
-}

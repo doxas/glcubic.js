@@ -1,11 +1,11 @@
 
 /*
- * step 1: let a = new AudioCtr(bgmGainValue, soundGainValue) <- float(0 to 1)
+ * step 1: let a = new gl3Audio(bgmGainValue, soundGainValue) <- float(0 to 1)
  * step 2: a.load(url, index, loop, background) <- string, int, boolean, boolean
  * step 3: a.src[index].loaded then a.src[index].play()
  */
 
-export default class AudioCtr {
+export default class gl3Audio {
     constructor(bgmGainValue, soundGainValue){
         if(
             typeof AudioContext != 'undefined' ||

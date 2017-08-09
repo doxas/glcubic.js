@@ -1,9 +1,9 @@
 
 export default class gl3Math {
     constructor(){
-        this.vec3 = vec3;
-        this.mat4 = mat4;
-        this.qtn  = qtn;
+        this.Vec3 = Vec3;
+        this.Mat4 = Mat4;
+        this.Qtn  = Qtn;
     }
 }
 

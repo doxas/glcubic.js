@@ -22,10 +22,9 @@ export default class gl3 {
         this.ext      = null;
 
         this.Audio   = audio;
-        this.Creator = creator;
-        this.Math    = math;
         this.Mesh    = mesh;
         this.Util    = util;
+        this.Math    = new math();
     }
 
     init(canvas, options){
@@ -63,13 +62,12 @@ export default class gl3 {
         gl.clear(flg);
     }
 
-    sceneView(camera, x, y, width, height){
+    sceneView(x, y, width, height){
         let X = x || 0;
         let Y = y || 0;
         let w = width  || window.innerWidth;
         let h = height || window.innerHeight;
         this.gl.viewport(X, Y, w, h);
-        if(camera != null){camera.aspect = w / h;}
     }
 
     drawArrays(primitive, vertexCount){
@@ -98,7 +96,7 @@ export default class gl3 {
         return ibo;
     }
 
-    createTexture(source, number, callback){
+    createTextureFromImage(source, number, callback){
         if(source == null || number == null){return;}
         let img = new Image();
         let gl = this.gl;
@@ -122,7 +120,7 @@ export default class gl3 {
         img.src = source;
     }
 
-    createTextureCanvas(canvas, number){
+    createTextureFromCanvas(canvas, number){
         if(canvas == null || number == null){return;}
         let gl = this.gl;
         let tex = gl.createTexture();
@@ -464,4 +462,6 @@ class ProgramManager {
         }
     }
 }
+
+window.gl3 = window.gl3 || new gl3();
 
