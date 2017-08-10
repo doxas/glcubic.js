@@ -3,9 +3,10 @@
     // variable ===============================================================
     let gl, run, mat4, qtn, count, nowTime;
     let canvas, canvasWidth, canvasHeight;
+    let audio;
 
     // shader
-    let basePrg;
+    let basePrg, noisePrg;
 
     // onload =================================================================
     window.addEventListener('load', () => {
@@ -28,11 +29,17 @@
         window.addEventListener('keydown', function(eve){
             if(eve.keyCode === 27){
                 run = false;
+                if(audio != null && audio.src[0] != null && audio.src[0].loaded){
+                    audio.src[0].stop();
+                }
             }
         }, false);
 
-        // start async load
-        gl3.createTextureFromImage('image/sample.jpg', 0, shaderLoader);
+        // audio
+        audio = new gl3.Audio(0.5, 0.5);
+        audio.load('sound/amairo.mp3', 0, true, true, () => {
+            gl3.createTextureFromImage('image/sample.jpg', 0, shaderLoader);
+        });
     }, false);
 
     function shaderLoader(){
@@ -46,8 +53,21 @@
             ['matrix4fv', 'matrix4fv', 'matrix4fv', '3fv', '3fv', '3fv', '1i'],
             shaderLoadCheck
         );
+        noisePrg = gl3.createProgramFromFile(
+            'shader/noise.vert',
+            'shader/noise.frag',
+            ['position'],
+            [3],
+            ['textureUnit', 'resolution', 'time'],
+            ['1i', '2fv', '1f'],
+            shaderLoadCheck
+        );
         function shaderLoadCheck(){
-            if(basePrg.prg != null){init();}
+            if(
+                basePrg.prg != null &&
+                noisePrg.prg != null &&
+                true
+            ){init();}
         }
     }
 
@@ -87,9 +107,16 @@
         let normalMatrix = mat4.identity(mat4.create());
         let invMatrix    = mat4.identity(mat4.create());
 
+        // framebuffer
+        let framebuffer = gl3.createFramebuffer(canvasWidth, canvasHeight, 1);
+
         // texture
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, gl3.textures[0].texture);
+        gl3.textures.map((v, i) => {
+            if(v != null && v.texture != null){
+                gl.activeTexture(gl.TEXTURE0 + i);
+                gl.bindTexture(gl.TEXTURE_2D, v.texture);
+            }
+        });
 
         // flags
         gl.enable(gl.DEPTH_TEST);
@@ -114,9 +141,8 @@
             far: 10.0
         }, vMatrix, pMatrix, vpMatrix);
 
-        // program
-        basePrg.useProgram();
-        basePrg.setAttribute(torusVBO, torusIBO);
+        // audio
+        audio.src[0].play();
 
         render();
         function render(){
@@ -133,9 +159,14 @@
             canvas.width  = canvasWidth;
             canvas.height = canvasHeight;
 
-            // scene
+            // render to framebuffer ==========================================
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer);
             gl3.sceneView(0, 0, canvasWidth, canvasHeight);
-            gl3.sceneClear([0.7, 0.7, 0.7, 1.0], 1.0);
+            gl3.sceneClear([0.3, 0.3, 0.4, 1.0], 1.0);
+
+            // program
+            basePrg.useProgram();
+            basePrg.setAttribute(torusVBO, torusIBO);
 
             // model and draw
             mat4.identity(mMatrix);
@@ -154,6 +185,17 @@
                 targetTexture
             ]);
             gl3.drawElements(gl.TRIANGLES, torusData.index.length);
+
+            // render to canvas
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl3.sceneView(0, 0, canvasWidth, canvasHeight);
+            gl3.sceneClear([0.0, 0.0, 0.0, 1.0], 1.0);
+
+            // program
+            noisePrg.useProgram();
+            noisePrg.setAttribute(planeVBO, planeIBO);
+            noisePrg.pushShader([1, [canvasWidth, canvasHeight], nowTime]);
+            gl3.drawElements(gl.TRIANGLES, planeIndex.length);
 
             // final
             gl.flush();
