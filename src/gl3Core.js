@@ -83,7 +83,7 @@ export default class gl3 {
         this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, 0);
     }
 
-    drawElementsInt = function(primitive, indexLength){
+    drawElementsInt(primitive, indexLength){
         this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_INT, 0);
     }
 
@@ -105,7 +105,7 @@ export default class gl3 {
         return ibo;
     }
 
-    createIboInt = function(data){
+    createIboInt(data){
         if(data == null){return;}
         let ibo = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
@@ -185,7 +185,7 @@ export default class gl3 {
         return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
     }
 
-    createFramebufferFloat = function(width, height, number){
+    createFramebufferFloat(width, height, number){
         if(width == null || height == null || number == null){return;}
         let gl = this.gl;
         this.textures[number] = {texture: null, type: null, loaded: false};
