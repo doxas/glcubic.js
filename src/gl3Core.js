@@ -45,9 +45,9 @@ export default class gl3 {
             this.textures = new Array(this.TEXTURE_UNIT_COUNT);
         }
         this.ext = {
-            elementIndexUint: this.gl.getExtension('OES_element_index_uint');
-            textureFloat: this.gl.getExtension('OES_texture_float');
-            drawBuffers: this.gl.getExtension('WEBGL_draw_buffers');
+            elementIndexUint: this.gl.getExtension('OES_element_index_uint'),
+            textureFloat: this.gl.getExtension('OES_texture_float'),
+            drawBuffers: this.gl.getExtension('WEBGL_draw_buffers')
         };
         return this.ready;
     }
