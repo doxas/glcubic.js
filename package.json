@@ -32,7 +32,7 @@
     "debug": "webpack --debug -w",
     "jsdoc": "./node_modules/.bin/esdoc",
     "browse": "browser-sync start --server ./build/",
-    "start": "npm-run-all -p dev:webpack browse"
+    "start": "npm-run-all -p debug browse"
   },
   "license": "MIT"
 }

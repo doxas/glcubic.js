@@ -97,7 +97,7 @@ export default class gl3Mesh {
         r = 0;
         for(i = 0; i < row; i++){
             for(j = 0; j < column; j++){
-                r = (column + 1) * i + j;
+                let r = (column + 1) * i + j;
                 idx.push(r, r + 1, r + column + 2);
                 idx.push(r, r + column + 2, r + column + 1);
             }
