@@ -29,11 +29,10 @@
   },
   "scripts": {
     "build": "webpack -p",
+    "debug": "webpack --debug -w",
     "jsdoc": "./node_modules/.bin/esdoc",
-    "browse": "browser-sync start --server ./build",
-    "dev:webpack": "webpack --debug -w",
-    "debug": "npm-run-all -p dev:webpack browse",
-    "start": "npm-run-all -s build browse"
+    "browse": "browser-sync start --server ./build/",
+    "start": "npm-run-all -p dev:webpack browse"
   },
   "license": "MIT"
 }

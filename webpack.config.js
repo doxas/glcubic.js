@@ -2,6 +2,9 @@
 const webpack = require('webpack');
 const path = require('path');
 
+let devmode = false;
+if('--debug' in process.argv){devmode = 'inline-source-map';}
+
 module.exports = {
     context: path.resolve(__dirname, 'src'),
     entry: {
@@ -27,5 +30,5 @@ module.exports = {
         }]
     },
     cache: true,
-    devtool: 'inline-source-map'
+    devtool: devmode
 };
