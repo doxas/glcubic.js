@@ -1,8 +1,9 @@
 
 export default class gl3Math {
     constructor(){
-        this.Vec3 = Vec3;
         this.Mat4 = Mat4;
+        this.Vec3 = Vec3;
+        this.Vec2 = Vec2;
         this.Qtn  = Qtn;
     }
 }
@@ -235,10 +236,34 @@ class Mat4 {
         dest[15] = ( i * t - j * r + k * q) * ivd;
         return dest;
     }
-    static vpFromCamera(cam, vmat, pmat, dest){
-        Mat4.lookAt(cam.position, cam.centerPoint, cam.upDirection, vmat);
-        Mat4.perspective(cam.fovy, cam.aspect, cam.near, cam.far, pmat);
+    static toVecIV(mat, vec){
+        let a = mat[0],  b = mat[1],  c = mat[2],  d = mat[3],
+            e = mat[4],  f = mat[5],  g = mat[6],  h = mat[7],
+            i = mat[8],  j = mat[9],  k = mat[10], l = mat[11],
+            m = mat[12], n = mat[13], o = mat[14], p = mat[15];
+        let x = vec[0], y = vec[1], z = vec[2], w = vec[3];
+        let dest = [];
+        dest[0] = x * a + y * e + z * i + w * m;
+        dest[1] = x * b + y * f + z * j + w * n;
+        dest[2] = x * c + y * g + z * k + w * o;
+        dest[3] = x * d + y * h + z * l + w * p;
+        return dest;
+    }
+    static vpFromCameraProperty(position, centerPoint, upDirection, fovy, aspect, near, far, vmat, pmat, dest){
+        Mat4.lookAt(position, centerPoint, upDirection, vmat);
+        Mat4.perspective(fovy, aspect, near, far, pmat);
         Mat4.multiply(pmat, vmat, dest);
+    }
+    static screenPositionFromMvp(mat, vec, width, height){
+        let halfWidth = width * 0.5;
+        let halfHeight = height * 0.5;
+        let v = Mat4.toVecIV(mat, [vec[0], vec[1], vec[2], 1.0]);
+        if(v[3] <= 0.0){return [NaN, NaN];}
+        v[0] /= v[3]; v[1] /= v[3]; v[2] /= v[3];
+        return [
+            halfWidth + v[0] * halfWidth,
+            halfHeight - v[1] * halfHeight
+        ];
     }
 }
 
@@ -246,9 +271,19 @@ class Vec3 {
     static create(){
         return new Float32Array(3);
     }
+    static length(v){
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    }
+    static distance(v0, v1){
+        let n = Vec3.create();
+        n[0] = v1[0] - v0[0];
+        n[1] = v1[1] - v0[1];
+        n[2] = v1[2] - v0[2];
+        return n;
+    }
     static normalize(v){
         let n = Vec3.create();
-        let l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        let l = Vec3.length(v);
         if(l > 0){
             let e = 1.0 / l;
             n[0] = v[0] * e;
@@ -275,6 +310,38 @@ class Vec3 {
         n[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
         n[2] = vec1[0] * vec2[1] - vec1[1] * vec2[0];
         return Vec3.normalize(n);
+    }
+}
+
+class Vec2 {
+    static create(){
+        return new Float32Array(2);
+    }
+    static length(v){
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+    }
+    static distance(v0, v1){
+        let n = Vec2.create();
+        n[0] = v1[0] - v0[0];
+        n[1] = v1[1] - v0[1];
+        return n;
+    }
+    static normalize(v){
+        let n = Vec2.create();
+        let l = Vec2.length(v);
+        if(l > 0){
+            let e = 1.0 / l;
+            n[0] = v[0] * e;
+            n[1] = v[1] * e;
+        }
+        return n;
+    }
+    static dot(v0, v1){
+        return v0[0] * v1[0] + v0[1] * v1[1];
+    }
+    static cross(v0, v1){
+        let n = Vec2.create();
+        return v0[0] * v1[1] - v0[1] * v1[0];
     }
 }
 
