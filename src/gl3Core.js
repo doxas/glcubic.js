@@ -6,14 +6,14 @@ import util  from './gl3Util.js';
 
 export default class gl3 {
     constructor(canvas, options){
-        this.VERSION = '0.0.6';
+        this.VERSION = '0.1.1';
         this.PI2  = 6.28318530717958647692528676655900576;
         this.PI   = 3.14159265358979323846264338327950288;
         this.PIH  = 1.57079632679489661923132169163975144;
         this.PIH2 = 0.78539816339744830961566084581987572;
         this.TEXTURE_UNIT_COUNT = null;
 
-        console.log('%c◆%c glCubic.js %c◆%c : version %c' + gl3.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
+        console.log('%c◆%c glCubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
 
         this.ready    = false;
         this.canvas   = null;

@@ -126,20 +126,23 @@
         let beginTime = Date.now();
         let nowTime = 0;
         let cameraPosition = [0.0, 0.0, 5.0];
+        let centerPoint    = [0.0, 0.0, 0.0];
+        let upDirection    = [0.0, 1.0, 0.0];
         let lightPosition  = [2.0, 3.0, 4.0];
         let ambientColor   = [0.1, 0.1, 0.1];
         let targetTexture  = 0;
 
         // view x proj
-        mat4.vpFromCamera({
-            position:    cameraPosition,
-            centerPoint: [0.0, 0.0, 0.0],
-            upDirection: [0.0, 1.0, 0.0],
-            fovy: 60,
-            aspect: canvasWidth / canvasHeight,
-            near: 0.1,
-            far: 10.0
-        }, vMatrix, pMatrix, vpMatrix);
+        mat4.vpFromCameraProperty(
+            cameraPosition,
+            centerPoint,
+            upDirection,
+            60,
+            canvasWidth / canvasHeight,
+            0.1,
+            10.0,
+            vMatrix, pMatrix, vpMatrix
+        );
 
         // audio
         audio.src[0].play();
