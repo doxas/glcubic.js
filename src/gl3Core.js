@@ -4,29 +4,102 @@ import math  from './gl3Math.js';
 import mesh  from './gl3Mesh.js';
 import util  from './gl3Util.js';
 
+/**
+ * gl3 core
+ * @class gl3
+ */
 export default class gl3 {
-    constructor(canvas, options){
+    /**
+     * @constructor
+     */
+    constructor(){
+        /**
+         * version
+         * @type {string}
+         */
         this.VERSION = '0.1.2';
+        /**
+         * pi * 2
+         * @type {number}
+         */
         this.PI2  = 6.28318530717958647692528676655900576;
+        /**
+         * pi
+         * @type {number}
+         */
         this.PI   = 3.14159265358979323846264338327950288;
+        /**
+         * pi / 2
+         * @type {number}
+         */
         this.PIH  = 1.57079632679489661923132169163975144;
+        /**
+         * pi / 4
+         * @type {number}
+         */
         this.PIH2 = 0.78539816339744830961566084581987572;
+        /**
+         * gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+         * @type {number}
+         */
         this.TEXTURE_UNIT_COUNT = null;
 
-        console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
-
+        /**
+         * gl3 ready flag
+         * @type {boolean}
+         */
         this.ready    = false;
+        /**
+         * canvas element
+         * @type {HTMLCanvasElement}
+         */
         this.canvas   = null;
+        /**
+         * WebGL rendering context
+         * @type {WebGLRenderingContext}
+         */
         this.gl       = null;
+        /**
+         * texture array in gl3
+         * @type {Array}
+         */
         this.textures = null;
+        /**
+         * WebGL Extensions
+         * @type {Object}
+         */
         this.ext      = null;
 
+        /**
+         * gl3Audio
+         * @type {gl3Audio}
+         */
         this.Audio   = audio;
+        /**
+         * gl3Mesh
+         * @type {gl3Mesh}
+         */
         this.Mesh    = mesh;
+        /**
+         * gl3Util
+         * @type {gl3Util}
+         */
         this.Util    = util;
+        /**
+         * gl3Math
+         * @type {gl3Math}
+         */
         this.Math    = new math();
+
+        console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
     }
 
+    /**
+     * initialize glcubic
+     * @param {HTMLCanvasElement|string} canvas - canvas element or id string of canvas
+     * @param {Object} options - option of getContext webgl
+     * @return {boolean} succeeded or not
+     */
     init(canvas, options){
         let opt = options || {};
         this.ready = false;
@@ -52,6 +125,12 @@ export default class gl3 {
         return this.ready;
     }
 
+    /**
+     * clear for framebuffer
+     * @param {Array} color - clear color value (RGBA)
+     * @param {number} [depth] - depth value
+     * @param {number} [stencil] - stencil value
+     */
     sceneClear(color, depth, stencil){
         let gl = this.gl;
         let flg = gl.COLOR_BUFFER_BIT;
@@ -67,6 +146,13 @@ export default class gl3 {
         gl.clear(flg);
     }
 
+    /**
+     * set viewport
+     * @param {number} [x] - x
+     * @param {number} [y] - y
+     * @param {number} [width] - width
+     * @param {number} [height] - height
+     */
     sceneView(x, y, width, height){
         let X = x || 0;
         let Y = y || 0;
