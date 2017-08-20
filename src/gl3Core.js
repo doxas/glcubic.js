@@ -75,16 +75,16 @@ export default class gl3 {
         this.gl.viewport(X, Y, w, h);
     }
 
-    drawArrays(primitive, vertexCount){
-        this.gl.drawArrays(primitive, 0, vertexCount);
+    drawArrays(primitive, vertexCount, offset = 0){
+        this.gl.drawArrays(primitive, offset, vertexCount);
     }
 
-    drawElements(primitive, indexLength){
-        this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, 0);
+    drawElements(primitive, indexLength, offset = 0){
+        this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, offset);
     }
 
-    drawElementsInt(primitive, indexLength){
-        this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_INT, 0);
+    drawElementsInt(primitive, indexLength, offset = 0){
+        this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_INT, offset);
     }
 
     createVbo(data){
