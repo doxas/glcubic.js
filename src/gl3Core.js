@@ -13,7 +13,7 @@ export default class gl3 {
         this.PIH2 = 0.78539816339744830961566084581987572;
         this.TEXTURE_UNIT_COUNT = null;
 
-        console.log('%c◆%c glCubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
+        console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
 
         this.ready    = false;
         this.canvas   = null;
