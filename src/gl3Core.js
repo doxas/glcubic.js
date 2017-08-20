@@ -6,7 +6,7 @@ import util  from './gl3Util.js';
 
 export default class gl3 {
     constructor(canvas, options){
-        this.VERSION = '0.1.1';
+        this.VERSION = '0.1.2';
         this.PI2  = 6.28318530717958647692528676655900576;
         this.PI   = 3.14159265358979323846264338327950288;
         this.PIH  = 1.57079632679489661923132169163975144;
