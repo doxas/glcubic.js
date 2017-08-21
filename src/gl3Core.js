@@ -293,6 +293,88 @@ export default class gl3 {
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
+    /**
+     * 画像を元にキューブマップテクスチャを生成する
+     * @param {Array.<string>} source - ファイルパスを格納した配列
+     * @param {Array.<number>} target - キューブマップテクスチャに設定するターゲットの配列
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     * @param {function} callback - 画像のロードが完了しテクスチャを生成した後に呼ばれるコールバック
+     */
+    createTextureCubeFromFile(source, target, number, callback){
+        if(source == null || target == null || number == null){return;}
+        let cImg = [];
+        let gl = this.gl;
+        this.textures[number] = {texture: null, type: null, loaded: false};
+        for(let i = 0; i < source.length; i++){
+            cImg[i] = {image: new Image(), loaded: false};
+            cImg[i].image.onload = ((index) => {return () => {
+                cImg[index].loaded = true;
+                if(cImg.length === 6){
+                    let f = true;
+                    cImg.map((v) => {
+                        f = f && v.loaded;
+                    });
+                    if(f === true){
+                        let tex = gl.createTexture();
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
+                        for(let j = 0; j < source.length; j++){
+                            gl.texImage2D(target[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cImg[j].image);
+                        }
+                        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                        this.textures[number].texture = tex;
+                        this.textures[number].type = gl.TEXTURE_CUBE_MAP;
+                        this.textures[number].loaded = true;
+                        console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                        if(callback != null){callback(number);}
+                    }
+                }
+            };})(i);
+            cImg[i].image.src = source[i];
+        }
+    }
+
+    /**
+     * glcubic が持つ配列のインデックスとテクスチャユニットを指定してテクスチャをバインドする
+     * @param {number} unit - テクスチャユニット
+     * @param {number} number - glcubic が持つ配列のインデックス
+     */
+    bindTexture(unit, number){
+        if(this.textures[number] == null){return;}
+        this.gl.activeTexture(this.gl.TEXTURE0 + unit);
+        this.gl.bindTexture(this.textures[number].type, this.textures[number].texture);
+    }
+
+    /**
+     * glcubic が持つ配列内のテクスチャ用画像が全てロード済みかどうか確認する
+     * @return {boolean} ロードが完了しているかどうかのフラグ
+     */
+    isTextureLoaded(){
+        let i, j, f, g;
+        f = true; g = false;
+        for(i = 0, j = this.textures.length; i < j; i++){
+            if(this.textures[i] != null){
+                g = true;
+                f = f && this.textures[i].loaded;
+            }
+        }
+        if(g){return f;}else{return false;}
+    }
+
+    /**
+     * フレームバッファを生成しカラーバッファにテクスチャを設定してオブジェクトとして返す
+     * @param {number} width - フレームバッファの横幅
+     * @param {number} height - フレームバッファの高さ
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     * @return {object} 生成した各種オブジェクトはラップして返却する
+     * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+     * @property {WebGLRenderbuffer} depthRenderBuffer - 深度バッファとして設定したレンダーバッファ
+     * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+     */
     createFramebuffer(width, height, number){
         if(width == null || height == null || number == null){return;}
         let gl = this.gl;
@@ -321,6 +403,54 @@ export default class gl3 {
         return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
     }
 
+    /**
+     * フレームバッファを生成しカラーバッファにテクスチャを設定、ステンシル有効でオブジェクトとして返す
+     * @param {number} width - フレームバッファの横幅
+     * @param {number} height - フレームバッファの高さ
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     * @return {object} 生成した各種オブジェクトはラップして返却する
+     * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+     * @property {WebGLRenderbuffer} depthStencilRenderbuffer - 深度バッファ兼ステンシルバッファとして設定したレンダーバッファ
+     * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+     */
+    createFramebufferStencil(width, height, number){
+        if(width == null || height == null || number == null){return;}
+        let gl = this.gl;
+        this.textures[number] = {texture: null, type: null, loaded: false};
+        let frameBuffer = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+        let depthStencilRenderBuffer = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, depthStencilRenderBuffer);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, depthStencilRenderBuffer);
+        let fTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, fTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTexture, 0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.textures[number].texture = fTexture;
+        this.textures[number].type = gl.TEXTURE_2D;
+        this.textures[number].loaded = true;
+        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable stencil)', 'color: crimson', '', 'color: blue', '');
+        return {framebuffer: frameBuffer, depthStencilRenderbuffer: depthStencilRenderBuffer, texture: fTexture};
+    }
+
+    /**
+     * フレームバッファを生成しカラーバッファに浮動小数点テクスチャを設定してオブジェクトとして返す ※要拡張機能（WebGL 1.0）
+     * @param {number} width - フレームバッファの横幅
+     * @param {number} height - フレームバッファの高さ
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     * @return {object} 生成した各種オブジェクトはラップして返却する
+     * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+     * @property {WebGLRenderbuffer} depthRenderBuffer - 深度バッファとして設定したレンダーバッファ
+     * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+     */
     createFramebufferFloat(width, height, number){
         if(width == null || height == null || number == null){return;}
         let gl = this.gl;
@@ -340,10 +470,21 @@ export default class gl3 {
         this.textures[number].texture = fTexture;
         this.textures[number].type = gl.TEXTURE_2D;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer float created', 'color: crimson', '', 'color: blue', '');
+        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable float)', 'color: crimson', '', 'color: blue', '');
         return {framebuffer: frameBuffer, depthRenderbuffer: null, texture: fTexture};
     }
 
+    /**
+     * フレームバッファを生成しカラーバッファにキューブテクスチャを設定してオブジェクトとして返す
+     * @param {number} width - フレームバッファの横幅
+     * @param {number} height - フレームバッファの高さ
+     * @param {Array.<number>} target - キューブマップテクスチャに設定するターゲットの配列
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     * @return {object} 生成した各種オブジェクトはラップして返却する
+     * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+     * @property {WebGLRenderbuffer} depthRenderBuffer - 深度バッファとして設定したレンダーバッファ
+     * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+     */
     createFramebufferCube(width, height, target, number){
         if(width == null || height == null || target == null || number == null){return;}
         let gl = this.gl;
@@ -373,62 +514,16 @@ export default class gl3 {
         return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
     }
 
-    createTextureCube(source, target, number, callback){
-        if(source == null || target == null || number == null){return;}
-        let cImg = [];
-        let gl = this.gl;
-        this.textures[number] = {texture: null, type: null, loaded: false};
-        for(let i = 0; i < source.length; i++){
-            cImg[i] = {image: new Image(), loaded: false};
-            cImg[i].image.onload = ((index) => {return () => {
-                cImg[index].loaded = true;
-                if(cImg.length === 6){
-                    let f = true;
-                    cImg.map((v) => {
-                        f = f && v.loaded;
-                    });
-                    if(f === true){
-                        let tex = gl.createTexture();
-                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
-                        for(let j = 0; j < source.length; j++){
-                            gl.texImage2D(target[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cImg[j].image);
-                        }
-                        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                        this.textures[number].texture = tex;
-                        this.textures[number].type = gl.TEXTURE_CUBE_MAP;
-                        this.textures[number].loaded = true;
-                        console.log('%c◆%c texture number: %c' + number + '%c, image loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
-                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                        if(callback != null){callback(number);}
-                    }
-                }
-            };})(i);
-            cImg[i].image.src = source[i];
-        }
-    }
-
-    bindTexture(unit, number){
-        if(this.textures[number] == null){return;}
-        this.gl.activeTexture(this.gl.TEXTURE0 + unit);
-        this.gl.bindTexture(this.textures[number].type, this.textures[number].texture);
-    }
-
-    isTextureLoaded(){
-        let i, j, f, g;
-        f = true; g = false;
-        for(i = 0, j = this.textures.length; i < j; i++){
-            if(this.textures[i] != null){
-                g = true;
-                f = f && this.textures[i].loaded;
-            }
-        }
-        if(g){return f;}else{return false;}
-    }
-
+    /**
+     * HTML 内に存在する ID 文字列から script タグを参照しプログラムオブジェクトを生成する
+     * @param {string} vsId - 頂点シェーダのソースが記述された script タグの ID 文字列
+     * @param {string} fsId - フラグメントシェーダのソースが記述された script タグの ID 文字列
+     * @param {Array.<string>} attLocation - attribute 変数名の配列
+     * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+     * @param {Array.<string>} uniLocation - uniform 変数名の配列
+     * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+     * @return {ProgramManager} プログラムマネージャークラスのインスタンス
+     */
     createProgramFromId(vsId, fsId, attLocation, attStride, uniLocation, uniType){
         if(this.gl == null){return null;}
         let i;
@@ -451,6 +546,16 @@ export default class gl3 {
         return mng;
     }
 
+    /**
+     * シェーダのソースコード文字列からプログラムオブジェクトを生成する
+     * @param {string} vs - 頂点シェーダのソース
+     * @param {string} fs - フラグメントシェーダのソース
+     * @param {Array.<string>} attLocation - attribute 変数名の配列
+     * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+     * @param {Array.<string>} uniLocation - uniform 変数名の配列
+     * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+     * @return {ProgramManager} プログラムマネージャークラスのインスタンス
+     */
     createProgramFromSource(vs, fs, attLocation, attStride, uniLocation, uniType){
         if(this.gl == null){return null;}
         let i;
@@ -473,16 +578,27 @@ export default class gl3 {
         return mng;
     }
 
-    createProgramFromFile(vsUrl, fsUrl, attLocation, attStride, uniLocation, uniType, callback){
+    /**
+     * ファイルからシェーダのソースコードを取得しプログラムオブジェクトを生成する
+     * @param {string} vsPath - 頂点シェーダのソースが記述されたファイルのパス
+     * @param {string} fsPath - フラグメントシェーダのソースが記述されたファイルのパス
+     * @param {Array.<string>} attLocation - attribute 変数名の配列
+     * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+     * @param {Array.<string>} uniLocation - uniform 変数名の配列
+     * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+     * @param {function} callback - ソースコードのロードが完了しプログラムオブジェクトを生成した後に呼ばれるコールバック
+     * @return {ProgramManager} プログラムマネージャークラスのインスタンス ※ロード前にインスタンスは戻り値として返却される
+     */
+    createProgramFromFile(vsPath, fsPath, attLocation, attStride, uniLocation, uniType, callback){
         if(this.gl == null){return null;}
         let mng = new ProgramManager(this.gl);
         let src = {
             vs: {
-                targetUrl: vsUrl,
+                targetUrl: vsPath,
                 source: null
             },
             fs: {
-                targetUrl: fsUrl,
+                targetUrl: fsPath,
                 source: null
             }
         };
@@ -518,7 +634,7 @@ export default class gl3 {
             }
             mng.uniT = uniType;
             mng.locationCheck(attLocation, uniLocation);
-            callback();
+            callback(mng);
         }
         return mng;
     }
