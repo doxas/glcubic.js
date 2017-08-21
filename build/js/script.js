@@ -38,7 +38,7 @@
         // audio
         audio = new gl3.Audio(0.5, 0.5);
         audio.load('sound/amairo.mp3', 0, true, true, () => {
-            gl3.createTextureFromImage('image/sample.jpg', 0, shaderLoader);
+            gl3.createTextureFromFile('image/sample.jpg', 0, shaderLoader);
         });
     }, false);
 

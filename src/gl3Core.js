@@ -67,7 +67,7 @@ export default class gl3 {
         this.gl       = null;
         /**
          * glcubic が内部的に持っているテクスチャ格納用の配列
-         * @type {Array}
+         * @type {Array.<WebGLTexture>}
          */
         this.textures = null;
         /**
@@ -167,18 +167,43 @@ export default class gl3 {
         this.gl.viewport(X, Y, w, h);
     }
 
+    /**
+     * gl.drawArrays をコールするラッパー
+     * @param {number} primitive - プリミティブタイプ
+     * @param {number} vertexCount - 描画する頂点の個数
+     * @param {number} [offset=0] - 描画する頂点の開始オフセット
+     *
+     */
     drawArrays(primitive, vertexCount, offset = 0){
         this.gl.drawArrays(primitive, offset, vertexCount);
     }
 
+    /**
+     * gl.drawElements をコールするラッパー
+     * @param {number} primitive - プリミティブタイプ
+     * @param {number} vertexCount - 描画するインデックスの個数
+     * @param {number} [offset=0] - 描画するインデックスの開始オフセット
+     *
+     */
     drawElements(primitive, indexLength, offset = 0){
         this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, offset);
     }
 
+    /**
+     * gl.drawElements をコールするラッパー（gl.UNSIGNED_INT） ※要拡張機能（WebGL 1.0）
+     * @param {number} primitive - プリミティブタイプ
+     * @param {number} vertexCount - 描画するインデックスの個数
+     * @param {number} [offset=0] - 描画するインデックスの開始オフセット
+     */
     drawElementsInt(primitive, indexLength, offset = 0){
         this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_INT, offset);
     }
 
+    /**
+     * VBO（Vertex Buffer Object）を生成して返す
+     * @param {Array.<number>} data - 頂点情報を格納した配列
+     * @return {WebGLBuffer} 生成した頂点バッファ
+     */
     createVbo(data){
         if(data == null){return;}
         let vbo = this.gl.createBuffer();
@@ -188,6 +213,11 @@ export default class gl3 {
         return vbo;
     }
 
+    /**
+     * IBO（Index Buffer Object）を生成して返す
+     * @param {Array.<number>} data - インデックス情報を格納した配列
+     * @return {WebGLBuffer} 生成したインデックスバッファ
+     */
     createIbo(data){
         if(data == null){return;}
         let ibo = this.gl.createBuffer();
@@ -197,6 +227,11 @@ export default class gl3 {
         return ibo;
     }
 
+    /**
+     * IBO（Index Buffer Object）を生成して返す（gl.UNSIGNED_INT） ※要拡張機能（WebGL 1.0）
+     * @param {Array.<number>} data - インデックス情報を格納した配列
+     * @return {WebGLBuffer} 生成したインデックスバッファ
+     */
     createIboInt(data){
         if(data == null){return;}
         let ibo = this.gl.createBuffer();
@@ -206,7 +241,13 @@ export default class gl3 {
         return ibo;
     }
 
-    createTextureFromImage(source, number, callback){
+    /**
+     * ファイルを元にテクスチャを生成して返す
+     * @param {string} source - ファイルパス
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     * @param {function} callback - 画像のロードが完了しテクスチャを生成した後に呼ばれるコールバック
+     */
+    createTextureFromFile(source, number, callback){
         if(source == null || number == null){return;}
         let img = new Image();
         let gl = this.gl;
@@ -218,34 +259,39 @@ export default class gl3 {
             gl.generateMipmap(gl.TEXTURE_2D);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             this.textures[number].texture = tex;
             this.textures[number].type = gl.TEXTURE_2D;
             this.textures[number].loaded = true;
-            console.log('%c◆%c texture number: %c' + number + '%c, image loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+            console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
             gl.bindTexture(gl.TEXTURE_2D, null);
             if(callback != null){callback(number);}
         };
         img.src = source;
     }
 
-    createTextureFromCanvas(canvas, number){
-        if(canvas == null || number == null){return;}
+    /**
+     * オブジェクトを元にテクスチャを生成して返す
+     * @param {string} source - ロード済みの Image オブジェクトや Canvas オブジェクト
+     * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+     */
+    createTextureFromObject(object, number){
+        if(object == null || number == null){return;}
         let gl = this.gl;
         let tex = gl.createTexture();
         this.textures[number] = {texture: null, type: null, loaded: false};
         gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, object);
         gl.generateMipmap(gl.TEXTURE_2D);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         this.textures[number].texture = tex;
         this.textures[number].type = gl.TEXTURE_2D;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, canvas attached', 'color: crimson', '', 'color: blue', '');
+        console.log('%c◆%c texture number: %c' + number + '%c, object attached', 'color: crimson', '', 'color: blue', '');
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
