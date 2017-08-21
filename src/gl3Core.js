@@ -610,7 +610,7 @@ export default class gl3 {
             xml.setRequestHeader('Pragma', 'no-cache');
             xml.setRequestHeader('Cache-Control', 'no-cache');
             xml.onload = function(){
-                console.log('%c◆%c shader source loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                console.log('%c◆%c shader file loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
                 target.source = xml.responseText;
                 loadCheck(gl);
             };
