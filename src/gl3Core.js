@@ -24,19 +24,19 @@ export default class gl3 {
          * @const
          * @type {number}
          */
-        this.PI2  = 6.28318530717958647692528676655900576;
+        this.PI2 = 6.28318530717958647692528676655900576;
         /**
          * pi
          * @const
          * @type {number}
          */
-        this.PI   = 3.14159265358979323846264338327950288;
+        this.PI = 3.14159265358979323846264338327950288;
         /**
          * pi / 2
          * @const
          * @type {number}
          */
-        this.PIH  = 1.57079632679489661923132169163975144;
+        this.PIH = 1.57079632679489661923132169163975144;
         /**
          * pi / 4
          * @const
@@ -54,17 +54,17 @@ export default class gl3 {
          * glcubic が正しく初期化されたどうかのフラグ
          * @type {boolean}
          */
-        this.ready    = false;
+        this.ready = false;
         /**
          * glcubic と紐付いている canvas element
          * @type {HTMLCanvasElement}
          */
-        this.canvas   = null;
+        this.canvas = null;
         /**
          * glcubic と紐付いている canvas から取得した WebGL Rendering Context
          * @type {WebGLRenderingContext}
          */
-        this.gl       = null;
+        this.gl = null;
         /**
          * glcubic が内部的に持っているテクスチャ格納用の配列
          * @type {Array.<WebGLTexture>}
@@ -74,28 +74,28 @@ export default class gl3 {
          * WebGL の拡張機能を格納するオブジェクト
          * @type {Object}
          */
-        this.ext      = null;
+        this.ext = null;
 
         /**
          * gl3Audio クラスのインスタンス
          * @type {gl3Audio}
          */
-        this.Audio   = audio;
+        this.Audio = audio;
         /**
          * gl3Mesh クラスのインスタンス
          * @type {gl3Mesh}
          */
-        this.Mesh    = mesh;
+        this.Mesh = mesh;
         /**
          * gl3Util クラスのインスタンス
          * @type {gl3Util}
          */
-        this.Util    = util;
+        this.Util = util;
         /**
          * gl3Math クラスのインスタンス
          * @type {gl3Math}
          */
-        this.Math    = new math();
+        this.Math = new math();
 
         console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
     }
@@ -104,7 +104,7 @@ export default class gl3 {
      * glcubic を初期化する
      * @param {HTMLCanvasElement|string} canvas - canvas element か canvas に付与されている ID 文字列
      * @param {Object} options - canvas.getContext で第二引数に渡す初期化時オプション
-     * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値（gl3.ready）
+     * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値
      */
     init(canvas, options){
         let opt = options || {};
@@ -172,7 +172,6 @@ export default class gl3 {
      * @param {number} primitive - プリミティブタイプ
      * @param {number} vertexCount - 描画する頂点の個数
      * @param {number} [offset=0] - 描画する頂点の開始オフセット
-     *
      */
     drawArrays(primitive, vertexCount, offset = 0){
         this.gl.drawArrays(primitive, offset, vertexCount);
@@ -183,7 +182,6 @@ export default class gl3 {
      * @param {number} primitive - プリミティブタイプ
      * @param {number} vertexCount - 描画するインデックスの個数
      * @param {number} [offset=0] - 描画するインデックスの開始オフセット
-     *
      */
     drawElements(primitive, indexLength, offset = 0){
         this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, offset);
