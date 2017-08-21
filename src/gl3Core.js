@@ -5,7 +5,7 @@ import mesh  from './gl3Mesh.js';
 import util  from './gl3Util.js';
 
 /**
- * gl3 core
+ * glcubic
  * @class gl3
  */
 export default class gl3 {
@@ -15,78 +15,84 @@ export default class gl3 {
     constructor(){
         /**
          * version
+         * @const
          * @type {string}
          */
         this.VERSION = '0.1.2';
         /**
          * pi * 2
+         * @const
          * @type {number}
          */
         this.PI2  = 6.28318530717958647692528676655900576;
         /**
          * pi
+         * @const
          * @type {number}
          */
         this.PI   = 3.14159265358979323846264338327950288;
         /**
          * pi / 2
+         * @const
          * @type {number}
          */
         this.PIH  = 1.57079632679489661923132169163975144;
         /**
          * pi / 4
+         * @const
          * @type {number}
          */
         this.PIH2 = 0.78539816339744830961566084581987572;
         /**
-         * gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+         * gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS を利用して得られるテクスチャユニットの最大利用可能数
+         * @const
          * @type {number}
          */
         this.TEXTURE_UNIT_COUNT = null;
 
         /**
-         * gl3 ready flag
+         * glcubic が正しく初期化されたどうかのフラグ
          * @type {boolean}
          */
         this.ready    = false;
         /**
-         * canvas element
+         * glcubic と紐付いている canvas element
          * @type {HTMLCanvasElement}
          */
         this.canvas   = null;
         /**
-         * WebGL rendering context
+         * glcubic と紐付いている canvas から取得した WebGL Rendering Context
          * @type {WebGLRenderingContext}
          */
         this.gl       = null;
         /**
-         * texture array in gl3
+         * glcubic が内部的に持っているテクスチャ格納用の配列
          * @type {Array}
          */
         this.textures = null;
         /**
-         * WebGL Extensions
+         * WebGL の拡張機能を格納するオブジェクト
          * @type {Object}
          */
         this.ext      = null;
 
         /**
-         * gl3Audio
+         * gl3Audio クラスのインスタンス
          * @type {gl3Audio}
          */
         this.Audio   = audio;
         /**
-         * gl3Mesh
+         * gl3Mesh クラスのインスタンス
          * @type {gl3Mesh}
          */
         this.Mesh    = mesh;
         /**
-         * gl3Util
+         * gl3Util クラスのインスタンス
          * @type {gl3Util}
          */
         this.Util    = util;
         /**
-         * gl3Math
+         * gl3Math クラスのインスタンス
          * @type {gl3Math}
          */
         this.Math    = new math();
@@ -95,10 +101,10 @@ export default class gl3 {
     }
 
     /**
-     * initialize glcubic
-     * @param {HTMLCanvasElement|string} canvas - canvas element or id string of canvas
-     * @param {Object} options - option of getContext webgl
-     * @return {boolean} succeeded or not
+     * glcubic を初期化する
+     * @param {HTMLCanvasElement|string} canvas - canvas element か canvas に付与されている ID 文字列
+     * @param {Object} options - canvas.getContext で第二引数に渡す初期化時オプション
+     * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値（gl3.ready）
      */
     init(canvas, options){
         let opt = options || {};
@@ -126,10 +132,10 @@ export default class gl3 {
     }
 
     /**
-     * clear for framebuffer
-     * @param {Array} color - clear color value (RGBA)
-     * @param {number} [depth] - depth value
-     * @param {number} [stencil] - stencil value
+     * フレームバッファをクリアする
+     * @param {Array.<number>} color - クリアする色（0.0 ~ 1.0）
+     * @param {number} [depth] - クリアする深度
+     * @param {number} [stencil] - クリアするステンシル値
      */
     sceneClear(color, depth, stencil){
         let gl = this.gl;
@@ -147,11 +153,11 @@ export default class gl3 {
     }
 
     /**
-     * set viewport
-     * @param {number} [x] - x
-     * @param {number} [y] - y
-     * @param {number} [width] - width
-     * @param {number} [height] - height
+     * ビューポートを設定する
+     * @param {number} [x] - x（左端原点）
+     * @param {number} [y] - y（下端原点）
+     * @param {number} [width] - 横の幅
+     * @param {number} [height] - 縦の高さ
      */
     sceneView(x, y, width, height){
         let X = x || 0;
