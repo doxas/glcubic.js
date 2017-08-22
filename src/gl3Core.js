@@ -640,18 +640,63 @@ export default class gl3 {
     }
 }
 
+/**
+ * プログラムオブジェクトやシェーダを管理するマネージャ
+ * @class ProgramManager
+ */
 class ProgramManager {
+    /**
+     * @constructor
+     * @param {WebGLRenderingContext}
+     */
     constructor(gl){
-        this.gl   = gl;
-        this.vs   = null;
-        this.fs   = null;
-        this.prg  = null;
+        /**
+         * 自身が属する WebGL Rendering Context
+         * @type {WebGLRenderingContext}
+         */
+        this.gl = gl;
+        /**
+         * 頂点シェーダのシェーダオブジェクト
+         * @type {WebGLShader}
+         */
+        this.vs = null;
+        /**
+         * フラグメントシェーダのシェーダオブジェクト
+         * @type {WebGLShader}
+         */
+        this.fs = null;
+        /**
+         * プログラムオブジェクト
+         * @type {WebGLProgram}
+         */
+        this.prg = null;
+        /**
+         * アトリビュートロケーションの配列
+         * @type {Array.<number>}
+         */
         this.attL = null;
+        /**
+         * アトリビュート変数のストライドの配列
+         * @type {Array.<number>}
+         */
         this.attS = null;
+        /**
+         * ユニフォームロケーションの配列
+         * @type {Array.<WebGLUniformLocation>}
+         */
         this.uniL = null;
+        /**
+         * ユニフォーム変数のタイプの配列
+         * @type {Array.<string>}
+         */
         this.uniT = null;
     }
 
+    /**
+     * script タグの ID を元にソースコードを取得しシェーダオブジェクトを生成する
+     * @param {string} id - script タグに付加された ID 文字列
+     * @return {WebGLShader} 生成したシェーダオブジェクト
+     */
     createShaderFromId(id){
         let shader;
         let scriptElement = document.getElementById(id);
@@ -675,6 +720,12 @@ class ProgramManager {
         }
     }
 
+    /**
+     * シェーダのソースコードを文字列で引数から取得しシェーダオブジェクトを生成する
+     * @param {string} source - シェーダのソースコード
+     * @param {number} type - gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+     * @return {WebGLShader} 生成したシェーダオブジェクト
+     */
     createShaderFromSource(source, type){
         let shader;
         switch(type){
@@ -696,6 +747,12 @@ class ProgramManager {
         }
     }
 
+    /**
+     * シェーダオブジェクトを引数から取得しプログラムオブジェクトを生成する
+     * @param {WebGLShader} vs - 頂点シェーダのシェーダオブジェクト
+     * @param {WebGLShader} fs - フラグメントシェーダのシェーダオブジェクト
+     * @return {WebGLProgram} 生成したプログラムオブジェクト
+     */
     createProgram(vs, fs){
         let program = this.gl.createProgram();
         this.gl.attachShader(program, vs);
@@ -709,10 +766,18 @@ class ProgramManager {
         }
     }
 
+    /**
+     * 自身の内部プロパティとして存在するプログラムオブジェクトを設定する
+     */
     useProgram(){
         this.gl.useProgram(this.prg);
     }
 
+    /**
+     * VBO と IBO をバインドして有効化する
+     * @param {Array.<WebGLBuffer>} vbo - VBO を格納した配列
+     * @param {WebGLBuffer} [ibo] - IBO
+     */
     setAttribute(vbo, ibo){
         let gl = this.gl;
         for(let i in vbo){
@@ -725,15 +790,19 @@ class ProgramManager {
         if(ibo != null){gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);}
     }
 
-    pushShader(any){
+    /**
+     * シェーダにユニフォーム変数に設定する値をプッシュする
+     * @param {Array.<mixed>} mixed - ユニフォーム変数に設定する値を格納した配列
+     */
+    pushShader(mixed){
         let gl = this.gl;
         for(let i = 0, j = this.uniT.length; i < j; i++){
             let uni = 'uniform' + this.uniT[i].replace(/matrix/i, 'Matrix');
             if(gl[uni] != null){
                 if(uni.search(/Matrix/) !== -1){
-                    gl[uni](this.uniL[i], false, any[i]);
+                    gl[uni](this.uniL[i], false, mixed[i]);
                 }else{
-                    gl[uni](this.uniL[i], any[i]);
+                    gl[uni](this.uniL[i], mixed[i]);
                 }
             }else{
                 console.warn('◆ not support uniform type: ' + this.uniT[i]);
@@ -741,6 +810,11 @@ class ProgramManager {
         }
     }
 
+    /**
+     * アトリビュートロケーションとユニフォームロケーションが正しく取得できたかチェックする
+     * @param {Array.<number>} attLocation - 取得したアトリビュートロケーションの配列
+     * @param {Array.<WebGLUniformLocation>} uniLocation - 取得したユニフォームロケーションの配列
+     */
     locationCheck(attLocation, uniLocation){
         let i, l;
         for(i = 0, l = attLocation.length; i < l; i++){
