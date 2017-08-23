@@ -5,8 +5,42 @@
  * step 3: a.src[index].loaded then a.src[index].play()
  */
 
+/**
+ * gl3Audio クラス
+ * @class gl3Audio
+ */
 export default class gl3Audio {
+    /**
+     * @constructor
+     * @param {number} bgmGainValue - BGM の再生音量
+     * @param {number} soundGainValue - 効果音の再生音量
+     */
     constructor(bgmGainValue, soundGainValue){
+        /**
+         * オーディオコンテキスト
+         * @type {AudioContext}
+         */
+        this.ctx = null;
+        /**
+         * ダイナミックコンプレッサーノード
+         * @type {DynamicsCompressorNode}
+         */
+        this.comp = null;
+        /**
+         * BGM 用のゲインノード
+         * @type {GainNode}
+         */
+        this.bgmGain = null;
+        /**
+         * 効果音用のゲインノード
+         * @type {GainNode}
+         */
+        this.soundGain = null;
+        /**
+         * オーディオソースをラップしたクラスの配列
+         * @type {Array.<AudioSrc>}
+         */
+        this.src = null;
         if(
             typeof AudioContext != 'undefined' ||
             typeof webkitAudioContext != 'undefined'
@@ -26,17 +60,25 @@ export default class gl3Audio {
             this.soundGain.gain.value = soundGainValue;
             this.src = [];
         }else{
-            return null;
+            throw new Error('not found AudioContext');
         }
     }
 
-    load(url, index, loop, background, callback){
+    /**
+     * ファイルをロードする
+     * @param {string} path - オーディオファイルのパス
+     * @param {number} index - 内部プロパティの配列に格納するインデックス
+     * @param {boolean} bool - ループ再生を設定するかどうか
+     * @param {boolean} background - BGM として設定するかどうか
+     * @param {function} callback - 読み込みと初期化が完了したあと呼ばれるコールバック
+     */
+    load(path, index, loop, background, callback){
         let ctx = this.ctx;
         let gain = background ? this.bgmGain : this.soundGain;
         let src = this.src;
         src[index] = null;
         let xml = new XMLHttpRequest();
-        xml.open('GET', url, true);
+        xml.open('GET', path, true);
         xml.setRequestHeader('Pragma', 'no-cache');
         xml.setRequestHeader('Cache-Control', 'no-cache');
         xml.responseType = 'arraybuffer';
@@ -44,12 +86,16 @@ export default class gl3Audio {
             ctx.decodeAudioData(xml.response, (buf) => {
                 src[index] = new AudioSrc(ctx, gain, buf, loop, background);
                 src[index].loaded = true;
-                console.log('%c◆%c audio number: %c' + index + '%c, audio loaded: %c' + url, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                console.log('%c◆%c audio number: %c' + index + '%c, audio loaded: %c' + path, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
                 callback();
             }, (e) => {console.log(e);});
         };
         xml.send();
     }
+
+    /**
+     * ロードの完了をチェックする
+     */
     loadComplete(){
         let i, f;
         f = true;
@@ -60,25 +106,92 @@ export default class gl3Audio {
     }
 }
 
+/**
+ * オーディオやソースファイルを管理するためのクラス
+ * @class AudioSrc
+ */
 class AudioSrc {
+    /**
+     * @constructor
+     * @param {AudioContext} ctx - 対象となるオーディオコンテキスト
+     * @param {GainNode} gain - 対象となるゲインノード
+     * @param {ArrayBuffer} audioBuffer - バイナリのオーディオソース
+     * @param {boolean} bool - ループ再生を設定するかどうか
+     * @param {boolean} background - BGM として設定するかどうか
+     */
     constructor(ctx, gain, audioBuffer, loop, background){
-        this.ctx                            = ctx;
-        this.gain                           = gain;
-        this.audioBuffer                    = audioBuffer;
-        this.bufferSource                   = [];
-        this.activeBufferSource             = 0;
-        this.loop                           = loop;
-        this.loaded                         = false;
-        this.fftLoop                        = 16;
-        this.update                         = false;
-        this.background                     = background;
-        this.node                           = this.ctx.createScriptProcessor(2048, 1, 1);
-        this.analyser                       = this.ctx.createAnalyser();
+        /**
+         * 対象となるオーディオコンテキスト
+         * @type {AudioContext}
+         */
+        this.ctx = ctx;
+        /**
+         * 対象となるゲインノード
+         * @type {GainNode}
+         */
+        this.gain = gain;
+        /**
+         * ソースファイルのバイナリデータ
+         * @type {ArrayBuffer}
+         */
+        this.audioBuffer = audioBuffer;
+        /**
+         * オーディオバッファソースノードを格納する配列
+         * @type {Array.<AudioBufferSourceNode>}
+         */
+        this.bufferSource = [];
+        /**
+         * アクティブなバッファソースのインデックス
+         * @type {number}
+         */
+        this.activeBufferSource = 0;
+        /**
+         * ループするかどうかのフラグ
+         * @type {boolean}
+         */
+        this.loop = loop;
+        /**
+         * ロード済みかどうかを示すフラグ
+         * @type {boolean}
+         */
+        this.loaded = false;
+        /**
+         * FFT サイズ
+         * @type {number}
+         */
+        this.fftLoop = 16;
+        /**
+         * このフラグが立っている場合再生中のデータを一度取得する
+         * @type {boolean}
+         */
+        this.update = false;
+        /**
+         * BGM かどうかを示すフラグ
+         * @param {boolean}
+         */
+        this.background = background;
+        /**
+         * スクリプトプロセッサーノード
+         * {ScriptProcessorNode}
+         */
+        this.node = this.ctx.createScriptProcessor(2048, 1, 1);
+        /**
+         * アナライザノード
+         * @type {AnalyserNode}
+         */
+        this.analyser = this.ctx.createAnalyser();
         this.analyser.smoothingTimeConstant = 0.8;
-        this.analyser.fftSize               = this.fftLoop * 2;
-        this.onData                         = new Uint8Array(this.analyser.frequencyBinCount);
+        this.analyser.fftSize = this.fftLoop * 2;
+        /**
+         * データを取得する際に利用する型付き配列
+         * @type {Uint8Array}
+         */
+        this.onData = new Uint8Array(this.analyser.frequencyBinCount);
     }
 
+    /**
+     * オーディオを再生する
+     */
     play(){
         let i, j, k;
         let self = this;
@@ -128,6 +241,10 @@ class AudioSrc {
             }
         }
     }
+
+    /**
+     * オーディオの再生を止める
+     */
     stop(){
         this.bufferSource[this.activeBufferSource].stop(0);
         this.playnow = false;
