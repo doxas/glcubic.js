@@ -1,5 +1,21 @@
 
+/**
+ * gl3Mesh
+ * @class
+ */
 export default class gl3Mesh {
+    /**
+     * 板ポリゴンの頂点情報を生成する
+     * @param {number} width - 板ポリゴンの一辺の幅
+     * @param {number} height - 板ポリゴンの一辺の高さ
+     * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
     static plane(width, height, color){
         let w, h;
         w = width / 2;
@@ -39,6 +55,21 @@ export default class gl3Mesh {
         ];
         return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
+
+    /**
+     * トーラスの頂点情報を生成する
+     * @param {number} row - 輪の分割数
+     * @param {number} column - パイプ断面の分割数
+     * @param {number} irad - パイプ断面の半径
+     * @param {number} orad - パイプ全体の半径
+     * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
     static torus(row, column, irad, orad, color){
         let i, j;
         let pos = [], nor = [],
@@ -73,6 +104,20 @@ export default class gl3Mesh {
         }
         return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
+
+    /**
+     * 球体の頂点情報を生成する
+     * @param {number} row - 球の縦方向（緯度方向）の分割数
+     * @param {number} column - 球の横方向（経度方向）の分割数
+     * @param {number} rad - 球の半径
+     * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
     static sphere(row, column, rad, color){
         let i, j;
         let pos = [], nor = [],
@@ -103,6 +148,18 @@ export default class gl3Mesh {
         }
         return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
+
+    /**
+     * キューブの頂点情報を生成する
+     * @param {number} side - 正立方体の一辺の長さ
+     * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線 ※キューブの中心から各頂点に向かって伸びるベクトルなので注意
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
     static cube(side, color){
         let hs = side * 0.5;
         let pos = [
@@ -113,13 +170,14 @@ export default class gl3Mesh {
              hs, -hs, -hs,  hs,  hs, -hs,  hs,  hs,  hs,  hs, -hs,  hs,
             -hs, -hs, -hs, -hs, -hs,  hs, -hs,  hs,  hs, -hs,  hs, -hs
         ];
+        let v = 1.0 / Math.sqrt(3.0);
         let nor = [
-            -1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0,  1.0,  1.0,
-            -1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
-            -1.0,  1.0, -1.0, -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0,
-            -1.0, -1.0, -1.0,  1.0, -1.0, -1.0,  1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
-             1.0, -1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0,  1.0,
-            -1.0, -1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0
+            -v, -v,  v,  v, -v,  v,  v,  v,  v, -v,  v,  v,
+            -v, -v, -v, -v,  v, -v,  v,  v, -v,  v, -v, -v,
+            -v,  v, -v, -v,  v,  v,  v,  v,  v,  v,  v, -v,
+            -v, -v, -v,  v, -v, -v,  v, -v,  v, -v, -v,  v,
+             v, -v, -v,  v,  v, -v,  v,  v,  v,  v, -v,  v,
+            -v, -v, -v, -v, -v,  v, -v,  v,  v, -v,  v, -v
         ];
         let col = [];
         for(let i = 0; i < pos.length / 3; i++){
