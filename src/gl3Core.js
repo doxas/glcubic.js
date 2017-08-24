@@ -180,7 +180,7 @@ export default class gl3 {
     /**
      * gl.drawElements をコールするラッパー
      * @param {number} primitive - プリミティブタイプ
-     * @param {number} vertexCount - 描画するインデックスの個数
+     * @param {number} indexLength - 描画するインデックスの個数
      * @param {number} [offset=0] - 描画するインデックスの開始オフセット
      */
     drawElements(primitive, indexLength, offset = 0){
@@ -190,7 +190,7 @@ export default class gl3 {
     /**
      * gl.drawElements をコールするラッパー（gl.UNSIGNED_INT） ※要拡張機能（WebGL 1.0）
      * @param {number} primitive - プリミティブタイプ
-     * @param {number} vertexCount - 描画するインデックスの個数
+     * @param {number} indexLength - 描画するインデックスの個数
      * @param {number} [offset=0] - 描画するインデックスの開始オフセット
      */
     drawElementsInt(primitive, indexLength, offset = 0){
@@ -271,7 +271,7 @@ export default class gl3 {
 
     /**
      * オブジェクトを元にテクスチャを生成して返す
-     * @param {string} source - ロード済みの Image オブジェクトや Canvas オブジェクト
+     * @param {object} object - ロード済みの Image オブジェクトや Canvas オブジェクト
      * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
      */
     createTextureFromObject(object, number){
@@ -647,7 +647,7 @@ export default class gl3 {
 class ProgramManager {
     /**
      * @constructor
-     * @param {WebGLRenderingContext}
+     * @param {WebGLRenderingContext} gl - 自身が属する WebGL Rendering Context
      */
     constructor(gl){
         /**

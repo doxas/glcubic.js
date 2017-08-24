@@ -68,7 +68,7 @@ export default class gl3Audio {
      * ファイルをロードする
      * @param {string} path - オーディオファイルのパス
      * @param {number} index - 内部プロパティの配列に格納するインデックス
-     * @param {boolean} bool - ループ再生を設定するかどうか
+     * @param {boolean} loop - ループ再生を設定するかどうか
      * @param {boolean} background - BGM として設定するかどうか
      * @param {function} callback - 読み込みと初期化が完了したあと呼ばれるコールバック
      */
@@ -95,6 +95,7 @@ export default class gl3Audio {
 
     /**
      * ロードの完了をチェックする
+     * @return {boolean} ロードが完了しているかどうか
      */
     loadComplete(){
         let i, f;
@@ -167,12 +168,12 @@ class AudioSrc {
         this.update = false;
         /**
          * BGM かどうかを示すフラグ
-         * @param {boolean}
+         * @type {boolean}
          */
         this.background = background;
         /**
          * スクリプトプロセッサーノード
-         * {ScriptProcessorNode}
+         * @type {ScriptProcessorNode}
          */
         this.node = this.ctx.createScriptProcessor(2048, 1, 1);
         /**
