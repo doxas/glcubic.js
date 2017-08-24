@@ -1,5 +1,17 @@
 
+/**
+ * gl3Util
+ * @class gl3Util
+ */
 export default class gl3Util {
+    /**
+     * HSV カラーを生成して配列で返す
+     * @param {number} h - 色相
+     * @param {number} s - 彩度
+     * @param {number} v - 明度
+     * @param {number} a - アルファ
+     * @return {Array.<number>} RGBA を 0.0 から 1.0 の範囲に正規化した色の配列
+     */
     static hsva(h, s, v, a){
         if(s > 1 || v > 1 || a > 1){return;}
         let th = h % 360;
@@ -19,12 +31,24 @@ export default class gl3Util {
         }
         return color;
     }
+    /**
+     * イージング
+     * @param {number} t - 0.0 から 1.0 の値
+     */
     static easeLiner(t){
         return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
     }
+    /**
+     * イージング
+     * @param {number} t - 0.0 から 1.0 の値
+     */
     static easeOutCubic(t){
         return (t = t / 1 - 1) * t * t + 1;
     }
+    /**
+     * イージング
+     * @param {number} t - 0.0 から 1.0 の値
+     */
     static easeQuintic(t){
         let ts = (t = t / 1) * t;
         let tc = ts * t;
