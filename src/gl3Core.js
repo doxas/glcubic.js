@@ -3,6 +3,7 @@ import audio from './gl3Audio.js';
 import math  from './gl3Math.js';
 import mesh  from './gl3Mesh.js';
 import util  from './gl3Util.js';
+import gui   from './gl3Gui.js';
 
 /**
  * glcubic
@@ -91,6 +92,11 @@ export default class gl3 {
          * @type {gl3Util}
          */
         this.Util = util;
+        /**
+         * gl3Gui クラスのインスタンス
+         * @type {gl3Gui}
+         */
+        this.Gui = new gui();
         /**
          * gl3Math クラスのインスタンス
          * @type {gl3Math}

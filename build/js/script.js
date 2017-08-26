@@ -40,6 +40,26 @@
         audio.load('sound/amairo.mp3', 0, true, true, () => {
             gl3.createTextureFromFile('image/sample.jpg', 0, shaderLoader);
         });
+
+        // element
+        let wrapper = new gl3.Gui.Wrapper().getElement();
+        document.body.appendChild(wrapper);
+
+        let slider = new gl3.Gui.Slider('test', 50, 0, 100, 1);
+        slider.add('input', (eve, self) => {console.log(self.getValue());});
+        wrapper.appendChild(slider.getElement());
+
+        let check = new gl3.Gui.Checkbox('hoge', false);
+        check.add('change', (eve, self) => {console.log(self.getValue());});
+        wrapper.appendChild(check.getElement());
+
+        let select = new gl3.Gui.Select('fuga', ['foo', 'baa'], 0);
+        select.add('change', (eve, self) => {console.log(self.getValue());});
+        wrapper.appendChild(select.getElement());
+
+        let spin = new gl3.Gui.Spin('hoge', 0.0, -1.0, 1.0, 0.1);
+        spin.add('input', (eve, self) => {console.log(self.getValue());});
+        wrapper.appendChild(spin.getElement());
     }, false);
 
     function shaderLoader(){

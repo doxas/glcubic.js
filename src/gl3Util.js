@@ -56,4 +56,3 @@ export default class gl3Util {
     }
 }
 
-
