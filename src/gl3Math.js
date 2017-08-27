@@ -523,15 +523,31 @@ class Vec2 {
     static create(){
         return new Float32Array(2);
     }
+    /**
+     * ベクトルの長さ（大きさ）を返す
+     * @param {Float32Array.<Vec2>} v - 2 つの要素を持つベクトル
+     * @return {number} ベクトルの長さ（大きさ）
+     */
     static length(v){
         return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
     }
+    /**
+     * 2 つの座標（始点・終点）を結ぶベクトルを返す
+     * @param {Float32Array.<Vec2>} v0 - 2 つの要素を持つ始点座標
+     * @param {Float32Array.<Vec2>} v1 - 2 つの要素を持つ終点座標
+     * @return {Float32Array.<Vec2>} 視点と終点を結ぶベクトル
+     */
     static distance(v0, v1){
         let n = Vec2.create();
         n[0] = v1[0] - v0[0];
         n[1] = v1[1] - v0[1];
         return n;
     }
+    /**
+     * ベクトルを正規化した結果を返す
+     * @param {Float32Array.<Vec2>} v - 2 つの要素を持つベクトル
+     * @return {Float32Array.<Vec2>} 正規化したベクトル
+     */
     static normalize(v){
         let n = Vec2.create();
         let l = Vec2.length(v);
@@ -542,9 +558,21 @@ class Vec2 {
         }
         return n;
     }
+    /**
+     * 2 つのベクトルの内積の結果を返す
+     * @param {Float32Array.<Vec2>} v0 - 2 つの要素を持つベクトル
+     * @param {Float32Array.<Vec2>} v1 - 2 つの要素を持つベクトル
+     * @return {number} 内積の結果
+     */
     static dot(v0, v1){
         return v0[0] * v1[0] + v0[1] * v1[1];
     }
+    /**
+     * 2 つのベクトルの外積の結果を返す
+     * @param {Float32Array.<Vec2>} v0 - 2 つの要素を持つベクトル
+     * @param {Float32Array.<Vec2>} v1 - 2 つの要素を持つベクトル
+     * @return {Float32Array.<Vec2>} 外積の結果
+     */
     static cross(v0, v1){
         let n = Vec2.create();
         return v0[0] * v1[1] - v0[1] * v1[0];
@@ -557,62 +585,109 @@ class Vec2 {
  */
 class Qtn {
     /**
-     * 4 つの要素からなるクォータニオンのデータ構造を生成する
+     * 4 つの要素からなるクォータニオンのデータ構造を生成する（虚部 x, y, z, 実部 w の順序で定義）
      * @return {Float32Array} クォータニオンデータ格納用の配列
      */
     static create(){
         return new Float32Array(4);
     }
+    /**
+     * クォータニオンを初期化する（参照に注意）
+     * @param {Float32Array.<Qtn>} dest - 初期化するクォータニオン
+     * @return {Float32Array.<Qtn>} 結果のクォータニオン
+     */
     static identity(dest){
         dest[0] = 0; dest[1] = 0; dest[2] = 0; dest[3] = 1;
         return dest;
     }
+    /**
+     * 共役四元数を生成して返す（参照に注意・戻り値としても結果を返す）
+     * @param {Float32Array.<Qtn>} qtn - 元となるクォータニオン
+     * @param {Float32Array.<Qtn>} [dest] - 結果を格納するクォータニオン
+     * @return {Float32Array.<Qtn>} 結果のクォータニオン
+     */
     static inverse(qtn, dest){
-        dest[0] = -qtn[0];
-        dest[1] = -qtn[1];
-        dest[2] = -qtn[2];
-        dest[3] =  qtn[3];
-        return dest;
+        let out = dest;
+        if(dest == null){out = Qtn.create();}
+        out[0] = -qtn[0];
+        out[1] = -qtn[1];
+        out[2] = -qtn[2];
+        out[3] =  qtn[3];
+        return out;
     }
+    /**
+     * 虚部を正規化して返す（参照に注意）
+     * @param {Float32Array.<Qtn>} qtn - 元となるクォータニオン
+     * @return {Float32Array.<Qtn>} 結果のクォータニオン
+     */
     static normalize(dest){
-        let x = dest[0], y = dest[1], z = dest[2], w = dest[3];
-        let l = Math.sqrt(x * x + y * y + z * z + w * w);
+        let x = dest[0], y = dest[1], z = dest[2];
+        let l = Math.sqrt(x * x + y * y + z * z);
         if(l === 0){
             dest[0] = 0;
             dest[1] = 0;
             dest[2] = 0;
-            dest[3] = 0;
         }else{
             l = 1 / l;
             dest[0] = x * l;
             dest[1] = y * l;
             dest[2] = z * l;
-            dest[3] = w * l;
         }
         return dest;
     }
-    static multiply(qtn1, qtn2, dest){
-        let ax = qtn1[0], ay = qtn1[1], az = qtn1[2], aw = qtn1[3];
-        let bx = qtn2[0], by = qtn2[1], bz = qtn2[2], bw = qtn2[3];
-        dest[0] = ax * bw + aw * bx + ay * bz - az * by;
-        dest[1] = ay * bw + aw * by + az * bx - ax * bz;
-        dest[2] = az * bw + aw * bz + ax * by - ay * bx;
-        dest[3] = aw * bw - ax * bx - ay * by - az * bz;
-        return dest;
+    /**
+     * クォータニオンを乗算した結果を返す（参照に注意・戻り値としても結果を返す）
+     * @param {Float32Array.<Qtn>} qtn0 - 乗算されるクォータニオン
+     * @param {Float32Array.<Qtn>} qtn1 - 乗算するクォータニオン
+     * @param {Float32Array.<Qtn>} [dest] - 結果を格納するクォータニオン
+     * @return {Float32Array.<Qtn>} 結果のクォータニオン
+     */
+    static multiply(qtn0, qtn1, dest){
+        let out = dest;
+        if(dest == null){out = Qtn.create();}
+        let ax = qtn0[0], ay = qtn0[1], az = qtn0[2], aw = qtn0[3];
+        let bx = qtn1[0], by = qtn1[1], bz = qtn1[2], bw = qtn1[3];
+        out[0] = ax * bw + aw * bx + ay * bz - az * by;
+        out[1] = ay * bw + aw * by + az * bx - ax * bz;
+        out[2] = az * bw + aw * bz + ax * by - ay * bx;
+        out[3] = aw * bw - ax * bx - ay * by - az * bz;
+        return out;
     }
+    /**
+     * クォータニオンに回転を適用し返す（参照に注意・戻り値としても結果を返す）
+     * @param {number} angle - 回転する量（ラジアン）
+     * @param {Array.<number>} axis - 3 つの要素を持つ軸ベクトル
+     * @param {Float32Array.<Qtn>} [dest] - 結果を格納するクォータニオン
+     * @return {Float32Array.<Qtn>} 結果のクォータニオン
+     */
     static rotate(angle, axis, dest){
-        let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
-        if(!sq){return null;}
+        let out = dest;
+        if(dest == null){out = Qtn.create();}
         let a = axis[0], b = axis[1], c = axis[2];
-        if(sq != 1){sq = 1 / sq; a *= sq; b *= sq; c *= sq;}
+        let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+        if(sq !== 0){
+            let l = 1 / sq;
+            a *= l;
+            b *= l;
+            c *= l;
+        }
         let s = Math.sin(angle * 0.5);
-        dest[0] = a * s;
-        dest[1] = b * s;
-        dest[2] = c * s;
-        dest[3] = Math.cos(angle * 0.5);
-        return dest;
+        out[0] = a * s;
+        out[1] = b * s;
+        out[2] = c * s;
+        out[3] = Math.cos(angle * 0.5);
+        return out;
     }
+    /**
+     * ベクトルにクォータニオンを適用し返す（参照に注意・戻り値としても結果を返す）
+     * @param {Array.<number>} vec - 3 つの要素を持つベクトル
+     * @param {Float32Array.<Qtn>} qtn - クォータニオン
+     * @param {Array.<number>} [dest] - 3 つの要素を持つベクトル
+     * @return {Array.<number>} 結果のベクトル
+     */
     static toVecIII(vec, qtn, dest){
+        let out = dest;
+        if(dest == null){out = [0.0, 0.0, 0.0];}
         let qp = Qtn.create();
         let qq = Qtn.create();
         let qr = Qtn.create();
@@ -622,62 +697,80 @@ class Qtn {
         qp[2] = vec[2];
         Qtn.multiply(qr, qp, qq);
         Qtn.multiply(qq, qtn, qr);
-        dest[0] = qr[0];
-        dest[1] = qr[1];
-        dest[2] = qr[2];
-        return dest;
+        out[0] = qr[0];
+        out[1] = qr[1];
+        out[2] = qr[2];
+        return out;
     }
+    /**
+     * 4x4 行列にクォータニオンを適用し返す（参照に注意・戻り値としても結果を返す）
+     * @param {Float32Array.<Qtn>} qtn - クォータニオン
+     * @param {Float32Array.<Mat4>} [dest] - 4x4 行列
+     * @return {Float32Array.<Mat4>} 結果の行列
+     */
     static toMatIV(qtn, dest){
+        let out = dest;
+        if(dest == null){out = Mat4.create();}
         let x = qtn[0], y = qtn[1], z = qtn[2], w = qtn[3];
         let x2 = x + x, y2 = y + y, z2 = z + z;
         let xx = x * x2, xy = x * y2, xz = x * z2;
         let yy = y * y2, yz = y * z2, zz = z * z2;
         let wx = w * x2, wy = w * y2, wz = w * z2;
-        dest[0]  = 1 - (yy + zz);
-        dest[1]  = xy - wz;
-        dest[2]  = xz + wy;
-        dest[3]  = 0;
-        dest[4]  = xy + wz;
-        dest[5]  = 1 - (xx + zz);
-        dest[6]  = yz - wx;
-        dest[7]  = 0;
-        dest[8]  = xz - wy;
-        dest[9]  = yz + wx;
-        dest[10] = 1 - (xx + yy);
-        dest[11] = 0;
-        dest[12] = 0;
-        dest[13] = 0;
-        dest[14] = 0;
-        dest[15] = 1;
-        return dest;
+        out[0]  = 1 - (yy + zz);
+        out[1]  = xy - wz;
+        out[2]  = xz + wy;
+        out[3]  = 0;
+        out[4]  = xy + wz;
+        out[5]  = 1 - (xx + zz);
+        out[6]  = yz - wx;
+        out[7]  = 0;
+        out[8]  = xz - wy;
+        out[9]  = yz + wx;
+        out[10] = 1 - (xx + yy);
+        out[11] = 0;
+        out[12] = 0;
+        out[13] = 0;
+        out[14] = 0;
+        out[15] = 1;
+        return out;
     }
-    static slerp(qtn1, qtn2, time, dest){
-        let ht = qtn1[0] * qtn2[0] + qtn1[1] * qtn2[1] + qtn1[2] * qtn2[2] + qtn1[3] * qtn2[3];
+    /**
+     * 2 つのクォータニオンの球面線形補間を行った結果を返す（参照に注意・戻り値としても結果を返す）
+     * @param {Float32Array.<Qtn>} qtn0 - クォータニオン
+     * @param {Float32Array.<Qtn>} qtn1 - クォータニオン
+     * @param {number} time - 補間係数（0.0 から 1.0 で指定）
+     * @param {Float32Array.<Qtn>} [dest] - 結果を格納するクォータニオン
+     * @return {Float32Array.<Qtn>} 結果のクォータニオン
+     */
+    static slerp(qtn0, qtn1, time, dest){
+        let out = dest;
+        if(dest == null){out = Qtn.create();}
+        let ht = qtn0[0] * qtn1[0] + qtn0[1] * qtn1[1] + qtn0[2] * qtn1[2] + qtn0[3] * qtn1[3];
         let hs = 1.0 - ht * ht;
         if(hs <= 0.0){
-            dest[0] = qtn1[0];
-            dest[1] = qtn1[1];
-            dest[2] = qtn1[2];
-            dest[3] = qtn1[3];
+            out[0] = qtn0[0];
+            out[1] = qtn0[1];
+            out[2] = qtn0[2];
+            out[3] = qtn0[3];
         }else{
             hs = Math.sqrt(hs);
             if(Math.abs(hs) < 0.0001){
-                dest[0] = (qtn1[0] * 0.5 + qtn2[0] * 0.5);
-                dest[1] = (qtn1[1] * 0.5 + qtn2[1] * 0.5);
-                dest[2] = (qtn1[2] * 0.5 + qtn2[2] * 0.5);
-                dest[3] = (qtn1[3] * 0.5 + qtn2[3] * 0.5);
+                out[0] = (qtn0[0] * 0.5 + qtn1[0] * 0.5);
+                out[1] = (qtn0[1] * 0.5 + qtn1[1] * 0.5);
+                out[2] = (qtn0[2] * 0.5 + qtn1[2] * 0.5);
+                out[3] = (qtn0[3] * 0.5 + qtn1[3] * 0.5);
             }else{
                 let ph = Math.acos(ht);
                 let pt = ph * time;
                 let t0 = Math.sin(ph - pt) / hs;
                 let t1 = Math.sin(pt) / hs;
-                dest[0] = qtn1[0] * t0 + qtn2[0] * t1;
-                dest[1] = qtn1[1] * t0 + qtn2[1] * t1;
-                dest[2] = qtn1[2] * t0 + qtn2[2] * t1;
-                dest[3] = qtn1[3] * t0 + qtn2[3] * t1;
+                out[0] = qtn0[0] * t0 + qtn1[0] * t1;
+                out[1] = qtn0[1] * t0 + qtn1[1] * t1;
+                out[2] = qtn0[2] * t0 + qtn1[2] * t1;
+                out[3] = qtn0[3] * t0 + qtn1[3] * t1;
             }
         }
-        return dest;
+        return out;
     }
 }
 
