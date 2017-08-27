@@ -34,6 +34,7 @@ export default class gl3Util {
     /**
      * イージング
      * @param {number} t - 0.0 から 1.0 の値
+     * @return {number} イージングした結果
      */
     static easeLiner(t){
         return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
@@ -41,6 +42,7 @@ export default class gl3Util {
     /**
      * イージング
      * @param {number} t - 0.0 から 1.0 の値
+     * @return {number} イージングした結果
      */
     static easeOutCubic(t){
         return (t = t / 1 - 1) * t * t + 1;
@@ -48,6 +50,7 @@ export default class gl3Util {
     /**
      * イージング
      * @param {number} t - 0.0 から 1.0 の値
+     * @return {number} イージングした結果
      */
     static easeQuintic(t){
         let ts = (t = t / 1) * t;
