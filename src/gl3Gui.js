@@ -108,7 +108,7 @@ class GUIWrapper {
 class GUIElement {
     /**
      * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * @param {string} [text=''] - エレメントに設定するテキスト
      */
     constructor(text = ''){
         /**
@@ -174,8 +174,8 @@ class GUIElement {
      */
     add(type, func){
         if(this.control == null || type == null || func == null){return;}
-        if(Object.prototype.toString.call(type) !== '[object String]'){return}
-        if(Object.prototype.toString.call(func) !== '[object Function]'){return}
+        if(Object.prototype.toString.call(type) !== '[object String]'){return;}
+        if(Object.prototype.toString.call(func) !== '[object Function]'){return;}
         this.listeners[type] = func;
     }
     /**
@@ -212,7 +212,7 @@ class GUIElement {
     }
     /**
      * コントロールエレメントを返す
-     * @return {HTMLDivElement}
+     * @return {HTMLElement}
      */
     getControl(){
         return this.control;
@@ -240,10 +240,18 @@ class GUIElement {
 class GUISlider extends GUIElement {
     /**
      * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * @param {string} [text=''] - エレメントに設定するテキスト
+     * @param {number} [value=0] - コントロールに設定する値
+     * @param {number} [min=0] - スライダーの最小値
+     * @param {number} [max=100] - スライダーの最大値
+     * @param {number} [step=1] - スライダーのステップ数
      */
     constructor(text = '', value = 0, min = 0, max = 100, step = 1){
         super(text);
+        /**
+         * コントロールエレメント
+         * @param {HTMLInputElement}
+         */
         this.control = document.createElement('input');
         this.control.setAttribute('type', 'range');
         this.control.setAttribute('min', min);
@@ -263,12 +271,24 @@ class GUISlider extends GUIElement {
             this.setValue(this.control.value);
         }, false);
     }
+    /**
+     * スライダーの最小値をセットする
+     * @param {number} min - 最小値に設定する値
+     */
     setMin(min){
         this.control.setAttribute('min', min);
     }
+    /**
+     * スライダーの最大値をセットする
+     * @param {number} max - 最大値に設定する値
+     */
     setMax(max){
         this.control.setAttribute('max', max);
     }
+    /**
+     * スライダーのステップ数をセットする
+     * @param {number} step - ステップ数に設定する値
+     */
     setStep(step){
         this.control.setAttribute('step', step);
     }
@@ -281,10 +301,15 @@ class GUISlider extends GUIElement {
 class GUICheckbox extends GUIElement {
     /**
      * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * @param {string} [text=''] - エレメントに設定するテキスト
+     * @param {boolean} [checked=false] - コントロールに設定する値
      */
     constructor(text = '', checked = false){
         super(text);
+        /**
+         * コントロールエレメント
+         * @param {HTMLInputElement}
+         */
         this.control = document.createElement('input');
         this.control.setAttribute('type', 'checkbox');
         this.control.checked = checked;
@@ -301,10 +326,18 @@ class GUICheckbox extends GUIElement {
             this.setValue(this.control.checked);
         }, false);
     }
+    /**
+     * コントロールに値を設定する
+     * @param {boolean} checked - コントロールに設定する値
+     */
     setValue(checked){
         this.value.textContent = checked;
         this.control.checked = checked;
     }
+    /**
+     * コントロールの値を返す
+     * @return {boolean} コントロールの値
+     */
     getValue(){
         return this.control.checked;
     }
@@ -317,10 +350,16 @@ class GUICheckbox extends GUIElement {
 class GUISelect extends GUIElement {
     /**
      * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * @param {string} [text=''] - エレメントに設定するテキスト
+     * @param {Array.<string>} [list=[]] - リストに登録するアイテムを指定する文字列の配列
+     * @param {number} [selectedIndex=0] - コントロールで選択するインデックス
      */
     constructor(text = '', list = [], selectedIndex = 0){
         super(text);
+        /**
+         * コントロールエレメント
+         * @param {HTMLSelectElement}
+         */
         this.control = document.createElement('select');
         list.map((v) => {
             let opt = new Option(v, v);
@@ -341,9 +380,17 @@ class GUISelect extends GUIElement {
             this.setValue(this.control.value);
         }, false);
     }
+    /**
+     * コントロールで選択するインデックスを指定する
+     * @param {number} index - 指定するインデックス
+     */
     setSelectedIndex(index){
         this.control.selectedIndex = index;
     }
+    /**
+     * コントロールが現在選択しているインデックスを返す
+     * @return {number} 現在選択しているインデックス
+     */
     getSelectedIndex(){
         return this.control.selectedIndex;
     }
@@ -356,10 +403,18 @@ class GUISelect extends GUIElement {
 class GUISpin extends GUIElement {
     /**
      * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * @param {string} [text=''] - エレメントに設定するテキスト
+     * @param {number} [value=0.0] - コントロールに設定する値
+     * @param {number} [min=-1.0] - スピンする際の最小値
+     * @param {number} [max=1.0] - スピンする際の最大値
+     * @param {number} [step=0.1] - スピンするステップ数
      */
     constructor(text = '', value = 0.0, min = -1.0, max = 1.0, step = 0.1){
         super(text);
+        /**
+         * コントロールエレメント
+         * @param {HTMLInputElement}
+         */
         this.control = document.createElement('input');
         this.control.setAttribute('type', 'number');
         this.control.setAttribute('min', min);
@@ -379,12 +434,24 @@ class GUISpin extends GUIElement {
             this.setValue(this.control.value);
         }, false);
     }
+    /**
+     * スピンの最小値を設定する
+     * @param {number} min - 設定する最小値
+     */
     setMin(min){
         this.control.setAttribute('min', min);
     }
+    /**
+     * スピンの最大値を設定する
+     * @param {number} max - 設定する最大値
+     */
     setMax(max){
         this.control.setAttribute('max', max);
     }
+    /**
+     * スピンのステップ数を設定する
+     * @param {number} step - 設定するステップ数
+     */
     setStep(step){
         this.control.setAttribute('step', step);
     }
@@ -397,20 +464,33 @@ class GUISpin extends GUIElement {
 class GUIColor extends GUIElement {
     /**
      * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * @param {string} [text=''] - エレメントに設定するテキスト
+     * @param {string} [value='#000000'] - コントロールに設定する値
      */
     constructor(text = '', value = '#000000'){
         super(text);
+        /**
+         * コントロールを包むコンテナエレメント
+         * @type {HTMLDivElement}
+         */
         this.container = document.createElement('div');
         this.container.style.lineHeight = '0';
         this.container.style.margin = '2px auto';
         this.container.style.width = '100px';
+        /**
+         * 余白兼選択カラー表示エレメント
+         * @type {HTMLDivElement}
+         */
         this.label = document.createElement('div');
         this.label.style.margin = '0px';
         this.label.style.width = 'calc(100% - 2px)';
         this.label.style.height = '24px';
         this.label.style.border = '1px solid whitesmoke';
         this.label.style.boxShadow = '0px 0px 0px 1px #222';
+        /**
+         * コントロールエレメントの役割を担う canvas
+         * @type {HTMLCanvasElement}
+         */
         this.control = document.createElement('canvas');
         this.control.style.margin = '0px';
         this.control.style.display = 'none';
@@ -422,7 +502,10 @@ class GUIColor extends GUIElement {
         this.container.appendChild(this.label);
         this.container.appendChild(this.control);
 
-        // canvas
+        /**
+         * コントロール用 canvas の 2d コンテキスト
+         * @type {CanvasRenderingContext2D}
+         */
         this.ctx = this.control.getContext('2d');
         let grad = this.ctx.createLinearGradient(0, 0, this.control.width, 0);
         let arr = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ff0000'];
@@ -438,6 +521,12 @@ class GUIColor extends GUIElement {
         }
         this.ctx.fillStyle = grad;
         this.ctx.fillRect(0, 0, this.control.width, this.control.height);
+
+        /**
+         * 自身に設定されている色を表す文字列の値
+         * @type {string}
+         */
+        this.colorValue = value;
 
         // set
         this.setValue(value);
@@ -462,23 +551,45 @@ class GUIColor extends GUIElement {
             this.emit('change', eve);
         }, false);
     }
+    /**
+     * 自身のプロパティに色を設定する
+     * @param {string} value - CSS 色表現のうち 16 進数表記のもの
+     */
     setValue(value){
         this.value.textContent = value;
         this.colorValue = value;
         this.container.style.backgroundColor = this.colorValue;
     }
+    /**
+     * 自身に設定されている色を表す文字列を返す
+     * @return {string} 16 進数表記の色を表す文字列
+     */
     getValue(){
         return this.colorValue;
     }
+    /**
+     * 自身に設定されている色を表す文字列を 0.0 から 1.0 の値に変換し配列で返す
+     * @return {Array.<number>} 浮動小数で表現した色の値の配列
+     */
     getFloatValue(){
         return this.getColorFloatArray(this.colorValue);
     }
+    /**
+     * canvas.imageData から取得する数値の配列を元に 16 進数表記文字列を生成して返す
+     * @param {Array.<number>} color - 最低でも 3 つの要素を持つ数値の配列
+     * @return {string} 16 進数表記の色の値の文字列
+     */
     getColor8bitString(color){
         let r = this.zeroPadding(color[0].toString(16), 2);
         let g = this.zeroPadding(color[1].toString(16), 2);
         let b = this.zeroPadding(color[2].toString(16), 2);
         return '#' + r + g + b;
     }
+    /**
+     * 16 進数表記の色表現文字列を元に 0.0 から 1.0 の値に変換した配列を生成し返す
+     * @param {string} color - 16 進数表記の色の値の文字列
+     * @return {Array.<number>} RGB の 3 つの値を 0.0 から 1.0 に変換した値の配列
+     */
     getColorFloatArray(color){
         if(color == null || Object.prototype.toString.call(color) !== '[object String]'){return null;}
         if(color.search(/^#+[\d|a-f|A-F]+$/) === -1){return null;}
@@ -491,6 +602,12 @@ class GUIColor extends GUIElement {
             parseInt(color.substr(1 + t * 2, t), 16) / 255
         ];
     }
+    /**
+     * 数値を指定された桁数に整形した文字列を返す
+     * @param {number} number - 整形したい数値
+     * @param {number} count - 整形する桁数
+     * @return {string} 16 進数表記の色の値の文字列
+     */
     zeroPadding(number, count){
         let a = new Array(count).join('0');
         return (a + number).slice(-count);

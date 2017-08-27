@@ -376,7 +376,7 @@ var AudioSrc = function () {
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -422,43 +422,43 @@ var gl3Gui =
  * @constructor
  */
 function gl3Gui() {
-    _classCallCheck(this, gl3Gui);
+  _classCallCheck(this, gl3Gui);
 
-    /**
-     * GUIWrapper
-     * @type {GUIWrapper}
-     */
-    this.Wrapper = GUIWrapper;
-    /**
-     * GUIElement
-     * @type {GUIElement}
-     */
-    this.Element = GUIElement;
-    /**
-     * GUISlider
-     * @type {GUISlider}
-     */
-    this.Slider = GUISlider;
-    /**
-     * GUICheckbox
-     * @type {GUICheckbox}
-     */
-    this.Checkbox = GUICheckbox;
-    /**
-     * GUISelect
-     * @type {GUISelect}
-     */
-    this.Select = GUISelect;
-    /**
-     * GUISpin
-     * @type {GUISpin}
-     */
-    this.Spin = GUISpin;
-    /**
-     * GUIColor
-     * @type {GUIColor}
-     */
-    this.Color = GUIColor;
+  /**
+   * GUIWrapper
+   * @type {GUIWrapper}
+   */
+  this.Wrapper = GUIWrapper;
+  /**
+   * GUIElement
+   * @type {GUIElement}
+   */
+  this.Element = GUIElement;
+  /**
+   * GUISlider
+   * @type {GUISlider}
+   */
+  this.Slider = GUISlider;
+  /**
+   * GUICheckbox
+   * @type {GUICheckbox}
+   */
+  this.Checkbox = GUICheckbox;
+  /**
+   * GUISelect
+   * @type {GUISelect}
+   */
+  this.Select = GUISelect;
+  /**
+   * GUISpin
+   * @type {GUISpin}
+   */
+  this.Spin = GUISpin;
+  /**
+   * GUIColor
+   * @type {GUIColor}
+   */
+  this.Color = GUIColor;
 };
 
 /**
@@ -470,37 +470,37 @@ function gl3Gui() {
 exports.default = gl3Gui;
 
 var GUIWrapper = function () {
-    /**
-     * @constructor
-     */
-    function GUIWrapper() {
-        _classCallCheck(this, GUIWrapper);
+  /**
+   * @constructor
+   */
+  function GUIWrapper() {
+    _classCallCheck(this, GUIWrapper);
 
-        /**
-         * GUI 全体を包むラッパー DOM
-         * @type {HTMLDivElement}
-         */
-        this.element = document.createElement('div');
-        this.element.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
-        this.element.style.position = 'absolute';
-        this.element.style.top = '0px';
-        this.element.style.right = '0px';
-        this.element.style.height = '100%';
+    /**
+     * GUI 全体を包むラッパー DOM
+     * @type {HTMLDivElement}
+     */
+    this.element = document.createElement('div');
+    this.element.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
+    this.element.style.position = 'absolute';
+    this.element.style.top = '0px';
+    this.element.style.right = '0px';
+    this.element.style.height = '100%';
+  }
+  /**
+   * エレメントを返す
+   * @return {HTMLDivElement}
+   */
+
+
+  _createClass(GUIWrapper, [{
+    key: 'getElement',
+    value: function getElement() {
+      return this.element;
     }
-    /**
-     * エレメントを返す
-     * @return {HTMLDivElement}
-     */
+  }]);
 
-
-    _createClass(GUIWrapper, [{
-        key: 'getElement',
-        value: function getElement() {
-            return this.element;
-        }
-    }]);
-
-    return GUIWrapper;
+  return GUIWrapper;
 }();
 
 /**
@@ -510,173 +510,173 @@ var GUIWrapper = function () {
 
 
 var GUIElement = function () {
+  /**
+   * @constructor
+   * @param {string} [text=''] - エレメントに設定するテキスト
+   */
+  function GUIElement() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+    _classCallCheck(this, GUIElement);
+
     /**
-     * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * エレメントラッパー DOM
+     * @type {HTMLDivElement}
      */
-    function GUIElement() {
-        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    this.element = document.createElement('div');
+    this.element.style.fontSize = 'small';
+    this.element.style.textAlign = 'center';
+    this.element.style.width = '270px';
+    this.element.style.height = '30px';
+    this.element.style.lineHeight = '30px';
+    this.element.style.display = 'flex';
+    this.element.style.flexDirection = 'row';
+    this.element.style.justifyContent = 'flex-start';
+    /**
+     * ラベル用エレメント DOM
+     * @type {HTMLSpanElement}
+     */
+    this.label = document.createElement('span');
+    this.label.textContent = text;
+    this.label.style.color = '#222';
+    this.label.style.textShadow = '0px 0px 5px white';
+    this.label.style.display = 'inline-block';
+    this.label.style.margin = 'auto 5px';
+    this.label.style.width = '50px';
+    this.label.style.overflow = 'hidden';
+    this.element.appendChild(this.label);
+    /**
+     * 値表示用 DOM
+     * @type {HTMLSpanElement}
+     */
+    this.value = document.createElement('span');
+    this.value.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
+    this.value.style.color = 'whitesmoke';
+    this.value.style.fontSize = 'x-small';
+    this.value.style.textShadow = '0px 0px 5px black';
+    this.value.style.display = 'inline-block';
+    this.value.style.margin = 'auto 5px';
+    this.value.style.width = '50px';
+    this.value.style.overflow = 'hidden';
+    this.element.appendChild(this.value);
+    /**
+     * コントロール DOM
+     * @type {HTMLElement}
+     */
+    this.control = null;
+    /**
+     * ラベルに設定するテキスト
+     * @type {string}
+     */
+    this.text = text;
+    /**
+     * イベントリスナ
+     * @type {object}
+     */
+    this.listeners = {};
+  }
+  /**
+   * イベントリスナを登録する
+   * @param {string} type - イベントタイプ
+   * @param {function} func - 登録する関数
+   */
 
-        _classCallCheck(this, GUIElement);
 
-        /**
-         * エレメントラッパー DOM
-         * @type {HTMLDivElement}
-         */
-        this.element = document.createElement('div');
-        this.element.style.fontSize = 'small';
-        this.element.style.textAlign = 'center';
-        this.element.style.width = '270px';
-        this.element.style.height = '30px';
-        this.element.style.lineHeight = '30px';
-        this.element.style.display = 'flex';
-        this.element.style.flexDirection = 'row';
-        this.element.style.justifyContent = 'flex-start';
-        /**
-         * ラベル用エレメント DOM
-         * @type {HTMLSpanElement}
-         */
-        this.label = document.createElement('span');
-        this.label.textContent = text;
-        this.label.style.color = '#222';
-        this.label.style.textShadow = '0px 0px 5px white';
-        this.label.style.display = 'inline-block';
-        this.label.style.margin = 'auto 5px';
-        this.label.style.width = '50px';
-        this.label.style.overflow = 'hidden';
-        this.element.appendChild(this.label);
-        /**
-         * 値表示用 DOM
-         * @type {HTMLSpanElement}
-         */
-        this.value = document.createElement('span');
-        this.value.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
-        this.value.style.color = 'whitesmoke';
-        this.value.style.fontSize = 'x-small';
-        this.value.style.textShadow = '0px 0px 5px black';
-        this.value.style.display = 'inline-block';
-        this.value.style.margin = 'auto 5px';
-        this.value.style.width = '50px';
-        this.value.style.overflow = 'hidden';
-        this.element.appendChild(this.value);
-        /**
-         * コントロール DOM
-         * @type {HTMLElement}
-         */
-        this.control = null;
-        /**
-         * ラベルに設定するテキスト
-         * @type {string}
-         */
-        this.text = text;
-        /**
-         * イベントリスナ
-         * @type {object}
-         */
-        this.listeners = {};
+  _createClass(GUIElement, [{
+    key: 'add',
+    value: function add(type, func) {
+      if (this.control == null || type == null || func == null) {
+        return;
+      }
+      if (Object.prototype.toString.call(type) !== '[object String]') {
+        return;
+      }
+      if (Object.prototype.toString.call(func) !== '[object Function]') {
+        return;
+      }
+      this.listeners[type] = func;
     }
     /**
-     * イベントリスナを登録する
-     * @param {string} type - イベントタイプ
-     * @param {function} func - 登録する関数
+     * イベントを発火する
+     * @param {string} type - 発火するイベントタイプ
+     * @param {Event} eve - Event オブジェクト
      */
 
+  }, {
+    key: 'emit',
+    value: function emit(type, eve) {
+      if (this.control == null || !this.listeners.hasOwnProperty(type)) {
+        return;
+      }
+      this.listeners[type](eve, this);
+    }
+    /**
+     * イベントリスナを登録解除する
+     */
 
-    _createClass(GUIElement, [{
-        key: 'add',
-        value: function add(type, func) {
-            if (this.control == null || type == null || func == null) {
-                return;
-            }
-            if (Object.prototype.toString.call(type) !== '[object String]') {
-                return;
-            }
-            if (Object.prototype.toString.call(func) !== '[object Function]') {
-                return;
-            }
-            this.listeners[type] = func;
-        }
-        /**
-         * イベントを発火する
-         * @param {string} type - 発火するイベントタイプ
-         * @param {Event} eve - Event オブジェクト
-         */
+  }, {
+    key: 'remove',
+    value: function remove() {
+      if (this.control == null || !this.listeners.hasOwnProperty(type)) {
+        return;
+      }
+      this.listeners[type] = null;
+      delete this.listeners[type];
+    }
+    /**
+     * ラベルテキストとコントロールの値を更新する
+     * @param {mixed} value - 設定する値
+     */
 
-    }, {
-        key: 'emit',
-        value: function emit(type, eve) {
-            if (this.control == null || !this.listeners.hasOwnProperty(type)) {
-                return;
-            }
-            this.listeners[type](eve, this);
-        }
-        /**
-         * イベントリスナを登録解除する
-         */
+  }, {
+    key: 'setValue',
+    value: function setValue(value) {
+      this.value.textContent = value;
+      this.control.value = value;
+    }
+    /**
+     * コントロールに設定されている値を返す
+     * @return {mixed} コントロールに設定されている値
+     */
 
-    }, {
-        key: 'remove',
-        value: function remove() {
-            if (this.control == null || !this.listeners.hasOwnProperty(type)) {
-                return;
-            }
-            this.listeners[type] = null;
-            delete this.listeners[type];
-        }
-        /**
-         * ラベルテキストとコントロールの値を更新する
-         * @param {mixed} value - 設定する値
-         */
+  }, {
+    key: 'getValue',
+    value: function getValue() {
+      return this.control.value;
+    }
+    /**
+     * コントロールエレメントを返す
+     * @return {HTMLElement}
+     */
 
-    }, {
-        key: 'setValue',
-        value: function setValue(value) {
-            this.value.textContent = value;
-            this.control.value = value;
-        }
-        /**
-         * コントロールに設定されている値を返す
-         * @return {mixed} コントロールに設定されている値
-         */
+  }, {
+    key: 'getControl',
+    value: function getControl() {
+      return this.control;
+    }
+    /**
+     * ラベルに設定されているテキストを返す
+     * @return {string} ラベルに設定されている値
+     */
 
-    }, {
-        key: 'getValue',
-        value: function getValue() {
-            return this.control.value;
-        }
-        /**
-         * コントロールエレメントを返す
-         * @return {HTMLDivElement}
-         */
+  }, {
+    key: 'getText',
+    value: function getText() {
+      return this.text;
+    }
+    /**
+     * エレメントを返す
+     * @return {HTMLDivElement}
+     */
 
-    }, {
-        key: 'getControl',
-        value: function getControl() {
-            return this.control;
-        }
-        /**
-         * ラベルに設定されているテキストを返す
-         * @return {string} ラベルに設定されている値
-         */
+  }, {
+    key: 'getElement',
+    value: function getElement() {
+      return this.element;
+    }
+  }]);
 
-    }, {
-        key: 'getText',
-        value: function getText() {
-            return this.text;
-        }
-        /**
-         * エレメントを返す
-         * @return {HTMLDivElement}
-         */
-
-    }, {
-        key: 'getElement',
-        value: function getElement() {
-            return this.element;
-        }
-    }]);
-
-    return GUIElement;
+  return GUIElement;
 }();
 
 /**
@@ -686,62 +686,85 @@ var GUIElement = function () {
 
 
 var GUISlider = function (_GUIElement) {
-    _inherits(GUISlider, _GUIElement);
+  _inherits(GUISlider, _GUIElement);
+
+  /**
+   * @constructor
+   * @param {string} [text=''] - エレメントに設定するテキスト
+   * @param {number} [value=0] - コントロールに設定する値
+   * @param {number} [min=0] - スライダーの最小値
+   * @param {number} [max=100] - スライダーの最大値
+   * @param {number} [step=1] - スライダーのステップ数
+   */
+  function GUISlider() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var min = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var max = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 100;
+    var step = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+
+    _classCallCheck(this, GUISlider);
 
     /**
-     * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * コントロールエレメント
+     * @param {HTMLInputElement}
      */
-    function GUISlider() {
-        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-        var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-        var min = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-        var max = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 100;
-        var step = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+    var _this = _possibleConstructorReturn(this, (GUISlider.__proto__ || Object.getPrototypeOf(GUISlider)).call(this, text));
 
-        _classCallCheck(this, GUISlider);
+    _this.control = document.createElement('input');
+    _this.control.setAttribute('type', 'range');
+    _this.control.setAttribute('min', min);
+    _this.control.setAttribute('max', max);
+    _this.control.setAttribute('step', step);
+    _this.control.value = value;
+    _this.control.style.margin = 'auto';
+    _this.control.style.verticalAlign = 'middle';
+    _this.element.appendChild(_this.control);
 
-        var _this = _possibleConstructorReturn(this, (GUISlider.__proto__ || Object.getPrototypeOf(GUISlider)).call(this, text));
+    // set
+    _this.setValue(_this.control.value);
 
-        _this.control = document.createElement('input');
-        _this.control.setAttribute('type', 'range');
-        _this.control.setAttribute('min', min);
-        _this.control.setAttribute('max', max);
-        _this.control.setAttribute('step', step);
-        _this.control.value = value;
-        _this.control.style.margin = 'auto';
-        _this.control.style.verticalAlign = 'middle';
-        _this.element.appendChild(_this.control);
+    // event
+    _this.control.addEventListener('input', function (eve) {
+      _this.emit('input', eve);
+      _this.setValue(_this.control.value);
+    }, false);
+    return _this;
+  }
+  /**
+   * スライダーの最小値をセットする
+   * @param {number} min - 最小値に設定する値
+   */
 
-        // set
-        _this.setValue(_this.control.value);
 
-        // event
-        _this.control.addEventListener('input', function (eve) {
-            _this.emit('input', eve);
-            _this.setValue(_this.control.value);
-        }, false);
-        return _this;
+  _createClass(GUISlider, [{
+    key: 'setMin',
+    value: function setMin(min) {
+      this.control.setAttribute('min', min);
     }
+    /**
+     * スライダーの最大値をセットする
+     * @param {number} max - 最大値に設定する値
+     */
 
-    _createClass(GUISlider, [{
-        key: 'setMin',
-        value: function setMin(min) {
-            this.control.setAttribute('min', min);
-        }
-    }, {
-        key: 'setMax',
-        value: function setMax(max) {
-            this.control.setAttribute('max', max);
-        }
-    }, {
-        key: 'setStep',
-        value: function setStep(step) {
-            this.control.setAttribute('step', step);
-        }
-    }]);
+  }, {
+    key: 'setMax',
+    value: function setMax(max) {
+      this.control.setAttribute('max', max);
+    }
+    /**
+     * スライダーのステップ数をセットする
+     * @param {number} step - ステップ数に設定する値
+     */
 
-    return GUISlider;
+  }, {
+    key: 'setStep',
+    value: function setStep(step) {
+      this.control.setAttribute('step', step);
+    }
+  }]);
+
+  return GUISlider;
 }(GUIElement);
 
 /**
@@ -751,52 +774,67 @@ var GUISlider = function (_GUIElement) {
 
 
 var GUICheckbox = function (_GUIElement2) {
-    _inherits(GUICheckbox, _GUIElement2);
+  _inherits(GUICheckbox, _GUIElement2);
+
+  /**
+   * @constructor
+   * @param {string} [text=''] - エレメントに設定するテキスト
+   * @param {boolean} [checked=false] - コントロールに設定する値
+   */
+  function GUICheckbox() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var checked = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    _classCallCheck(this, GUICheckbox);
 
     /**
-     * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * コントロールエレメント
+     * @param {HTMLInputElement}
      */
-    function GUICheckbox() {
-        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-        var checked = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var _this2 = _possibleConstructorReturn(this, (GUICheckbox.__proto__ || Object.getPrototypeOf(GUICheckbox)).call(this, text));
 
-        _classCallCheck(this, GUICheckbox);
+    _this2.control = document.createElement('input');
+    _this2.control.setAttribute('type', 'checkbox');
+    _this2.control.checked = checked;
+    _this2.control.style.margin = 'auto';
+    _this2.control.style.verticalAlign = 'middle';
+    _this2.element.appendChild(_this2.control);
 
-        var _this2 = _possibleConstructorReturn(this, (GUICheckbox.__proto__ || Object.getPrototypeOf(GUICheckbox)).call(this, text));
+    // set
+    _this2.setValue(_this2.control.checked);
 
-        _this2.control = document.createElement('input');
-        _this2.control.setAttribute('type', 'checkbox');
-        _this2.control.checked = checked;
-        _this2.control.style.margin = 'auto';
-        _this2.control.style.verticalAlign = 'middle';
-        _this2.element.appendChild(_this2.control);
+    // event
+    _this2.control.addEventListener('change', function (eve) {
+      _this2.emit('change', eve);
+      _this2.setValue(_this2.control.checked);
+    }, false);
+    return _this2;
+  }
+  /**
+   * コントロールに値を設定する
+   * @param {boolean} checked - コントロールに設定する値
+   */
 
-        // set
-        _this2.setValue(_this2.control.checked);
 
-        // event
-        _this2.control.addEventListener('change', function (eve) {
-            _this2.emit('change', eve);
-            _this2.setValue(_this2.control.checked);
-        }, false);
-        return _this2;
+  _createClass(GUICheckbox, [{
+    key: 'setValue',
+    value: function setValue(checked) {
+      this.value.textContent = checked;
+      this.control.checked = checked;
     }
+    /**
+     * コントロールの値を返す
+     * @return {boolean} コントロールの値
+     */
 
-    _createClass(GUICheckbox, [{
-        key: 'setValue',
-        value: function setValue(checked) {
-            this.value.textContent = checked;
-            this.control.checked = checked;
-        }
-    }, {
-        key: 'getValue',
-        value: function getValue() {
-            return this.control.checked;
-        }
-    }]);
+  }, {
+    key: 'getValue',
+    value: function getValue() {
+      return this.control.checked;
+    }
+  }]);
 
-    return GUICheckbox;
+  return GUICheckbox;
 }(GUIElement);
 
 /**
@@ -806,56 +844,72 @@ var GUICheckbox = function (_GUIElement2) {
 
 
 var GUISelect = function (_GUIElement3) {
-    _inherits(GUISelect, _GUIElement3);
+  _inherits(GUISelect, _GUIElement3);
+
+  /**
+   * @constructor
+   * @param {string} [text=''] - エレメントに設定するテキスト
+   * @param {Array.<string>} [list=[]] - リストに登録するアイテムを指定する文字列の配列
+   * @param {number} [selectedIndex=0] - コントロールで選択するインデックス
+   */
+  function GUISelect() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var list = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var selectedIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+    _classCallCheck(this, GUISelect);
 
     /**
-     * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * コントロールエレメント
+     * @param {HTMLSelectElement}
      */
-    function GUISelect() {
-        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-        var list = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-        var selectedIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var _this3 = _possibleConstructorReturn(this, (GUISelect.__proto__ || Object.getPrototypeOf(GUISelect)).call(this, text));
 
-        _classCallCheck(this, GUISelect);
+    _this3.control = document.createElement('select');
+    list.map(function (v) {
+      var opt = new Option(v, v);
+      _this3.control.add(opt);
+    });
+    _this3.control.selectedIndex = selectedIndex;
+    _this3.control.style.width = '130px';
+    _this3.control.style.margin = 'auto';
+    _this3.control.style.verticalAlign = 'middle';
+    _this3.element.appendChild(_this3.control);
 
-        var _this3 = _possibleConstructorReturn(this, (GUISelect.__proto__ || Object.getPrototypeOf(GUISelect)).call(this, text));
+    // set
+    _this3.setValue(_this3.control.value);
 
-        _this3.control = document.createElement('select');
-        list.map(function (v) {
-            var opt = new Option(v, v);
-            _this3.control.add(opt);
-        });
-        _this3.control.selectedIndex = selectedIndex;
-        _this3.control.style.width = '130px';
-        _this3.control.style.margin = 'auto';
-        _this3.control.style.verticalAlign = 'middle';
-        _this3.element.appendChild(_this3.control);
+    // event
+    _this3.control.addEventListener('change', function (eve) {
+      _this3.emit('change', eve);
+      _this3.setValue(_this3.control.value);
+    }, false);
+    return _this3;
+  }
+  /**
+   * コントロールで選択するインデックスを指定する
+   * @param {number} index - 指定するインデックス
+   */
 
-        // set
-        _this3.setValue(_this3.control.value);
 
-        // event
-        _this3.control.addEventListener('change', function (eve) {
-            _this3.emit('change', eve);
-            _this3.setValue(_this3.control.value);
-        }, false);
-        return _this3;
+  _createClass(GUISelect, [{
+    key: 'setSelectedIndex',
+    value: function setSelectedIndex(index) {
+      this.control.selectedIndex = index;
     }
+    /**
+     * コントロールが現在選択しているインデックスを返す
+     * @return {number} 現在選択しているインデックス
+     */
 
-    _createClass(GUISelect, [{
-        key: 'setSelectedIndex',
-        value: function setSelectedIndex(index) {
-            this.control.selectedIndex = index;
-        }
-    }, {
-        key: 'getSelectedIndex',
-        value: function getSelectedIndex() {
-            return this.control.selectedIndex;
-        }
-    }]);
+  }, {
+    key: 'getSelectedIndex',
+    value: function getSelectedIndex() {
+      return this.control.selectedIndex;
+    }
+  }]);
 
-    return GUISelect;
+  return GUISelect;
 }(GUIElement);
 
 /**
@@ -865,62 +919,85 @@ var GUISelect = function (_GUIElement3) {
 
 
 var GUISpin = function (_GUIElement4) {
-    _inherits(GUISpin, _GUIElement4);
+  _inherits(GUISpin, _GUIElement4);
+
+  /**
+   * @constructor
+   * @param {string} [text=''] - エレメントに設定するテキスト
+   * @param {number} [value=0.0] - コントロールに設定する値
+   * @param {number} [min=-1.0] - スピンする際の最小値
+   * @param {number} [max=1.0] - スピンする際の最大値
+   * @param {number} [step=0.1] - スピンするステップ数
+   */
+  function GUISpin() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
+    var min = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : -1.0;
+    var max = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1.0;
+    var step = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.1;
+
+    _classCallCheck(this, GUISpin);
 
     /**
-     * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * コントロールエレメント
+     * @param {HTMLInputElement}
      */
-    function GUISpin() {
-        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-        var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
-        var min = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : -1.0;
-        var max = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1.0;
-        var step = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.1;
+    var _this4 = _possibleConstructorReturn(this, (GUISpin.__proto__ || Object.getPrototypeOf(GUISpin)).call(this, text));
 
-        _classCallCheck(this, GUISpin);
+    _this4.control = document.createElement('input');
+    _this4.control.setAttribute('type', 'number');
+    _this4.control.setAttribute('min', min);
+    _this4.control.setAttribute('max', max);
+    _this4.control.setAttribute('step', step);
+    _this4.control.value = value;
+    _this4.control.style.margin = 'auto';
+    _this4.control.style.verticalAlign = 'middle';
+    _this4.element.appendChild(_this4.control);
 
-        var _this4 = _possibleConstructorReturn(this, (GUISpin.__proto__ || Object.getPrototypeOf(GUISpin)).call(this, text));
+    // set
+    _this4.setValue(_this4.control.value);
 
-        _this4.control = document.createElement('input');
-        _this4.control.setAttribute('type', 'number');
-        _this4.control.setAttribute('min', min);
-        _this4.control.setAttribute('max', max);
-        _this4.control.setAttribute('step', step);
-        _this4.control.value = value;
-        _this4.control.style.margin = 'auto';
-        _this4.control.style.verticalAlign = 'middle';
-        _this4.element.appendChild(_this4.control);
+    // event
+    _this4.control.addEventListener('input', function (eve) {
+      _this4.emit('input', eve);
+      _this4.setValue(_this4.control.value);
+    }, false);
+    return _this4;
+  }
+  /**
+   * スピンの最小値を設定する
+   * @param {number} min - 設定する最小値
+   */
 
-        // set
-        _this4.setValue(_this4.control.value);
 
-        // event
-        _this4.control.addEventListener('input', function (eve) {
-            _this4.emit('input', eve);
-            _this4.setValue(_this4.control.value);
-        }, false);
-        return _this4;
+  _createClass(GUISpin, [{
+    key: 'setMin',
+    value: function setMin(min) {
+      this.control.setAttribute('min', min);
     }
+    /**
+     * スピンの最大値を設定する
+     * @param {number} max - 設定する最大値
+     */
 
-    _createClass(GUISpin, [{
-        key: 'setMin',
-        value: function setMin(min) {
-            this.control.setAttribute('min', min);
-        }
-    }, {
-        key: 'setMax',
-        value: function setMax(max) {
-            this.control.setAttribute('max', max);
-        }
-    }, {
-        key: 'setStep',
-        value: function setStep(step) {
-            this.control.setAttribute('step', step);
-        }
-    }]);
+  }, {
+    key: 'setMax',
+    value: function setMax(max) {
+      this.control.setAttribute('max', max);
+    }
+    /**
+     * スピンのステップ数を設定する
+     * @param {number} step - 設定するステップ数
+     */
 
-    return GUISpin;
+  }, {
+    key: 'setStep',
+    value: function setStep(step) {
+      this.control.setAttribute('step', step);
+    }
+  }]);
+
+  return GUISpin;
 }(GUIElement);
 
 /**
@@ -930,133 +1007,189 @@ var GUISpin = function (_GUIElement4) {
 
 
 var GUIColor = function (_GUIElement5) {
-    _inherits(GUIColor, _GUIElement5);
+  _inherits(GUIColor, _GUIElement5);
+
+  /**
+   * @constructor
+   * @param {string} [text=''] - エレメントに設定するテキスト
+   * @param {string} [value='#000000'] - コントロールに設定する値
+   */
+  function GUIColor() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000000';
+
+    _classCallCheck(this, GUIColor);
 
     /**
-     * @constructor
-     * @param {string} text - エレメントに設定するテキスト
+     * コントロールを包むコンテナエレメント
+     * @type {HTMLDivElement}
      */
-    function GUIColor() {
-        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-        var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000000';
+    var _this5 = _possibleConstructorReturn(this, (GUIColor.__proto__ || Object.getPrototypeOf(GUIColor)).call(this, text));
 
-        _classCallCheck(this, GUIColor);
+    _this5.container = document.createElement('div');
+    _this5.container.style.lineHeight = '0';
+    _this5.container.style.margin = '2px auto';
+    _this5.container.style.width = '100px';
+    /**
+     * 余白兼選択カラー表示エレメント
+     * @type {HTMLDivElement}
+     */
+    _this5.label = document.createElement('div');
+    _this5.label.style.margin = '0px';
+    _this5.label.style.width = 'calc(100% - 2px)';
+    _this5.label.style.height = '24px';
+    _this5.label.style.border = '1px solid whitesmoke';
+    _this5.label.style.boxShadow = '0px 0px 0px 1px #222';
+    /**
+     * コントロールエレメントの役割を担う canvas
+     * @type {HTMLCanvasElement}
+     */
+    _this5.control = document.createElement('canvas');
+    _this5.control.style.margin = '0px';
+    _this5.control.style.display = 'none';
+    _this5.control.width = 100;
+    _this5.control.height = 100;
 
-        var _this5 = _possibleConstructorReturn(this, (GUIColor.__proto__ || Object.getPrototypeOf(GUIColor)).call(this, text));
+    // append
+    _this5.element.appendChild(_this5.container);
+    _this5.container.appendChild(_this5.label);
+    _this5.container.appendChild(_this5.control);
 
-        _this5.container = document.createElement('div');
-        _this5.container.style.lineHeight = '0';
-        _this5.container.style.margin = '2px auto';
-        _this5.container.style.width = '100px';
-        _this5.label = document.createElement('div');
-        _this5.label.style.margin = '0px';
-        _this5.label.style.width = 'calc(100% - 2px)';
-        _this5.label.style.height = '24px';
-        _this5.label.style.border = '1px solid whitesmoke';
-        _this5.label.style.boxShadow = '0px 0px 0px 1px #222';
-        _this5.control = document.createElement('canvas');
-        _this5.control.style.margin = '0px';
-        _this5.control.style.display = 'none';
-        _this5.control.width = 100;
-        _this5.control.height = 100;
-
-        // append
-        _this5.element.appendChild(_this5.container);
-        _this5.container.appendChild(_this5.label);
-        _this5.container.appendChild(_this5.control);
-
-        // canvas
-        _this5.ctx = _this5.control.getContext('2d');
-        var grad = _this5.ctx.createLinearGradient(0, 0, _this5.control.width, 0);
-        var arr = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ff0000'];
-        for (var i = 0, j = arr.length; i < j; ++i) {
-            grad.addColorStop(i / (j - 1), arr[i]);
-        }
-        _this5.ctx.fillStyle = grad;
-        _this5.ctx.fillRect(0, 0, _this5.control.width, _this5.control.height);
-        grad = _this5.ctx.createLinearGradient(0, 0, 0, _this5.control.height);
-        arr = ['rgba(255, 255, 255, 1.0)', 'rgba(255, 255, 255, 0.0)', 'rgba(0, 0, 0, 0.0)', 'rgba(0, 0, 0, 1.0)'];
-        for (var _i = 0, _j = arr.length; _i < _j; ++_i) {
-            grad.addColorStop(_i / (_j - 1), arr[_i]);
-        }
-        _this5.ctx.fillStyle = grad;
-        _this5.ctx.fillRect(0, 0, _this5.control.width, _this5.control.height);
-
-        // set
-        _this5.setValue(value);
-
-        // event
-        _this5.container.addEventListener('mouseover', function () {
-            _this5.control.style.display = 'block';
-        });
-        _this5.container.addEventListener('mouseout', function () {
-            _this5.control.style.display = 'none';
-        });
-        _this5.control.addEventListener('mousemove', function (eve) {
-            var imageData = _this5.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
-            var color = _this5.getColor8bitString(imageData.data);
-            _this5.setValue(color);
-        });
-
-        _this5.control.addEventListener('click', function (eve) {
-            var imageData = _this5.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
-            eve.currentTarget.value = _this5.getColor8bitString(imageData.data);
-            _this5.control.style.display = 'none';
-            _this5.emit('change', eve);
-        }, false);
-        return _this5;
+    /**
+     * コントロール用 canvas の 2d コンテキスト
+     * @type {CanvasRenderingContext2D}
+     */
+    _this5.ctx = _this5.control.getContext('2d');
+    var grad = _this5.ctx.createLinearGradient(0, 0, _this5.control.width, 0);
+    var arr = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ff0000'];
+    for (var i = 0, j = arr.length; i < j; ++i) {
+      grad.addColorStop(i / (j - 1), arr[i]);
     }
+    _this5.ctx.fillStyle = grad;
+    _this5.ctx.fillRect(0, 0, _this5.control.width, _this5.control.height);
+    grad = _this5.ctx.createLinearGradient(0, 0, 0, _this5.control.height);
+    arr = ['rgba(255, 255, 255, 1.0)', 'rgba(255, 255, 255, 0.0)', 'rgba(0, 0, 0, 0.0)', 'rgba(0, 0, 0, 1.0)'];
+    for (var _i = 0, _j = arr.length; _i < _j; ++_i) {
+      grad.addColorStop(_i / (_j - 1), arr[_i]);
+    }
+    _this5.ctx.fillStyle = grad;
+    _this5.ctx.fillRect(0, 0, _this5.control.width, _this5.control.height);
 
-    _createClass(GUIColor, [{
-        key: 'setValue',
-        value: function setValue(value) {
-            this.value.textContent = value;
-            this.colorValue = value;
-            this.container.style.backgroundColor = this.colorValue;
-        }
-    }, {
-        key: 'getValue',
-        value: function getValue() {
-            return this.colorValue;
-        }
-    }, {
-        key: 'getFloatValue',
-        value: function getFloatValue() {
-            return this.getColorFloatArray(this.colorValue);
-        }
-    }, {
-        key: 'getColor8bitString',
-        value: function getColor8bitString(color) {
-            var r = this.zeroPadding(color[0].toString(16), 2);
-            var g = this.zeroPadding(color[1].toString(16), 2);
-            var b = this.zeroPadding(color[2].toString(16), 2);
-            return '#' + r + g + b;
-        }
-    }, {
-        key: 'getColorFloatArray',
-        value: function getColorFloatArray(color) {
-            if (color == null || Object.prototype.toString.call(color) !== '[object String]') {
-                return null;
-            }
-            if (color.search(/^#+[\d|a-f|A-F]+$/) === -1) {
-                return null;
-            }
-            var s = color.replace('#', '');
-            if (s.length !== 3 && s.length !== 6) {
-                return null;
-            }
-            var t = s.length / 3;
-            return [parseInt(color.substr(1, t), 16) / 255, parseInt(color.substr(1 + t, t), 16) / 255, parseInt(color.substr(1 + t * 2, t), 16) / 255];
-        }
-    }, {
-        key: 'zeroPadding',
-        value: function zeroPadding(number, count) {
-            var a = new Array(count).join('0');
-            return (a + number).slice(-count);
-        }
-    }]);
+    /**
+     * 自身に設定されている色を表す文字列の値
+     * @type {string}
+     */
+    _this5.colorValue = value;
 
-    return GUIColor;
+    // set
+    _this5.setValue(value);
+
+    // event
+    _this5.container.addEventListener('mouseover', function () {
+      _this5.control.style.display = 'block';
+    });
+    _this5.container.addEventListener('mouseout', function () {
+      _this5.control.style.display = 'none';
+    });
+    _this5.control.addEventListener('mousemove', function (eve) {
+      var imageData = _this5.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
+      var color = _this5.getColor8bitString(imageData.data);
+      _this5.setValue(color);
+    });
+
+    _this5.control.addEventListener('click', function (eve) {
+      var imageData = _this5.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
+      eve.currentTarget.value = _this5.getColor8bitString(imageData.data);
+      _this5.control.style.display = 'none';
+      _this5.emit('change', eve);
+    }, false);
+    return _this5;
+  }
+  /**
+   * 自身のプロパティに色を設定する
+   * @param {string} value - CSS 色表現のうち 16 進数表記のもの
+   */
+
+
+  _createClass(GUIColor, [{
+    key: 'setValue',
+    value: function setValue(value) {
+      this.value.textContent = value;
+      this.colorValue = value;
+      this.container.style.backgroundColor = this.colorValue;
+    }
+    /**
+     * 自身に設定されている色を表す文字列を返す
+     * @return {string} 16 進数表記の色を表す文字列
+     */
+
+  }, {
+    key: 'getValue',
+    value: function getValue() {
+      return this.colorValue;
+    }
+    /**
+     * 自身に設定されている色を表す文字列を 0.0 から 1.0 の値に変換し配列で返す
+     * @return {Array.<number>} 浮動小数で表現した色の値の配列
+     */
+
+  }, {
+    key: 'getFloatValue',
+    value: function getFloatValue() {
+      return this.getColorFloatArray(this.colorValue);
+    }
+    /**
+     * canvas.imageData から取得する数値の配列を元に 16 進数表記文字列を生成して返す
+     * @param {Array.<number>} color - 最低でも 3 つの要素を持つ数値の配列
+     * @return {string} 16 進数表記の色の値の文字列
+     */
+
+  }, {
+    key: 'getColor8bitString',
+    value: function getColor8bitString(color) {
+      var r = this.zeroPadding(color[0].toString(16), 2);
+      var g = this.zeroPadding(color[1].toString(16), 2);
+      var b = this.zeroPadding(color[2].toString(16), 2);
+      return '#' + r + g + b;
+    }
+    /**
+     * 16 進数表記の色表現文字列を元に 0.0 から 1.0 の値に変換した配列を生成し返す
+     * @param {string} color - 16 進数表記の色の値の文字列
+     * @return {Array.<number>} RGB の 3 つの値を 0.0 から 1.0 に変換した値の配列
+     */
+
+  }, {
+    key: 'getColorFloatArray',
+    value: function getColorFloatArray(color) {
+      if (color == null || Object.prototype.toString.call(color) !== '[object String]') {
+        return null;
+      }
+      if (color.search(/^#+[\d|a-f|A-F]+$/) === -1) {
+        return null;
+      }
+      var s = color.replace('#', '');
+      if (s.length !== 3 && s.length !== 6) {
+        return null;
+      }
+      var t = s.length / 3;
+      return [parseInt(color.substr(1, t), 16) / 255, parseInt(color.substr(1 + t, t), 16) / 255, parseInt(color.substr(1 + t * 2, t), 16) / 255];
+    }
+    /**
+     * 数値を指定された桁数に整形した文字列を返す
+     * @param {number} number - 整形したい数値
+     * @param {number} count - 整形する桁数
+     * @return {string} 16 進数表記の色の値の文字列
+     */
+
+  }, {
+    key: 'zeroPadding',
+    value: function zeroPadding(number, count) {
+      var a = new Array(count).join('0');
+      return (a + number).slice(-count);
+    }
+  }]);
+
+  return GUIColor;
 }(GUIElement);
 
 /***/ }),
