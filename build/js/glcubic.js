@@ -1280,51 +1280,51 @@ var Mat4 = function () {
         }
         /**
          * 行列を乗算する（参照に注意・戻り値としても結果を返す）
-         * @param {Float32Array.<Mat4>} mat1 - 乗算される行列
-         * @param {Float32Array.<Mat4>} mat2 - 乗算する行列
+         * @param {Float32Array.<Mat4>} mat0 - 乗算される行列
+         * @param {Float32Array.<Mat4>} mat1 - 乗算する行列
          * @param {Float32Array.<Mat4>} [dest] - 乗算結果を格納する行列
          * @return {Float32Array.<Mat4>} 乗算結果の行列
          */
 
     }, {
         key: "multiply",
-        value: function multiply(mat1, mat2, dest) {
+        value: function multiply(mat0, mat1, dest) {
             var out = dest;
             if (dest == null) {
                 out = Mat4.create();
             }
-            var a = mat1[0],
-                b = mat1[1],
-                c = mat1[2],
-                d = mat1[3],
-                e = mat1[4],
-                f = mat1[5],
-                g = mat1[6],
-                h = mat1[7],
-                i = mat1[8],
-                j = mat1[9],
-                k = mat1[10],
-                l = mat1[11],
-                m = mat1[12],
-                n = mat1[13],
-                o = mat1[14],
-                p = mat1[15],
-                A = mat2[0],
-                B = mat2[1],
-                C = mat2[2],
-                D = mat2[3],
-                E = mat2[4],
-                F = mat2[5],
-                G = mat2[6],
-                H = mat2[7],
-                I = mat2[8],
-                J = mat2[9],
-                K = mat2[10],
-                L = mat2[11],
-                M = mat2[12],
-                N = mat2[13],
-                O = mat2[14],
-                P = mat2[15];
+            var a = mat0[0],
+                b = mat0[1],
+                c = mat0[2],
+                d = mat0[3],
+                e = mat0[4],
+                f = mat0[5],
+                g = mat0[6],
+                h = mat0[7],
+                i = mat0[8],
+                j = mat0[9],
+                k = mat0[10],
+                l = mat0[11],
+                m = mat0[12],
+                n = mat0[13],
+                o = mat0[14],
+                p = mat0[15],
+                A = mat1[0],
+                B = mat1[1],
+                C = mat1[2],
+                D = mat1[3],
+                E = mat1[4],
+                F = mat1[5],
+                G = mat1[6],
+                H = mat1[7],
+                I = mat1[8],
+                J = mat1[9],
+                K = mat1[10],
+                L = mat1[11],
+                M = mat1[12],
+                N = mat1[13],
+                O = mat1[14],
+                P = mat1[15];
             out[0] = A * a + B * e + C * i + D * m;
             out[1] = A * b + B * f + C * j + D * n;
             out[2] = A * c + B * g + C * k + D * o;
@@ -1811,11 +1811,24 @@ var Vec3 = function () {
         value: function create() {
             return new Float32Array(3);
         }
+        /**
+         * ベクトルの長さ（大きさ）を返す
+         * @param {Float32Array.<Vec3>} v - 3 つの要素を持つベクトル
+         * @return {number} ベクトルの長さ（大きさ）
+         */
+
     }, {
         key: "length",
         value: function length(v) {
             return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         }
+        /**
+         * 2 つの座標（始点・終点）を結ぶベクトルを返す
+         * @param {Float32Array.<Vec3>} v0 - 3 つの要素を持つ始点座標
+         * @param {Float32Array.<Vec3>} v1 - 3 つの要素を持つ終点座標
+         * @return {Float32Array.<Vec3>} 視点と終点を結ぶベクトル
+         */
+
     }, {
         key: "distance",
         value: function distance(v0, v1) {
@@ -1825,6 +1838,12 @@ var Vec3 = function () {
             n[2] = v1[2] - v0[2];
             return n;
         }
+        /**
+         * ベクトルを正規化した結果を返す
+         * @param {Float32Array.<Vec3>} v - 3 つの要素を持つベクトル
+         * @return {Float32Array.<Vec3>} 正規化したベクトル
+         */
+
     }, {
         key: "normalize",
         value: function normalize(v) {
@@ -1835,14 +1854,32 @@ var Vec3 = function () {
                 n[0] = v[0] * e;
                 n[1] = v[1] * e;
                 n[2] = v[2] * e;
+            } else {
+                n[0] = 0.0;
+                n[1] = 0.0;
+                n[2] = 0.0;
             }
             return n;
         }
+        /**
+         * 2 つのベクトルの内積の結果を返す
+         * @param {Float32Array.<Vec3>} v0 - 3 つの要素を持つベクトル
+         * @param {Float32Array.<Vec3>} v1 - 3 つの要素を持つベクトル
+         * @return {number} 内積の結果
+         */
+
     }, {
         key: "dot",
         value: function dot(v0, v1) {
             return v0[0] * v1[0] + v0[1] * v1[1] + v0[2] * v1[2];
         }
+        /**
+         * 2 つのベクトルの外積の結果を返す
+         * @param {Float32Array.<Vec3>} v0 - 3 つの要素を持つベクトル
+         * @param {Float32Array.<Vec3>} v1 - 3 つの要素を持つベクトル
+         * @return {Float32Array.<Vec3>} 外積の結果
+         */
+
     }, {
         key: "cross",
         value: function cross(v0, v1) {
@@ -1852,6 +1889,14 @@ var Vec3 = function () {
             n[2] = v0[0] * v1[1] - v0[1] * v1[0];
             return n;
         }
+        /**
+         * 3 つのベクトルから面法線を求めて返す
+         * @param {Float32Array.<Vec3>} v0 - 3 つの要素を持つベクトル
+         * @param {Float32Array.<Vec3>} v1 - 3 つの要素を持つベクトル
+         * @param {Float32Array.<Vec3>} v2 - 3 つの要素を持つベクトル
+         * @return {Float32Array.<Vec3>} 面法線ベクトル
+         */
+
     }, {
         key: "faceNormal",
         value: function faceNormal(v0, v1, v2) {
