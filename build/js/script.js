@@ -60,6 +60,10 @@
         let spin = new gl3.Gui.Spin('hoge', 0.0, -1.0, 1.0, 0.1);
         spin.add('input', (eve, self) => {console.log(self.getValue());});
         wrapper.appendChild(spin.getElement());
+
+        let color = new gl3.Gui.Color('fuga', '#ff0000');
+        color.add('change', (eve, self) => {console.log(self.getValue(), self.getFloatValue());});
+        wrapper.appendChild(color.getElement());
     }, false);
 
     function shaderLoader(){

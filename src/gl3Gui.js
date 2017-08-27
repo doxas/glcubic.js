@@ -222,26 +222,101 @@ class GUISpin extends GUIElement {
 }
 
 class GUIColor extends GUIElement {
-    constructor(text = '', value = 0.0){
-        // super(text);
-        // this.control = document.createElement('canvas');
-        // this.control.setAttribute('type', 'number');
-        // this.control.setAttribute('min', min);
-        // this.control.setAttribute('max', max);
-        // this.control.setAttribute('step', step);
-        // this.control.value = value;
-        // this.control.style.margin = 'auto';
-        // this.control.style.verticalAlign = 'middle';
-        // this.element.appendChild(this.control);
-        //
-        // // set
-        // this.setValue(this.control.value);
-        //
-        // // event
-        // this.control.addEventListener('click', (eve) => {
-        //     this.emit('input', eve);
-        //     this.setValue(this.control.value);
-        // }, false);
+    constructor(text = '', value = '#000000'){
+        super(text);
+        this.container = document.createElement('div');
+        this.container.style.lineHeight = '0';
+        this.container.style.margin = '2px auto';
+        this.container.style.width = '100px';
+        this.label = document.createElement('div');
+        this.label.style.margin = '0px';
+        this.label.style.width = 'calc(100% - 2px)';
+        this.label.style.height = '24px';
+        this.label.style.border = '1px solid whitesmoke';
+        this.label.style.boxShadow = '0px 0px 0px 1px #222';
+        this.control = document.createElement('canvas');
+        this.control.style.margin = '0px';
+        this.control.style.display = 'none';
+        this.control.width = 100;
+        this.control.height = 100;
+
+        // append
+        this.element.appendChild(this.container);
+        this.container.appendChild(this.label);
+        this.container.appendChild(this.control);
+
+        // canvas
+        this.ctx = this.control.getContext('2d');
+        let grad = this.ctx.createLinearGradient(0, 0, this.control.width, 0);
+        let arr = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ff0000'];
+        for(let i = 0, j = arr.length; i < j; ++i){
+            grad.addColorStop(i / (j - 1), arr[i]);
+        }
+        this.ctx.fillStyle = grad;
+        this.ctx.fillRect(0, 0, this.control.width, this.control.height);
+        grad = this.ctx.createLinearGradient(0, 0, 0, this.control.height);
+        arr = ['rgba(255, 255, 255, 1.0)', 'rgba(255, 255, 255, 0.0)', 'rgba(0, 0, 0, 0.0)', 'rgba(0, 0, 0, 1.0)'];
+        for(let i = 0, j = arr.length; i < j; ++i){
+            grad.addColorStop(i / (j - 1), arr[i]);
+        }
+        this.ctx.fillStyle = grad;
+        this.ctx.fillRect(0, 0, this.control.width, this.control.height);
+
+        // set
+        this.setValue(value);
+
+        // event
+        this.container.addEventListener('mouseover', () => {
+            this.control.style.display = 'block';
+        });
+        this.container.addEventListener('mouseout', () => {
+            this.control.style.display = 'none';
+        });
+        this.control.addEventListener('mousemove', (eve) => {
+            let imageData = this.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
+            let color = this.getColor8bitString(imageData.data);
+            this.setValue(color);
+        });
+
+        this.control.addEventListener('click', (eve) => {
+            let imageData = this.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
+            eve.currentTarget.value = this.getColor8bitString(imageData.data);
+            this.control.style.display = 'none';
+            this.emit('change', eve);
+        }, false);
+    }
+    setValue(value){
+        this.value.textContent = value;
+        this.colorValue = value;
+        this.container.style.backgroundColor = this.colorValue;
+    }
+    getValue(){
+        return this.colorValue;
+    }
+    getFloatValue(){
+        return this.getColorFloatArray(this.colorValue);
+    }
+    getColor8bitString(color){
+        let r = this.zeroPadding(color[0].toString(16), 2);
+        let g = this.zeroPadding(color[1].toString(16), 2);
+        let b = this.zeroPadding(color[2].toString(16), 2);
+        return '#' + r + g + b;
+    }
+    getColorFloatArray(color){
+        if(color == null || Object.prototype.toString.call(color) !== '[object String]'){return null;}
+        if(color.search(/^#+[\d|a-f|A-F]+$/) === -1){return null;}
+        let s = color.replace('#', '');
+        if(s.length !== 3 && s.length !== 6){return null;}
+        let t = s.length / 3;
+        return [
+            parseInt(color.substr(1, t), 16) / 255,
+            parseInt(color.substr(1 + t, t), 16) / 255,
+            parseInt(color.substr(1 + t * 2, t), 16) / 255
+        ];
+    }
+    zeroPadding(number, count){
+        let a = new Array(count).join('0');
+        return (a + number).slice(-count);
     }
 }
 

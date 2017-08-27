@@ -1,1 +1,2891 @@
-!function(e){function t(n){if(r[n])return r[n].exports;var i=r[n]={i:n,l:!1,exports:{}};return e[n].call(i.exports,i,i.exports,t),i.l=!0,i.exports}var r={};t.m=e,t.c=r,t.i=function(e){return e},t.d=function(e,r,n){t.o(e,r)||Object.defineProperty(e,r,{configurable:!1,enumerable:!0,get:n})},t.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(r,"a",r),r},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="./",t(t.s=5)}([function(e,t,r){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var i=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),l=function(){function e(t,r){if(n(this,e),this.ctx=null,this.comp=null,this.bgmGain=null,this.soundGain=null,this.src=null,"undefined"==typeof AudioContext&&"undefined"==typeof webkitAudioContext)throw new Error("not found AudioContext");"undefined"!=typeof AudioContext?this.ctx=new AudioContext:this.ctx=new webkitAudioContext,this.comp=this.ctx.createDynamicsCompressor(),this.comp.connect(this.ctx.destination),this.bgmGain=this.ctx.createGain(),this.bgmGain.connect(this.comp),this.bgmGain.gain.value=t,this.soundGain=this.ctx.createGain(),this.soundGain.connect(this.comp),this.soundGain.gain.value=r,this.src=[]}return i(e,[{key:"load",value:function(e,t,r,n,i){var l=this.ctx,u=n?this.bgmGain:this.soundGain,a=this.src;a[t]=null;var s=new XMLHttpRequest;s.open("GET",e,!0),s.setRequestHeader("Pragma","no-cache"),s.setRequestHeader("Cache-Control","no-cache"),s.responseType="arraybuffer",s.onload=function(){l.decodeAudioData(s.response,function(s){a[t]=new o(l,u,s,r,n),a[t].loaded=!0,console.log("%c◆%c audio number: %c"+t+"%c, audio loaded: %c"+e,"color: crimson","","color: blue","","color: goldenrod"),i()},function(e){console.log(e)})},s.send()}},{key:"loadComplete",value:function(){var e=void 0,t=void 0;for(t=!0,e=0;e<this.src.length;e++)t=t&&null!=this.src[e]&&this.src[e].loaded;return t}}]),e}();t.default=l;var o=function(){function e(t,r,i,l,o){n(this,e),this.ctx=t,this.gain=r,this.audioBuffer=i,this.bufferSource=[],this.activeBufferSource=0,this.loop=l,this.loaded=!1,this.fftLoop=16,this.update=!1,this.background=o,this.node=this.ctx.createScriptProcessor(2048,1,1),this.analyser=this.ctx.createAnalyser(),this.analyser.smoothingTimeConstant=.8,this.analyser.fftSize=2*this.fftLoop,this.onData=new Uint8Array(this.analyser.frequencyBinCount)}return i(e,[{key:"play",value:function(){function e(e){l.update&&(l.update=!1,l.analyser.getByteFrequencyData(l.onData))}var t=this,r=void 0,n=void 0,i=void 0,l=this;if(r=this.bufferSource.length,i=-1,r>0){for(n=0;n<r;n++)if(!this.bufferSource[n].playnow){this.bufferSource[n]=null,this.bufferSource[n]=this.ctx.createBufferSource(),i=n;break}i<0&&(this.bufferSource[this.bufferSource.length]=this.ctx.createBufferSource(),i=this.bufferSource.length-1)}else this.bufferSource[0]=this.ctx.createBufferSource(),i=0;this.activeBufferSource=i,this.bufferSource[i].buffer=this.audioBuffer,this.bufferSource[i].loop=this.loop,this.bufferSource[i].playbackRate.value=1,this.loop||(this.bufferSource[i].onended=function(){t.stop(0),t.playnow=!1}),this.background&&(this.bufferSource[i].connect(this.analyser),this.analyser.connect(this.node),this.node.connect(this.ctx.destination),this.node.onaudioprocess=function(t){e(t)}),this.bufferSource[i].connect(this.gain),this.bufferSource[i].start(0),this.bufferSource[i].playnow=!0}},{key:"stop",value:function(){this.bufferSource[this.activeBufferSource].stop(0),this.playnow=!1}}]),e}()},function(e,t,r){"use strict";function n(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function i(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function l(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var o=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),u=function e(){l(this,e),this.Wrapper=a,this.Element=s,this.Slider=c,this.Checkbox=f,this.Select=h,this.Spin=E,this.Color=d};t.default=u;var a=function(){function e(){l(this,e),this.element=document.createElement("div"),this.element.style.backgroundColor="rgba(64, 64, 64, 0.5)",this.element.style.position="absolute",this.element.style.top="0px",this.element.style.right="0px",this.element.style.height="100%"}return o(e,[{key:"getElement",value:function(){return this.element}}]),e}(),s=function(){function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";l(this,e),this.element=document.createElement("div"),this.element.style.fontSize="small",this.element.style.textAlign="center",this.element.style.width="270px",this.element.style.height="30px",this.element.style.lineHeight="30px",this.element.style.display="flex",this.element.style.flexDirection="row",this.element.style.justifyContent="flex-start",this.text=t,this.label=document.createElement("span"),this.label.textContent=this.text,this.label.style.color="#222",this.label.style.textShadow="0px 0px 5px white",this.label.style.display="inline-block",this.label.style.margin="auto 5px",this.label.style.width="50px",this.label.style.overflow="hidden",this.element.appendChild(this.label),this.value=document.createElement("span"),this.value.style.backgroundColor="rgba(0, 0, 0, 0.25)",this.value.style.color="whitesmoke",this.value.style.fontSize="x-small",this.value.style.textShadow="0px 0px 5px black",this.value.style.display="inline-block",this.value.style.margin="auto 5px",this.value.style.width="50px",this.value.style.overflow="hidden",this.element.appendChild(this.value),this.control=null,this.listeners={}}return o(e,[{key:"add",value:function(e,t){null!=this.control&&null!=e&&null!=t&&"[object String]"===Object.prototype.toString.call(e)&&"[object Function]"===Object.prototype.toString.call(t)&&(this.listeners[e]=t)}},{key:"emit",value:function(e,t){null!=this.control&&this.listeners.hasOwnProperty(e)&&this.listeners[e](t,this)}},{key:"remove",value:function(){null!=this.control&&this.listeners.hasOwnProperty(type)&&(this.listeners[type]=null,delete this.listeners[type])}},{key:"setValue",value:function(e){this.value.textContent=e,this.control.value=e}},{key:"getValue",value:function(){return this.control.value}},{key:"getControl",value:function(){return this.control}},{key:"getText",value:function(){return this.text}},{key:"getElement",value:function(){return this.element}}]),e}(),c=function(e){function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,i=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0,o=arguments.length>3&&void 0!==arguments[3]?arguments[3]:100,u=arguments.length>4&&void 0!==arguments[4]?arguments[4]:1;l(this,t);var a=n(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return a.control=document.createElement("input"),a.control.setAttribute("type","range"),a.control.setAttribute("min",i),a.control.setAttribute("max",o),a.control.setAttribute("step",u),a.control.value=r,a.control.style.margin="auto",a.control.style.verticalAlign="middle",a.element.appendChild(a.control),a.setValue(a.control.value),a.control.addEventListener("input",function(e){a.emit("input",e),a.setValue(a.control.value)},!1),a}return i(t,e),o(t,[{key:"setMin",value:function(e){this.control.setAttribute("min",e)}},{key:"setMax",value:function(e){this.control.setAttribute("max",e)}},{key:"setStep",value:function(e){this.control.setAttribute("step",e)}}]),t}(s),f=function(e){function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",r=arguments.length>1&&void 0!==arguments[1]&&arguments[1];l(this,t);var i=n(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return i.control=document.createElement("input"),i.control.setAttribute("type","checkbox"),i.control.checked=r,i.control.style.margin="auto",i.control.style.verticalAlign="middle",i.element.appendChild(i.control),i.setValue(i.control.checked),i.control.addEventListener("change",function(e){i.emit("change",e),i.setValue(i.control.checked)},!1),i}return i(t,e),o(t,[{key:"setValue",value:function(e){this.value.textContent=e,this.control.checked=e}},{key:"getValue",value:function(){return this.control.checked}}]),t}(s),h=function(e){function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[],i=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0;l(this,t);var o=n(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return o.control=document.createElement("select"),r.map(function(e){var t=new Option(e,e);o.control.add(t)}),o.control.selectedIndex=i,o.control.style.width="130px",o.control.style.margin="auto",o.control.style.verticalAlign="middle",o.element.appendChild(o.control),o.setValue(o.control.value),o.control.addEventListener("change",function(e){o.emit("change",e),o.setValue(o.control.value)},!1),o}return i(t,e),o(t,[{key:"setSelectedIndex",value:function(e){this.control.selectedIndex=e}},{key:"getSelectedIndex",value:function(){return this.control.selectedIndex}}]),t}(s),E=function(e){function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,i=arguments.length>2&&void 0!==arguments[2]?arguments[2]:-1,o=arguments.length>3&&void 0!==arguments[3]?arguments[3]:1,u=arguments.length>4&&void 0!==arguments[4]?arguments[4]:.1;l(this,t);var a=n(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return a.control=document.createElement("input"),a.control.setAttribute("type","number"),a.control.setAttribute("min",i),a.control.setAttribute("max",o),a.control.setAttribute("step",u),a.control.value=r,a.control.style.margin="auto",a.control.style.verticalAlign="middle",a.element.appendChild(a.control),a.setValue(a.control.value),a.control.addEventListener("input",function(e){a.emit("input",e),a.setValue(a.control.value)},!1),a}return i(t,e),o(t,[{key:"setMin",value:function(e){this.control.setAttribute("min",e)}},{key:"setMax",value:function(e){this.control.setAttribute("max",e)}},{key:"setStep",value:function(e){this.control.setAttribute("step",e)}}]),t}(s),d=function(e){function t(){return l(this,t),n(this,(t.__proto__||Object.getPrototypeOf(t)).apply(this,arguments))}return i(t,e),t}(s)},function(e,t,r){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var i=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),l=function e(){n(this,e),this.Mat4=o,this.Vec3=u,this.Vec2=a,this.Qtn=s};t.default=l;var o=function(){function e(){n(this,e)}return i(e,null,[{key:"create",value:function(){return new Float32Array(16)}},{key:"identity",value:function(e){return e[0]=1,e[1]=0,e[2]=0,e[3]=0,e[4]=0,e[5]=1,e[6]=0,e[7]=0,e[8]=0,e[9]=0,e[10]=1,e[11]=0,e[12]=0,e[13]=0,e[14]=0,e[15]=1,e}},{key:"multiply",value:function(e,t,r){var n=e[0],i=e[1],l=e[2],o=e[3],u=e[4],a=e[5],s=e[6],c=e[7],f=e[8],h=e[9],E=e[10],d=e[11],v=e[12],T=e[13],g=e[14],R=e[15],y=t[0],m=t[1],_=t[2],b=t[3],p=t[4],x=t[5],A=t[6],U=t[7],F=t[8],M=t[9],P=t[10],k=t[11],S=t[12],D=t[13],w=t[14],I=t[15];return r[0]=y*n+m*u+_*f+b*v,r[1]=y*i+m*a+_*h+b*T,r[2]=y*l+m*s+_*E+b*g,r[3]=y*o+m*c+_*d+b*R,r[4]=p*n+x*u+A*f+U*v,r[5]=p*i+x*a+A*h+U*T,r[6]=p*l+x*s+A*E+U*g,r[7]=p*o+x*c+A*d+U*R,r[8]=F*n+M*u+P*f+k*v,r[9]=F*i+M*a+P*h+k*T,r[10]=F*l+M*s+P*E+k*g,r[11]=F*o+M*c+P*d+k*R,r[12]=S*n+D*u+w*f+I*v,r[13]=S*i+D*a+w*h+I*T,r[14]=S*l+D*s+w*E+I*g,r[15]=S*o+D*c+w*d+I*R,r}},{key:"scale",value:function(e,t,r){return r[0]=e[0]*t[0],r[1]=e[1]*t[0],r[2]=e[2]*t[0],r[3]=e[3]*t[0],r[4]=e[4]*t[1],r[5]=e[5]*t[1],r[6]=e[6]*t[1],r[7]=e[7]*t[1],r[8]=e[8]*t[2],r[9]=e[9]*t[2],r[10]=e[10]*t[2],r[11]=e[11]*t[2],r[12]=e[12],r[13]=e[13],r[14]=e[14],r[15]=e[15],r}},{key:"translate",value:function(e,t,r){return r[0]=e[0],r[1]=e[1],r[2]=e[2],r[3]=e[3],r[4]=e[4],r[5]=e[5],r[6]=e[6],r[7]=e[7],r[8]=e[8],r[9]=e[9],r[10]=e[10],r[11]=e[11],r[12]=e[0]*t[0]+e[4]*t[1]+e[8]*t[2]+e[12],r[13]=e[1]*t[0]+e[5]*t[1]+e[9]*t[2]+e[13],r[14]=e[2]*t[0]+e[6]*t[1]+e[10]*t[2]+e[14],r[15]=e[3]*t[0]+e[7]*t[1]+e[11]*t[2]+e[15],r}},{key:"rotate",value:function(e,t,r,n){var i=Math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2]);if(!i)return null;var l=r[0],o=r[1],u=r[2];1!=i&&(i=1/i,l*=i,o*=i,u*=i);var a=Math.sin(t),s=Math.cos(t),c=1-s,f=e[0],h=e[1],E=e[2],d=e[3],v=e[4],T=e[5],g=e[6],R=e[7],y=e[8],m=e[9],_=e[10],b=e[11],p=l*l*c+s,x=o*l*c+u*a,A=u*l*c-o*a,U=l*o*c-u*a,F=o*o*c+s,M=u*o*c+l*a,P=l*u*c+o*a,k=o*u*c-l*a,S=u*u*c+s;return t?e!=n&&(n[12]=e[12],n[13]=e[13],n[14]=e[14],n[15]=e[15]):n=e,n[0]=f*p+v*x+y*A,n[1]=h*p+T*x+m*A,n[2]=E*p+g*x+_*A,n[3]=d*p+R*x+b*A,n[4]=f*U+v*F+y*M,n[5]=h*U+T*F+m*M,n[6]=E*U+g*F+_*M,n[7]=d*U+R*F+b*M,n[8]=f*P+v*k+y*S,n[9]=h*P+T*k+m*S,n[10]=E*P+g*k+_*S,n[11]=d*P+R*k+b*S,n}},{key:"lookAt",value:function(t,r,n,i){var l=t[0],o=t[1],u=t[2],a=n[0],s=n[1],c=n[2],f=r[0],h=r[1],E=r[2];if(l==f&&o==h&&u==E)return e.identity(i);var d=void 0,v=void 0,T=void 0,g=void 0,R=void 0,y=void 0,m=void 0,_=void 0,b=void 0,p=void 0;return m=l-r[0],_=o-r[1],b=u-r[2],p=1/Math.sqrt(m*m+_*_+b*b),m*=p,_*=p,b*=p,d=s*b-c*_,v=c*m-a*b,T=a*_-s*m,p=Math.sqrt(d*d+v*v+T*T),p?(p=1/p,d*=p,v*=p,T*=p):(d=0,v=0,T=0),g=_*T-b*v,R=b*d-m*T,y=m*v-_*d,p=Math.sqrt(g*g+R*R+y*y),p?(p=1/p,g*=p,R*=p,y*=p):(g=0,R=0,y=0),i[0]=d,i[1]=g,i[2]=m,i[3]=0,i[4]=v,i[5]=R,i[6]=_,i[7]=0,i[8]=T,i[9]=y,i[10]=b,i[11]=0,i[12]=-(d*l+v*o+T*u),i[13]=-(g*l+R*o+y*u),i[14]=-(m*l+_*o+b*u),i[15]=1,i}},{key:"perspective",value:function(e,t,r,n,i){var l=r*Math.tan(e*Math.PI/360),o=l*t,u=2*o,a=2*l,s=n-r;return i[0]=2*r/u,i[1]=0,i[2]=0,i[3]=0,i[4]=0,i[5]=2*r/a,i[6]=0,i[7]=0,i[8]=0,i[9]=0,i[10]=-(n+r)/s,i[11]=-1,i[12]=0,i[13]=0,i[14]=-n*r*2/s,i[15]=0,i}},{key:"ortho",value:function(e,t,r,n,i,l,o){var u=t-e,a=r-n,s=l-i;return o[0]=2/u,o[1]=0,o[2]=0,o[3]=0,o[4]=0,o[5]=2/a,o[6]=0,o[7]=0,o[8]=0,o[9]=0,o[10]=-2/s,o[11]=0,o[12]=-(e+t)/u,o[13]=-(r+n)/a,o[14]=-(l+i)/s,o[15]=1,o}},{key:"transpose",value:function(e,t){return t[0]=e[0],t[1]=e[4],t[2]=e[8],t[3]=e[12],t[4]=e[1],t[5]=e[5],t[6]=e[9],t[7]=e[13],t[8]=e[2],t[9]=e[6],t[10]=e[10],t[11]=e[14],t[12]=e[3],t[13]=e[7],t[14]=e[11],t[15]=e[15],t}},{key:"inverse",value:function(e,t){var r=e[0],n=e[1],i=e[2],l=e[3],o=e[4],u=e[5],a=e[6],s=e[7],c=e[8],f=e[9],h=e[10],E=e[11],d=e[12],v=e[13],T=e[14],g=e[15],R=r*u-n*o,y=r*a-i*o,m=r*s-l*o,_=n*a-i*u,b=n*s-l*u,p=i*s-l*a,x=c*v-f*d,A=c*T-h*d,U=c*g-E*d,F=f*T-h*v,M=f*g-E*v,P=h*g-E*T,k=1/(R*P-y*M+m*F+_*U-b*A+p*x);return t[0]=(u*P-a*M+s*F)*k,t[1]=(-n*P+i*M-l*F)*k,t[2]=(v*p-T*b+g*_)*k,t[3]=(-f*p+h*b-E*_)*k,t[4]=(-o*P+a*U-s*A)*k,t[5]=(r*P-i*U+l*A)*k,t[6]=(-d*p+T*m-g*y)*k,t[7]=(c*p-h*m+E*y)*k,t[8]=(o*M-u*U+s*x)*k,t[9]=(-r*M+n*U-l*x)*k,t[10]=(d*b-v*m+g*R)*k,t[11]=(-c*b+f*m-E*R)*k,t[12]=(-o*F+u*A-a*x)*k,t[13]=(r*F-n*A+i*x)*k,t[14]=(-d*_+v*y-T*R)*k,t[15]=(c*_-f*y+h*R)*k,t}},{key:"toVecIV",value:function(e,t){var r=e[0],n=e[1],i=e[2],l=e[3],o=e[4],u=e[5],a=e[6],s=e[7],c=e[8],f=e[9],h=e[10],E=e[11],d=e[12],v=e[13],T=e[14],g=e[15],R=t[0],y=t[1],m=t[2],_=t[3],b=[];return b[0]=R*r+y*o+m*c+_*d,b[1]=R*n+y*u+m*f+_*v,b[2]=R*i+y*a+m*h+_*T,b[3]=R*l+y*s+m*E+_*g,b}},{key:"vpFromCameraProperty",value:function(t,r,n,i,l,o,u,a,s,c){e.lookAt(t,r,n,a),e.perspective(i,l,o,u,s),e.multiply(s,a,c)}},{key:"screenPositionFromMvp",value:function(t,r,n,i){var l=.5*n,o=.5*i,u=e.toVecIV(t,[r[0],r[1],r[2],1]);return u[3]<=0?[NaN,NaN]:(u[0]/=u[3],u[1]/=u[3],u[2]/=u[3],[l+u[0]*l,o-u[1]*o])}}]),e}(),u=function(){function e(){n(this,e)}return i(e,null,[{key:"create",value:function(){return new Float32Array(3)}},{key:"length",value:function(e){return Math.sqrt(e[0]*e[0]+e[1]*e[1]+e[2]*e[2])}},{key:"distance",value:function(t,r){var n=e.create();return n[0]=r[0]-t[0],n[1]=r[1]-t[1],n[2]=r[2]-t[2],n}},{key:"normalize",value:function(t){var r=e.create(),n=e.length(t);if(n>0){var i=1/n;r[0]=t[0]*i,r[1]=t[1]*i,r[2]=t[2]*i}return r}},{key:"dot",value:function(e,t){return e[0]*t[0]+e[1]*t[1]+e[2]*t[2]}},{key:"cross",value:function(t,r){var n=e.create();return n[0]=t[1]*r[2]-t[2]*r[1],n[1]=t[2]*r[0]-t[0]*r[2],n[2]=t[0]*r[1]-t[1]*r[0],n}},{key:"faceNormal",value:function(t,r,n){var i=e.create(),l=[r[0]-t[0],r[1]-t[1],r[2]-t[2]],o=[n[0]-t[0],n[1]-t[1],n[2]-t[2]];return i[0]=l[1]*o[2]-l[2]*o[1],i[1]=l[2]*o[0]-l[0]*o[2],i[2]=l[0]*o[1]-l[1]*o[0],e.normalize(i)}}]),e}(),a=function(){function e(){n(this,e)}return i(e,null,[{key:"create",value:function(){return new Float32Array(2)}},{key:"length",value:function(e){return Math.sqrt(e[0]*e[0]+e[1]*e[1])}},{key:"distance",value:function(t,r){var n=e.create();return n[0]=r[0]-t[0],n[1]=r[1]-t[1],n}},{key:"normalize",value:function(t){var r=e.create(),n=e.length(t);if(n>0){var i=1/n;r[0]=t[0]*i,r[1]=t[1]*i}return r}},{key:"dot",value:function(e,t){return e[0]*t[0]+e[1]*t[1]}},{key:"cross",value:function(t,r){e.create();return t[0]*r[1]-t[1]*r[0]}}]),e}(),s=function(){function e(){n(this,e)}return i(e,null,[{key:"create",value:function(){return new Float32Array(4)}},{key:"identity",value:function(e){return e[0]=0,e[1]=0,e[2]=0,e[3]=1,e}},{key:"inverse",value:function(e,t){return t[0]=-e[0],t[1]=-e[1],t[2]=-e[2],t[3]=e[3],t}},{key:"normalize",value:function(e){var t=e[0],r=e[1],n=e[2],i=e[3],l=Math.sqrt(t*t+r*r+n*n+i*i);return 0===l?(e[0]=0,e[1]=0,e[2]=0,e[3]=0):(l=1/l,e[0]=t*l,e[1]=r*l,e[2]=n*l,e[3]=i*l),e}},{key:"multiply",value:function(e,t,r){var n=e[0],i=e[1],l=e[2],o=e[3],u=t[0],a=t[1],s=t[2],c=t[3];return r[0]=n*c+o*u+i*s-l*a,r[1]=i*c+o*a+l*u-n*s,r[2]=l*c+o*s+n*a-i*u,r[3]=o*c-n*u-i*a-l*s,r}},{key:"rotate",value:function(e,t,r){var n=Math.sqrt(t[0]*t[0]+t[1]*t[1]+t[2]*t[2]);if(!n)return null;var i=t[0],l=t[1],o=t[2];1!=n&&(n=1/n,i*=n,l*=n,o*=n);var u=Math.sin(.5*e);return r[0]=i*u,r[1]=l*u,r[2]=o*u,r[3]=Math.cos(.5*e),r}},{key:"toVecIII",value:function(t,r,n){var i=e.create(),l=e.create(),o=e.create();return e.inverse(r,o),i[0]=t[0],i[1]=t[1],i[2]=t[2],e.multiply(o,i,l),e.multiply(l,r,o),n[0]=o[0],n[1]=o[1],n[2]=o[2],n}},{key:"toMatIV",value:function(e,t){var r=e[0],n=e[1],i=e[2],l=e[3],o=r+r,u=n+n,a=i+i,s=r*o,c=r*u,f=r*a,h=n*u,E=n*a,d=i*a,v=l*o,T=l*u,g=l*a;return t[0]=1-(h+d),t[1]=c-g,t[2]=f+T,t[3]=0,t[4]=c+g,t[5]=1-(s+d),t[6]=E-v,t[7]=0,t[8]=f-T,t[9]=E+v,t[10]=1-(s+h),t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}},{key:"slerp",value:function(e,t,r,n){var i=e[0]*t[0]+e[1]*t[1]+e[2]*t[2]+e[3]*t[3],l=1-i*i;if(l<=0)n[0]=e[0],n[1]=e[1],n[2]=e[2],n[3]=e[3];else if(l=Math.sqrt(l),Math.abs(l)<1e-4)n[0]=.5*e[0]+.5*t[0],n[1]=.5*e[1]+.5*t[1],n[2]=.5*e[2]+.5*t[2],n[3]=.5*e[3]+.5*t[3];else{var o=Math.acos(i),u=o*r,a=Math.sin(o-u)/l,s=Math.sin(u)/l;n[0]=e[0]*a+t[0]*s,n[1]=e[1]*a+t[1]*s,n[2]=e[2]*a+t[2]*s,n[3]=e[3]*a+t[3]*s}return n}}]),e}()},function(e,t,r){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var i=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),l=function(){function e(){n(this,e)}return i(e,null,[{key:"plane",value:function(e,t,r){var n=void 0,i=void 0;return n=e/2,i=t/2,tc=r||[1,1,1,1],{position:[-n,i,0,n,i,0,-n,-i,0,n,-i,0],normal:[0,0,1,0,0,1,0,0,1,0,0,1],color:[r[0],r[1],r[2],r[3],r[0],r[1],r[2],r[3],r[0],r[1],r[2],r[3],r[0],r[1],r[2],r[3]],texCoord:[0,0,1,0,0,1,1,1],index:[0,1,2,2,1,3]}}},{key:"torus",value:function(e,t,r,n,i){var l=void 0,o=void 0,u=[],a=[],s=[],c=[],f=[];for(l=0;l<=e;l++){var h=2*Math.PI/e*l,E=Math.cos(h),d=Math.sin(h);for(o=0;o<=t;o++){var v=2*Math.PI/t*o,T=(E*r+n)*Math.cos(v),g=d*r,R=(E*r+n)*Math.sin(v),y=E*Math.cos(v),m=E*Math.sin(v),_=1/t*o,b=1/e*l+.5;b>1&&(b-=1),b=1-b,u.push(T,g,R),a.push(y,d,m),s.push(i[0],i[1],i[2],i[3]),c.push(_,b)}}for(l=0;l<e;l++)for(o=0;o<t;o++){var p=(t+1)*l+o;f.push(p,p+t+1,p+1),f.push(p+t+1,p+t+2,p+1)}return{position:u,normal:a,color:s,texCoord:c,index:f}}},{key:"sphere",value:function(e,t,r,n){var i=void 0,l=void 0,o=[],u=[],a=[],s=[],c=[];for(i=0;i<=e;i++){var f=Math.PI/e*i,h=Math.cos(f),E=Math.sin(f);for(l=0;l<=t;l++){var d=2*Math.PI/t*l,v=E*r*Math.cos(d),T=h*r,g=E*r*Math.sin(d),R=E*Math.cos(d),y=E*Math.sin(d);o.push(v,T,g),u.push(R,h,y),a.push(n[0],n[1],n[2],n[3]),s.push(1-1/t*l,1/e*i)}}for(i=0;i<e;i++)for(l=0;l<t;l++){var m=(t+1)*i+l;c.push(m,m+1,m+t+2),c.push(m,m+t+2,m+t+1)}return{position:o,normal:u,color:a,texCoord:s,index:c}}},{key:"cube",value:function(e,t){for(var r=.5*e,n=[-r,-r,r,r,-r,r,r,r,r,-r,r,r,-r,-r,-r,-r,r,-r,r,r,-r,r,-r,-r,-r,r,-r,-r,r,r,r,r,r,r,r,-r,-r,-r,-r,r,-r,-r,r,-r,r,-r,-r,r,r,-r,-r,r,r,-r,r,r,r,r,-r,r,-r,-r,-r,-r,-r,r,-r,r,r,-r,r,-r],i=1/Math.sqrt(3),l=[-i,-i,i,i,-i,i,i,i,i,-i,i,i,-i,-i,-i,-i,i,-i,i,i,-i,i,-i,-i,-i,i,-i,-i,i,i,i,i,i,i,i,-i,-i,-i,-i,i,-i,-i,i,-i,i,-i,-i,i,i,-i,-i,i,i,-i,i,i,i,i,-i,i,-i,-i,-i,-i,-i,i,-i,i,i,-i,i,-i],o=[],u=0;u<n.length/3;u++)o.push(t[0],t[1],t[2],t[3]);return{position:n,normal:l,color:o,texCoord:[0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1],index:[0,1,2,0,2,3,4,5,6,4,6,7,8,9,10,8,10,11,12,13,14,12,14,15,16,17,18,16,18,19,20,21,22,20,22,23]}}}]),e}();t.default=l},function(e,t,r){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var i=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),l=function(){function e(){n(this,e)}return i(e,null,[{key:"hsva",value:function(e,t,r,n){if(!(t>1||r>1||n>1)){var i=e%360,l=Math.floor(i/60),o=i/60-l,u=r*(1-t),a=r*(1-t*o),s=r*(1-t*(1-o)),c=new Array;if(!t>0&&!t<0)c.push(r,r,r,n);else{var f=new Array(r,a,u,u,s,r),h=new Array(s,r,r,a,u,u),E=new Array(u,u,s,r,r,a);c.push(f[l],h[l],E[l],n)}return c}}},{key:"easeLiner",value:function(e){return e<.5?4*e*e*e:(e-1)*(2*e-2)*(2*e-2)+1}},{key:"easeOutCubic",value:function(e){return(e=e/1-1)*e*e+1}},{key:"easeQuintic",value:function(e){var t=(e/=1)*e;return t*e*t}}]),e}();t.default=l},function(e,t,r){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var l=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),o=r(0),u=n(o),a=r(2),s=n(a),c=r(3),f=n(c),h=r(4),E=n(h),d=r(1),v=n(d),T=function(){function e(){i(this,e),this.VERSION="0.1.2",this.PI2=6.283185307179586,this.PI=3.141592653589793,this.PIH=1.5707963267948966,this.PIH2=.7853981633974483,this.TEXTURE_UNIT_COUNT=null,this.ready=!1,this.canvas=null,this.gl=null,this.textures=null,this.ext=null,this.Audio=u.default,this.Mesh=f.default,this.Util=E.default,this.Gui=new v.default,this.Math=new s.default,console.log("%c◆%c glcubic.js %c◆%c : version %c"+this.VERSION,"color: crimson","","color: crimson","","color: royalblue")}return l(e,[{key:"init",value:function(e,t){var r=t||{};return this.ready=!1,null!=e&&(e instanceof HTMLCanvasElement?this.canvas=e:"[object String]"===Object.prototype.toString.call(e)&&(this.canvas=document.getElementById(e)),null!=this.canvas&&(this.gl=this.canvas.getContext("webgl",r)||this.canvas.getContext("experimental-webgl",r),null!=this.gl&&(this.ready=!0,this.TEXTURE_UNIT_COUNT=this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS),this.textures=new Array(this.TEXTURE_UNIT_COUNT)),this.ext={elementIndexUint:this.gl.getExtension("OES_element_index_uint"),textureFloat:this.gl.getExtension("OES_texture_float"),drawBuffers:this.gl.getExtension("WEBGL_draw_buffers")},this.ready))}},{key:"sceneClear",value:function(e,t,r){var n=this.gl,i=n.COLOR_BUFFER_BIT;n.clearColor(e[0],e[1],e[2],e[3]),null!=t&&(n.clearDepth(t),i|=n.DEPTH_BUFFER_BIT),null!=r&&(n.clearStencil(r),i|=n.STENCIL_BUFFER_BIT),n.clear(i)}},{key:"sceneView",value:function(e,t,r,n){var i=e||0,l=t||0,o=r||window.innerWidth,u=n||window.innerHeight;this.gl.viewport(i,l,o,u)}},{key:"drawArrays",value:function(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0;this.gl.drawArrays(e,r,t)}},{key:"drawElements",value:function(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0;this.gl.drawElements(e,t,this.gl.UNSIGNED_SHORT,r)}},{key:"drawElementsInt",value:function(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0;this.gl.drawElements(e,t,this.gl.UNSIGNED_INT,r)}},{key:"createVbo",value:function(e){if(null!=e){var t=this.gl.createBuffer();return this.gl.bindBuffer(this.gl.ARRAY_BUFFER,t),this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(e),this.gl.STATIC_DRAW),this.gl.bindBuffer(this.gl.ARRAY_BUFFER,null),t}}},{key:"createIbo",value:function(e){if(null!=e){var t=this.gl.createBuffer();return this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,t),this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Int16Array(e),this.gl.STATIC_DRAW),this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,null),t}}},{key:"createIboInt",value:function(e){if(null!=e){var t=this.gl.createBuffer();return this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,t),this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Uint32Array(e),this.gl.STATIC_DRAW),this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,null),t}}},{key:"createTextureFromFile",value:function(e,t,r){var n=this;if(null!=e&&null!=t){var i=new Image,l=this.gl;i.onload=function(){n.textures[t]={texture:null,type:null,loaded:!1};var o=l.createTexture();l.bindTexture(l.TEXTURE_2D,o),l.texImage2D(l.TEXTURE_2D,0,l.RGBA,l.RGBA,l.UNSIGNED_BYTE,i),l.generateMipmap(l.TEXTURE_2D),l.texParameteri(l.TEXTURE_2D,l.TEXTURE_MIN_FILTER,l.LINEAR),l.texParameteri(l.TEXTURE_2D,l.TEXTURE_MAG_FILTER,l.LINEAR),l.texParameteri(l.TEXTURE_2D,l.TEXTURE_WRAP_S,l.CLAMP_TO_EDGE),l.texParameteri(l.TEXTURE_2D,l.TEXTURE_WRAP_T,l.CLAMP_TO_EDGE),n.textures[t].texture=o,n.textures[t].type=l.TEXTURE_2D,n.textures[t].loaded=!0,console.log("%c◆%c texture number: %c"+t+"%c, file loaded: %c"+e,"color: crimson","","color: blue","","color: goldenrod"),l.bindTexture(l.TEXTURE_2D,null),null!=r&&r(t)},i.src=e}}},{key:"createTextureFromObject",value:function(e,t){if(null!=e&&null!=t){var r=this.gl,n=r.createTexture();this.textures[t]={texture:null,type:null,loaded:!1},r.bindTexture(r.TEXTURE_2D,n),r.texImage2D(r.TEXTURE_2D,0,r.RGBA,r.RGBA,r.UNSIGNED_BYTE,e),r.generateMipmap(r.TEXTURE_2D),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_MIN_FILTER,r.LINEAR),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_MAG_FILTER,r.LINEAR),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_WRAP_S,r.CLAMP_TO_EDGE),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_WRAP_T,r.CLAMP_TO_EDGE),this.textures[t].texture=n,this.textures[t].type=r.TEXTURE_2D,this.textures[t].loaded=!0,console.log("%c◆%c texture number: %c"+t+"%c, object attached","color: crimson","","color: blue",""),r.bindTexture(r.TEXTURE_2D,null)}}},{key:"createTextureCubeFromFile",value:function(e,t,r,n){var i=this;if(null!=e&&null!=t&&null!=r){var l=[],o=this.gl;this.textures[r]={texture:null,type:null,loaded:!1};for(var u=0;u<e.length;u++)l[u]={image:new Image,loaded:!1},l[u].image.onload=function(u){return function(){if(l[u].loaded=!0,6===l.length){var a=!0;if(l.map(function(e){a=a&&e.loaded}),!0===a){var s=o.createTexture();o.bindTexture(o.TEXTURE_CUBE_MAP,s);for(var c=0;c<e.length;c++)o.texImage2D(t[c],0,o.RGBA,o.RGBA,o.UNSIGNED_BYTE,l[c].image);o.generateMipmap(o.TEXTURE_CUBE_MAP),o.texParameteri(o.TEXTURE_CUBE_MAP,o.TEXTURE_MIN_FILTER,o.LINEAR),o.texParameteri(o.TEXTURE_CUBE_MAP,o.TEXTURE_MAG_FILTER,o.LINEAR),o.texParameteri(o.TEXTURE_CUBE_MAP,o.TEXTURE_WRAP_S,o.CLAMP_TO_EDGE),o.texParameteri(o.TEXTURE_CUBE_MAP,o.TEXTURE_WRAP_T,o.CLAMP_TO_EDGE),i.textures[r].texture=s,i.textures[r].type=o.TEXTURE_CUBE_MAP,i.textures[r].loaded=!0,console.log("%c◆%c texture number: %c"+r+"%c, file loaded: %c"+e[0]+"...","color: crimson","","color: blue","","color: goldenrod"),o.bindTexture(o.TEXTURE_CUBE_MAP,null),null!=n&&n(r)}}}}(u),l[u].image.src=e[u]}}},{key:"bindTexture",value:function(e,t){null!=this.textures[t]&&(this.gl.activeTexture(this.gl.TEXTURE0+e),this.gl.bindTexture(this.textures[t].type,this.textures[t].texture))}},{key:"isTextureLoaded",value:function(){var e=void 0,t=void 0,r=void 0,n=void 0;for(r=!0,n=!1,e=0,t=this.textures.length;e<t;e++)null!=this.textures[e]&&(n=!0,r=r&&this.textures[e].loaded);return!!n&&r}},{key:"createFramebuffer",value:function(e,t,r){if(null!=e&&null!=t&&null!=r){var n=this.gl;this.textures[r]={texture:null,type:null,loaded:!1};var i=n.createFramebuffer();n.bindFramebuffer(n.FRAMEBUFFER,i);var l=n.createRenderbuffer();n.bindRenderbuffer(n.RENDERBUFFER,l),n.renderbufferStorage(n.RENDERBUFFER,n.DEPTH_COMPONENT16,e,t),n.framebufferRenderbuffer(n.FRAMEBUFFER,n.DEPTH_ATTACHMENT,n.RENDERBUFFER,l);var o=n.createTexture();return n.bindTexture(n.TEXTURE_2D,o),n.texImage2D(n.TEXTURE_2D,0,n.RGBA,e,t,0,n.RGBA,n.UNSIGNED_BYTE,null),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_MAG_FILTER,n.LINEAR),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_MIN_FILTER,n.LINEAR),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_WRAP_S,n.CLAMP_TO_EDGE),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_WRAP_T,n.CLAMP_TO_EDGE),n.framebufferTexture2D(n.FRAMEBUFFER,n.COLOR_ATTACHMENT0,n.TEXTURE_2D,o,0),n.bindTexture(n.TEXTURE_2D,null),n.bindRenderbuffer(n.RENDERBUFFER,null),n.bindFramebuffer(n.FRAMEBUFFER,null),this.textures[r].texture=o,this.textures[r].type=n.TEXTURE_2D,this.textures[r].loaded=!0,console.log("%c◆%c texture number: %c"+r+"%c, framebuffer created","color: crimson","","color: blue",""),{framebuffer:i,depthRenderbuffer:l,texture:o}}}},{key:"createFramebufferStencil",value:function(e,t,r){if(null!=e&&null!=t&&null!=r){var n=this.gl;this.textures[r]={texture:null,type:null,loaded:!1};var i=n.createFramebuffer();n.bindFramebuffer(n.FRAMEBUFFER,i);var l=n.createRenderbuffer();n.bindRenderbuffer(n.RENDERBUFFER,l),n.renderbufferStorage(n.RENDERBUFFER,n.DEPTH_STENCIL,e,t),n.framebufferRenderbuffer(n.FRAMEBUFFER,n.DEPTH_STENCIL_ATTACHMENT,n.RENDERBUFFER,l);var o=n.createTexture();return n.bindTexture(n.TEXTURE_2D,o),n.texImage2D(n.TEXTURE_2D,0,n.RGBA,e,t,0,n.RGBA,n.UNSIGNED_BYTE,null),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_MAG_FILTER,n.LINEAR),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_MIN_FILTER,n.LINEAR),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_WRAP_S,n.CLAMP_TO_EDGE),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_WRAP_T,n.CLAMP_TO_EDGE),n.framebufferTexture2D(n.FRAMEBUFFER,n.COLOR_ATTACHMENT0,n.TEXTURE_2D,o,0),n.bindTexture(n.TEXTURE_2D,null),n.bindRenderbuffer(n.RENDERBUFFER,null),n.bindFramebuffer(n.FRAMEBUFFER,null),this.textures[r].texture=o,this.textures[r].type=n.TEXTURE_2D,this.textures[r].loaded=!0,console.log("%c◆%c texture number: %c"+r+"%c, framebuffer created (enable stencil)","color: crimson","","color: blue",""),{framebuffer:i,depthStencilRenderbuffer:l,texture:o}}}},{key:"createFramebufferFloat",value:function(e,t,r){if(null!=e&&null!=t&&null!=r){var n=this.gl;this.textures[r]={texture:null,type:null,loaded:!1};var i=n.createFramebuffer();n.bindFramebuffer(n.FRAMEBUFFER,i);var l=n.createTexture();return n.bindTexture(n.TEXTURE_2D,l),n.texImage2D(n.TEXTURE_2D,0,n.RGBA,e,t,0,n.RGBA,n.FLOAT,null),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_MAG_FILTER,n.NEAREST),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_MIN_FILTER,n.NEAREST),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_WRAP_S,n.CLAMP_TO_EDGE),n.texParameteri(n.TEXTURE_2D,n.TEXTURE_WRAP_T,n.CLAMP_TO_EDGE),n.framebufferTexture2D(n.FRAMEBUFFER,n.COLOR_ATTACHMENT0,n.TEXTURE_2D,l,0),n.bindTexture(n.TEXTURE_2D,null),n.bindFramebuffer(n.FRAMEBUFFER,null),this.textures[r].texture=l,this.textures[r].type=n.TEXTURE_2D,this.textures[r].loaded=!0,console.log("%c◆%c texture number: %c"+r+"%c, framebuffer created (enable float)","color: crimson","","color: blue",""),{framebuffer:i,depthRenderbuffer:null,texture:l}}}},{key:"createFramebufferCube",value:function(e,t,r,n){if(null!=e&&null!=t&&null!=r&&null!=n){var i=this.gl;this.textures[n]={texture:null,type:null,loaded:!1};var l=i.createFramebuffer();i.bindFramebuffer(i.FRAMEBUFFER,l);var o=i.createRenderbuffer();i.bindRenderbuffer(i.RENDERBUFFER,o),i.renderbufferStorage(i.RENDERBUFFER,i.DEPTH_COMPONENT16,e,t),i.framebufferRenderbuffer(i.FRAMEBUFFER,i.DEPTH_ATTACHMENT,i.RENDERBUFFER,o);var u=i.createTexture();i.bindTexture(i.TEXTURE_CUBE_MAP,u);for(var a=0;a<r.length;a++)i.texImage2D(r[a],0,i.RGBA,e,t,0,i.RGBA,i.UNSIGNED_BYTE,null);return i.texParameteri(i.TEXTURE_CUBE_MAP,i.TEXTURE_MAG_FILTER,i.LINEAR),i.texParameteri(i.TEXTURE_CUBE_MAP,i.TEXTURE_MIN_FILTER,i.LINEAR),i.texParameteri(i.TEXTURE_CUBE_MAP,i.TEXTURE_WRAP_S,i.CLAMP_TO_EDGE),i.texParameteri(i.TEXTURE_CUBE_MAP,i.TEXTURE_WRAP_T,i.CLAMP_TO_EDGE),i.bindTexture(i.TEXTURE_CUBE_MAP,null),i.bindRenderbuffer(i.RENDERBUFFER,null),i.bindFramebuffer(i.FRAMEBUFFER,null),this.textures[n].texture=u,this.textures[n].type=i.TEXTURE_CUBE_MAP,this.textures[n].loaded=!0,console.log("%c◆%c texture number: %c"+n+"%c, framebuffer cube created","color: crimson","","color: blue",""),{framebuffer:l,depthRenderbuffer:o,texture:u}}}},{key:"createProgramFromId",value:function(e,t,r,n,i,l){if(null==this.gl)return null;var o=void 0,u=new g(this.gl);for(u.vs=u.createShaderFromId(e),u.fs=u.createShaderFromId(t),u.prg=u.createProgram(u.vs,u.fs),u.attL=new Array(r.length),u.attS=new Array(r.length),o=0;o<r.length;o++)u.attL[o]=this.gl.getAttribLocation(u.prg,r[o]),u.attS[o]=n[o];for(u.uniL=new Array(i.length),o=0;o<i.length;o++)u.uniL[o]=this.gl.getUniformLocation(u.prg,i[o]);return u.uniT=l,u.locationCheck(r,i),u}},{key:"createProgramFromSource",value:function(e,t,r,n,i,l){if(null==this.gl)return null;var o=void 0,u=new g(this.gl);for(u.vs=u.createShaderFromSource(e,this.gl.VERTEX_SHADER),u.fs=u.createShaderFromSource(t,this.gl.FRAGMENT_SHADER),u.prg=u.createProgram(u.vs,u.fs),u.attL=new Array(r.length),u.attS=new Array(r.length),o=0;o<r.length;o++)u.attL[o]=this.gl.getAttribLocation(u.prg,r[o]),u.attS[o]=n[o];for(u.uniL=new Array(i.length),o=0;o<i.length;o++)u.uniL[o]=this.gl.getUniformLocation(u.prg,i[o]);return u.uniT=l,u.locationCheck(r,i),u}},{key:"createProgramFromFile",value:function(e,t,r,n,i,l,o){function u(e,t){var r=new XMLHttpRequest;r.open("GET",t.targetUrl,!0),r.setRequestHeader("Pragma","no-cache"),r.setRequestHeader("Cache-Control","no-cache"),r.onload=function(){console.log("%c◆%c shader file loaded: %c"+t.targetUrl,"color: crimson","","color: goldenrod"),t.source=r.responseText,a(e)},r.send()}function a(e){if(null!=c.vs.source&&null!=c.fs.source){var t=void 0;for(s.vs=s.createShaderFromSource(c.vs.source,e.VERTEX_SHADER),s.fs=s.createShaderFromSource(c.fs.source,e.FRAGMENT_SHADER),s.prg=s.createProgram(s.vs,s.fs),s.attL=new Array(r.length),s.attS=new Array(r.length),t=0;t<r.length;t++)s.attL[t]=e.getAttribLocation(s.prg,r[t]),s.attS[t]=n[t];for(s.uniL=new Array(i.length),t=0;t<i.length;t++)s.uniL[t]=e.getUniformLocation(s.prg,i[t]);s.uniT=l,s.locationCheck(r,i),o(s)}}if(null==this.gl)return null;var s=new g(this.gl),c={vs:{targetUrl:e,source:null},fs:{targetUrl:t,source:null}};return u(this.gl,c.vs),u(this.gl,c.fs),s}}]),e}();t.default=T;var g=function(){function e(t){i(this,e),this.gl=t,this.vs=null,this.fs=null,this.prg=null,this.attL=null,this.attS=null,this.uniL=null,this.uniT=null}return l(e,[{key:"createShaderFromId",value:function(e){var t=void 0,r=document.getElementById(e);if(r){switch(r.type){case"x-shader/x-vertex":t=this.gl.createShader(this.gl.VERTEX_SHADER);break;case"x-shader/x-fragment":t=this.gl.createShader(this.gl.FRAGMENT_SHADER);break;default:return}if(this.gl.shaderSource(t,r.text),this.gl.compileShader(t),this.gl.getShaderParameter(t,this.gl.COMPILE_STATUS))return t;console.warn("◆ compile failed of shader: "+this.gl.getShaderInfoLog(t))}}},{key:"createShaderFromSource",value:function(e,t){var r=void 0;switch(t){case this.gl.VERTEX_SHADER:r=this.gl.createShader(this.gl.VERTEX_SHADER);break;case this.gl.FRAGMENT_SHADER:r=this.gl.createShader(this.gl.FRAGMENT_SHADER);break;default:return}if(this.gl.shaderSource(r,e),this.gl.compileShader(r),this.gl.getShaderParameter(r,this.gl.COMPILE_STATUS))return r;console.warn("◆ compile failed of shader: "+this.gl.getShaderInfoLog(r))}},{key:"createProgram",value:function(e,t){var r=this.gl.createProgram();if(this.gl.attachShader(r,e),this.gl.attachShader(r,t),this.gl.linkProgram(r),this.gl.getProgramParameter(r,this.gl.LINK_STATUS))return this.gl.useProgram(r),r;console.warn("◆ link program failed: "+this.gl.getProgramInfoLog(r))}},{key:"useProgram",value:function(){this.gl.useProgram(this.prg)}},{key:"setAttribute",value:function(e,t){var r=this.gl;for(var n in e)this.attL[n]>=0&&(r.bindBuffer(r.ARRAY_BUFFER,e[n]),r.enableVertexAttribArray(this.attL[n]),r.vertexAttribPointer(this.attL[n],this.attS[n],r.FLOAT,!1,0,0));null!=t&&r.bindBuffer(r.ELEMENT_ARRAY_BUFFER,t)}},{key:"pushShader",value:function(e){for(var t=this.gl,r=0,n=this.uniT.length;r<n;r++){var i="uniform"+this.uniT[r].replace(/matrix/i,"Matrix");null!=t[i]?-1!==i.search(/Matrix/)?t[i](this.uniL[r],!1,e[r]):t[i](this.uniL[r],e[r]):console.warn("◆ not support uniform type: "+this.uniT[r])}}},{key:"locationCheck",value:function(e,t){var r=void 0,n=void 0;for(r=0,n=e.length;r<n;r++)(null==this.attL[r]||this.attL[r]<0)&&console.warn('◆ invalid attribute location: %c"'+e[r]+'"',"color: crimson");for(r=0,n=t.length;r<n;r++)(null==this.uniL[r]||this.uniL[r]<0)&&console.warn('◆ invalid uniform location: %c"'+t[r]+'"',"color: crimson")}}]),e}();window.gl3=window.gl3||new T}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "./";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*
+ * step 1: let a = new gl3Audio(bgmGainValue, soundGainValue) <- float(0 to 1)
+ * step 2: a.load(url, index, loop, background) <- string, int, boolean, boolean
+ * step 3: a.src[index].loaded then a.src[index].play()
+ */
+
+/**
+ * gl3Audio クラス
+ * @class gl3Audio
+ */
+var gl3Audio = function () {
+    /**
+     * @constructor
+     * @param {number} bgmGainValue - BGM の再生音量
+     * @param {number} soundGainValue - 効果音の再生音量
+     */
+    function gl3Audio(bgmGainValue, soundGainValue) {
+        _classCallCheck(this, gl3Audio);
+
+        /**
+         * オーディオコンテキスト
+         * @type {AudioContext}
+         */
+        this.ctx = null;
+        /**
+         * ダイナミックコンプレッサーノード
+         * @type {DynamicsCompressorNode}
+         */
+        this.comp = null;
+        /**
+         * BGM 用のゲインノード
+         * @type {GainNode}
+         */
+        this.bgmGain = null;
+        /**
+         * 効果音用のゲインノード
+         * @type {GainNode}
+         */
+        this.soundGain = null;
+        /**
+         * オーディオソースをラップしたクラスの配列
+         * @type {Array.<AudioSrc>}
+         */
+        this.src = null;
+        if (typeof AudioContext != 'undefined' || typeof webkitAudioContext != 'undefined') {
+            if (typeof AudioContext != 'undefined') {
+                this.ctx = new AudioContext();
+            } else {
+                this.ctx = new webkitAudioContext();
+            }
+            this.comp = this.ctx.createDynamicsCompressor();
+            this.comp.connect(this.ctx.destination);
+            this.bgmGain = this.ctx.createGain();
+            this.bgmGain.connect(this.comp);
+            this.bgmGain.gain.value = bgmGainValue;
+            this.soundGain = this.ctx.createGain();
+            this.soundGain.connect(this.comp);
+            this.soundGain.gain.value = soundGainValue;
+            this.src = [];
+        } else {
+            throw new Error('not found AudioContext');
+        }
+    }
+
+    /**
+     * ファイルをロードする
+     * @param {string} path - オーディオファイルのパス
+     * @param {number} index - 内部プロパティの配列に格納するインデックス
+     * @param {boolean} loop - ループ再生を設定するかどうか
+     * @param {boolean} background - BGM として設定するかどうか
+     * @param {function} callback - 読み込みと初期化が完了したあと呼ばれるコールバック
+     */
+
+
+    _createClass(gl3Audio, [{
+        key: 'load',
+        value: function load(path, index, loop, background, callback) {
+            var ctx = this.ctx;
+            var gain = background ? this.bgmGain : this.soundGain;
+            var src = this.src;
+            src[index] = null;
+            var xml = new XMLHttpRequest();
+            xml.open('GET', path, true);
+            xml.setRequestHeader('Pragma', 'no-cache');
+            xml.setRequestHeader('Cache-Control', 'no-cache');
+            xml.responseType = 'arraybuffer';
+            xml.onload = function () {
+                ctx.decodeAudioData(xml.response, function (buf) {
+                    src[index] = new AudioSrc(ctx, gain, buf, loop, background);
+                    src[index].loaded = true;
+                    console.log('%c◆%c audio number: %c' + index + '%c, audio loaded: %c' + path, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                    callback();
+                }, function (e) {
+                    console.log(e);
+                });
+            };
+            xml.send();
+        }
+
+        /**
+         * ロードの完了をチェックする
+         * @return {boolean} ロードが完了しているかどうか
+         */
+
+    }, {
+        key: 'loadComplete',
+        value: function loadComplete() {
+            var i = void 0,
+                f = void 0;
+            f = true;
+            for (i = 0; i < this.src.length; i++) {
+                f = f && this.src[i] != null && this.src[i].loaded;
+            }
+            return f;
+        }
+    }]);
+
+    return gl3Audio;
+}();
+
+/**
+ * オーディオやソースファイルを管理するためのクラス
+ * @class AudioSrc
+ */
+
+
+exports.default = gl3Audio;
+
+var AudioSrc = function () {
+    /**
+     * @constructor
+     * @param {AudioContext} ctx - 対象となるオーディオコンテキスト
+     * @param {GainNode} gain - 対象となるゲインノード
+     * @param {ArrayBuffer} audioBuffer - バイナリのオーディオソース
+     * @param {boolean} bool - ループ再生を設定するかどうか
+     * @param {boolean} background - BGM として設定するかどうか
+     */
+    function AudioSrc(ctx, gain, audioBuffer, loop, background) {
+        _classCallCheck(this, AudioSrc);
+
+        /**
+         * 対象となるオーディオコンテキスト
+         * @type {AudioContext}
+         */
+        this.ctx = ctx;
+        /**
+         * 対象となるゲインノード
+         * @type {GainNode}
+         */
+        this.gain = gain;
+        /**
+         * ソースファイルのバイナリデータ
+         * @type {ArrayBuffer}
+         */
+        this.audioBuffer = audioBuffer;
+        /**
+         * オーディオバッファソースノードを格納する配列
+         * @type {Array.<AudioBufferSourceNode>}
+         */
+        this.bufferSource = [];
+        /**
+         * アクティブなバッファソースのインデックス
+         * @type {number}
+         */
+        this.activeBufferSource = 0;
+        /**
+         * ループするかどうかのフラグ
+         * @type {boolean}
+         */
+        this.loop = loop;
+        /**
+         * ロード済みかどうかを示すフラグ
+         * @type {boolean}
+         */
+        this.loaded = false;
+        /**
+         * FFT サイズ
+         * @type {number}
+         */
+        this.fftLoop = 16;
+        /**
+         * このフラグが立っている場合再生中のデータを一度取得する
+         * @type {boolean}
+         */
+        this.update = false;
+        /**
+         * BGM かどうかを示すフラグ
+         * @type {boolean}
+         */
+        this.background = background;
+        /**
+         * スクリプトプロセッサーノード
+         * @type {ScriptProcessorNode}
+         */
+        this.node = this.ctx.createScriptProcessor(2048, 1, 1);
+        /**
+         * アナライザノード
+         * @type {AnalyserNode}
+         */
+        this.analyser = this.ctx.createAnalyser();
+        this.analyser.smoothingTimeConstant = 0.8;
+        this.analyser.fftSize = this.fftLoop * 2;
+        /**
+         * データを取得する際に利用する型付き配列
+         * @type {Uint8Array}
+         */
+        this.onData = new Uint8Array(this.analyser.frequencyBinCount);
+    }
+
+    /**
+     * オーディオを再生する
+     */
+
+
+    _createClass(AudioSrc, [{
+        key: 'play',
+        value: function play() {
+            var _this = this;
+
+            var i = void 0,
+                j = void 0,
+                k = void 0;
+            var self = this;
+            i = this.bufferSource.length;
+            k = -1;
+            if (i > 0) {
+                for (j = 0; j < i; j++) {
+                    if (!this.bufferSource[j].playnow) {
+                        this.bufferSource[j] = null;
+                        this.bufferSource[j] = this.ctx.createBufferSource();
+                        k = j;
+                        break;
+                    }
+                }
+                if (k < 0) {
+                    this.bufferSource[this.bufferSource.length] = this.ctx.createBufferSource();
+                    k = this.bufferSource.length - 1;
+                }
+            } else {
+                this.bufferSource[0] = this.ctx.createBufferSource();
+                k = 0;
+            }
+            this.activeBufferSource = k;
+            this.bufferSource[k].buffer = this.audioBuffer;
+            this.bufferSource[k].loop = this.loop;
+            this.bufferSource[k].playbackRate.value = 1.0;
+            if (!this.loop) {
+                this.bufferSource[k].onended = function () {
+                    _this.stop(0);
+                    _this.playnow = false;
+                };
+            }
+            if (this.background) {
+                this.bufferSource[k].connect(this.analyser);
+                this.analyser.connect(this.node);
+                this.node.connect(this.ctx.destination);
+                this.node.onaudioprocess = function (eve) {
+                    onprocessEvent(eve);
+                };
+            }
+            this.bufferSource[k].connect(this.gain);
+            this.bufferSource[k].start(0);
+            this.bufferSource[k].playnow = true;
+
+            function onprocessEvent(eve) {
+                if (self.update) {
+                    self.update = false;
+                    self.analyser.getByteFrequencyData(self.onData);
+                }
+            }
+        }
+
+        /**
+         * オーディオの再生を止める
+         */
+
+    }, {
+        key: 'stop',
+        value: function stop() {
+            this.bufferSource[this.activeBufferSource].stop(0);
+            this.playnow = false;
+        }
+    }]);
+
+    return AudioSrc;
+}();
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * gl3Gui
+ * @class gl3Gui
+ */
+var gl3Gui = function gl3Gui() {
+    _classCallCheck(this, gl3Gui);
+
+    this.Wrapper = GUIWrapper;
+    this.Element = GUIElement;
+    this.Slider = GUISlider;
+    this.Checkbox = GUICheckbox;
+    this.Select = GUISelect;
+    this.Spin = GUISpin;
+    this.Color = GUIColor;
+};
+
+exports.default = gl3Gui;
+
+var GUIWrapper = function () {
+    function GUIWrapper() {
+        _classCallCheck(this, GUIWrapper);
+
+        this.element = document.createElement('div');
+        this.element.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
+        this.element.style.position = 'absolute';
+        this.element.style.top = '0px';
+        this.element.style.right = '0px';
+        this.element.style.height = '100%';
+    }
+
+    _createClass(GUIWrapper, [{
+        key: 'getElement',
+        value: function getElement() {
+            return this.element;
+        }
+    }]);
+
+    return GUIWrapper;
+}();
+
+var GUIElement = function () {
+    function GUIElement() {
+        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        _classCallCheck(this, GUIElement);
+
+        this.element = document.createElement('div');
+        this.element.style.fontSize = 'small';
+        this.element.style.textAlign = 'center';
+        this.element.style.width = '270px';
+        this.element.style.height = '30px';
+        this.element.style.lineHeight = '30px';
+        this.element.style.display = 'flex';
+        this.element.style.flexDirection = 'row';
+        this.element.style.justifyContent = 'flex-start';
+        this.text = text;
+        this.label = document.createElement('span');
+        this.label.textContent = this.text;
+        this.label.style.color = '#222';
+        this.label.style.textShadow = '0px 0px 5px white';
+        this.label.style.display = 'inline-block';
+        this.label.style.margin = 'auto 5px';
+        this.label.style.width = '50px';
+        this.label.style.overflow = 'hidden';
+        this.element.appendChild(this.label);
+        this.value = document.createElement('span');
+        this.value.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
+        this.value.style.color = 'whitesmoke';
+        this.value.style.fontSize = 'x-small';
+        this.value.style.textShadow = '0px 0px 5px black';
+        this.value.style.display = 'inline-block';
+        this.value.style.margin = 'auto 5px';
+        this.value.style.width = '50px';
+        this.value.style.overflow = 'hidden';
+        this.element.appendChild(this.value);
+        this.control = null;
+        this.listeners = {};
+    }
+
+    _createClass(GUIElement, [{
+        key: 'add',
+        value: function add(type, func) {
+            if (this.control == null || type == null || func == null) {
+                return;
+            }
+            if (Object.prototype.toString.call(type) !== '[object String]') {
+                return;
+            }
+            if (Object.prototype.toString.call(func) !== '[object Function]') {
+                return;
+            }
+            this.listeners[type] = func;
+        }
+    }, {
+        key: 'emit',
+        value: function emit(type, eve) {
+            if (this.control == null || !this.listeners.hasOwnProperty(type)) {
+                return;
+            }
+            this.listeners[type](eve, this);
+        }
+    }, {
+        key: 'remove',
+        value: function remove() {
+            if (this.control == null || !this.listeners.hasOwnProperty(type)) {
+                return;
+            }
+            this.listeners[type] = null;
+            delete this.listeners[type];
+        }
+    }, {
+        key: 'setValue',
+        value: function setValue(value) {
+            this.value.textContent = value;
+            this.control.value = value;
+        }
+    }, {
+        key: 'getValue',
+        value: function getValue() {
+            return this.control.value;
+        }
+    }, {
+        key: 'getControl',
+        value: function getControl() {
+            return this.control;
+        }
+    }, {
+        key: 'getText',
+        value: function getText() {
+            return this.text;
+        }
+    }, {
+        key: 'getElement',
+        value: function getElement() {
+            return this.element;
+        }
+    }]);
+
+    return GUIElement;
+}();
+
+var GUISlider = function (_GUIElement) {
+    _inherits(GUISlider, _GUIElement);
+
+    function GUISlider() {
+        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        var min = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        var max = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 100;
+        var step = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+
+        _classCallCheck(this, GUISlider);
+
+        var _this = _possibleConstructorReturn(this, (GUISlider.__proto__ || Object.getPrototypeOf(GUISlider)).call(this, text));
+
+        _this.control = document.createElement('input');
+        _this.control.setAttribute('type', 'range');
+        _this.control.setAttribute('min', min);
+        _this.control.setAttribute('max', max);
+        _this.control.setAttribute('step', step);
+        _this.control.value = value;
+        _this.control.style.margin = 'auto';
+        _this.control.style.verticalAlign = 'middle';
+        _this.element.appendChild(_this.control);
+
+        // set
+        _this.setValue(_this.control.value);
+
+        // event
+        _this.control.addEventListener('input', function (eve) {
+            _this.emit('input', eve);
+            _this.setValue(_this.control.value);
+        }, false);
+        return _this;
+    }
+
+    _createClass(GUISlider, [{
+        key: 'setMin',
+        value: function setMin(min) {
+            this.control.setAttribute('min', min);
+        }
+    }, {
+        key: 'setMax',
+        value: function setMax(max) {
+            this.control.setAttribute('max', max);
+        }
+    }, {
+        key: 'setStep',
+        value: function setStep(step) {
+            this.control.setAttribute('step', step);
+        }
+    }]);
+
+    return GUISlider;
+}(GUIElement);
+
+var GUICheckbox = function (_GUIElement2) {
+    _inherits(GUICheckbox, _GUIElement2);
+
+    function GUICheckbox() {
+        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var checked = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        _classCallCheck(this, GUICheckbox);
+
+        var _this2 = _possibleConstructorReturn(this, (GUICheckbox.__proto__ || Object.getPrototypeOf(GUICheckbox)).call(this, text));
+
+        _this2.control = document.createElement('input');
+        _this2.control.setAttribute('type', 'checkbox');
+        _this2.control.checked = checked;
+        _this2.control.style.margin = 'auto';
+        _this2.control.style.verticalAlign = 'middle';
+        _this2.element.appendChild(_this2.control);
+
+        // set
+        _this2.setValue(_this2.control.checked);
+
+        // event
+        _this2.control.addEventListener('change', function (eve) {
+            _this2.emit('change', eve);
+            _this2.setValue(_this2.control.checked);
+        }, false);
+        return _this2;
+    }
+
+    _createClass(GUICheckbox, [{
+        key: 'setValue',
+        value: function setValue(checked) {
+            this.value.textContent = checked;
+            this.control.checked = checked;
+        }
+    }, {
+        key: 'getValue',
+        value: function getValue() {
+            return this.control.checked;
+        }
+    }]);
+
+    return GUICheckbox;
+}(GUIElement);
+
+var GUISelect = function (_GUIElement3) {
+    _inherits(GUISelect, _GUIElement3);
+
+    function GUISelect() {
+        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var list = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+        var selectedIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+        _classCallCheck(this, GUISelect);
+
+        var _this3 = _possibleConstructorReturn(this, (GUISelect.__proto__ || Object.getPrototypeOf(GUISelect)).call(this, text));
+
+        _this3.control = document.createElement('select');
+        list.map(function (v) {
+            var opt = new Option(v, v);
+            _this3.control.add(opt);
+        });
+        _this3.control.selectedIndex = selectedIndex;
+        _this3.control.style.width = '130px';
+        _this3.control.style.margin = 'auto';
+        _this3.control.style.verticalAlign = 'middle';
+        _this3.element.appendChild(_this3.control);
+
+        // set
+        _this3.setValue(_this3.control.value);
+
+        // event
+        _this3.control.addEventListener('change', function (eve) {
+            _this3.emit('change', eve);
+            _this3.setValue(_this3.control.value);
+        }, false);
+        return _this3;
+    }
+
+    _createClass(GUISelect, [{
+        key: 'setSelectedIndex',
+        value: function setSelectedIndex(index) {
+            this.control.selectedIndex = index;
+        }
+    }, {
+        key: 'getSelectedIndex',
+        value: function getSelectedIndex() {
+            return this.control.selectedIndex;
+        }
+    }]);
+
+    return GUISelect;
+}(GUIElement);
+
+var GUISpin = function (_GUIElement4) {
+    _inherits(GUISpin, _GUIElement4);
+
+    function GUISpin() {
+        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
+        var min = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : -1.0;
+        var max = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1.0;
+        var step = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.1;
+
+        _classCallCheck(this, GUISpin);
+
+        var _this4 = _possibleConstructorReturn(this, (GUISpin.__proto__ || Object.getPrototypeOf(GUISpin)).call(this, text));
+
+        _this4.control = document.createElement('input');
+        _this4.control.setAttribute('type', 'number');
+        _this4.control.setAttribute('min', min);
+        _this4.control.setAttribute('max', max);
+        _this4.control.setAttribute('step', step);
+        _this4.control.value = value;
+        _this4.control.style.margin = 'auto';
+        _this4.control.style.verticalAlign = 'middle';
+        _this4.element.appendChild(_this4.control);
+
+        // set
+        _this4.setValue(_this4.control.value);
+
+        // event
+        _this4.control.addEventListener('input', function (eve) {
+            _this4.emit('input', eve);
+            _this4.setValue(_this4.control.value);
+        }, false);
+        return _this4;
+    }
+
+    _createClass(GUISpin, [{
+        key: 'setMin',
+        value: function setMin(min) {
+            this.control.setAttribute('min', min);
+        }
+    }, {
+        key: 'setMax',
+        value: function setMax(max) {
+            this.control.setAttribute('max', max);
+        }
+    }, {
+        key: 'setStep',
+        value: function setStep(step) {
+            this.control.setAttribute('step', step);
+        }
+    }]);
+
+    return GUISpin;
+}(GUIElement);
+
+var GUIColor = function (_GUIElement5) {
+    _inherits(GUIColor, _GUIElement5);
+
+    function GUIColor() {
+        var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000000';
+
+        _classCallCheck(this, GUIColor);
+
+        var _this5 = _possibleConstructorReturn(this, (GUIColor.__proto__ || Object.getPrototypeOf(GUIColor)).call(this, text));
+
+        _this5.container = document.createElement('div');
+        _this5.container.style.lineHeight = '0';
+        _this5.container.style.margin = '2px auto';
+        _this5.container.style.width = '100px';
+        _this5.label = document.createElement('div');
+        _this5.label.style.margin = '0px';
+        _this5.label.style.width = 'calc(100% - 2px)';
+        _this5.label.style.height = '24px';
+        _this5.label.style.border = '1px solid whitesmoke';
+        _this5.label.style.boxShadow = '0px 0px 0px 1px #222';
+        _this5.control = document.createElement('canvas');
+        _this5.control.style.margin = '0px';
+        _this5.control.style.display = 'none';
+        _this5.control.width = 100;
+        _this5.control.height = 100;
+
+        // append
+        _this5.element.appendChild(_this5.container);
+        _this5.container.appendChild(_this5.label);
+        _this5.container.appendChild(_this5.control);
+
+        // canvas
+        _this5.ctx = _this5.control.getContext('2d');
+        var grad = _this5.ctx.createLinearGradient(0, 0, _this5.control.width, 0);
+        var arr = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ff0000'];
+        for (var i = 0, j = arr.length; i < j; ++i) {
+            grad.addColorStop(i / (j - 1), arr[i]);
+        }
+        _this5.ctx.fillStyle = grad;
+        _this5.ctx.fillRect(0, 0, _this5.control.width, _this5.control.height);
+        grad = _this5.ctx.createLinearGradient(0, 0, 0, _this5.control.height);
+        arr = ['rgba(255, 255, 255, 1.0)', 'rgba(255, 255, 255, 0.0)', 'rgba(0, 0, 0, 0.0)', 'rgba(0, 0, 0, 1.0)'];
+        for (var _i = 0, _j = arr.length; _i < _j; ++_i) {
+            grad.addColorStop(_i / (_j - 1), arr[_i]);
+        }
+        _this5.ctx.fillStyle = grad;
+        _this5.ctx.fillRect(0, 0, _this5.control.width, _this5.control.height);
+
+        // set
+        _this5.setValue(value);
+
+        // event
+        _this5.container.addEventListener('mouseover', function () {
+            _this5.control.style.display = 'block';
+        });
+        _this5.container.addEventListener('mouseout', function () {
+            _this5.control.style.display = 'none';
+        });
+        _this5.control.addEventListener('mousemove', function (eve) {
+            var imageData = _this5.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
+            var color = _this5.getColor8bitString(imageData.data);
+            _this5.setValue(color);
+        });
+
+        _this5.control.addEventListener('click', function (eve) {
+            var imageData = _this5.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
+            eve.currentTarget.value = _this5.getColor8bitString(imageData.data);
+            _this5.control.style.display = 'none';
+            _this5.emit('change', eve);
+        }, false);
+        return _this5;
+    }
+
+    _createClass(GUIColor, [{
+        key: 'setValue',
+        value: function setValue(value) {
+            this.value.textContent = value;
+            this.colorValue = value;
+            this.container.style.backgroundColor = this.colorValue;
+        }
+    }, {
+        key: 'getValue',
+        value: function getValue() {
+            return this.colorValue;
+        }
+    }, {
+        key: 'getFloatValue',
+        value: function getFloatValue() {
+            return this.getColorFloatArray(this.colorValue);
+        }
+    }, {
+        key: 'getColor8bitString',
+        value: function getColor8bitString(color) {
+            var r = this.zeroPadding(color[0].toString(16), 2);
+            var g = this.zeroPadding(color[1].toString(16), 2);
+            var b = this.zeroPadding(color[2].toString(16), 2);
+            return '#' + r + g + b;
+        }
+    }, {
+        key: 'getColorFloatArray',
+        value: function getColorFloatArray(color) {
+            if (color == null || Object.prototype.toString.call(color) !== '[object String]') {
+                return null;
+            }
+            if (color.search(/^#+[\d|a-f|A-F]+$/) === -1) {
+                return null;
+            }
+            var s = color.replace('#', '');
+            if (s.length !== 3 && s.length !== 6) {
+                return null;
+            }
+            var t = s.length / 3;
+            return [parseInt(color.substr(1, t), 16) / 255, parseInt(color.substr(1 + t, t), 16) / 255, parseInt(color.substr(1 + t * 2, t), 16) / 255];
+        }
+    }, {
+        key: 'zeroPadding',
+        value: function zeroPadding(number, count) {
+            var a = new Array(count).join('0');
+            return (a + number).slice(-count);
+        }
+    }]);
+
+    return GUIColor;
+}(GUIElement);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var gl3Math = function gl3Math() {
+    _classCallCheck(this, gl3Math);
+
+    this.Mat4 = Mat4;
+    this.Vec3 = Vec3;
+    this.Vec2 = Vec2;
+    this.Qtn = Qtn;
+};
+
+exports.default = gl3Math;
+
+var Mat4 = function () {
+    function Mat4() {
+        _classCallCheck(this, Mat4);
+    }
+
+    _createClass(Mat4, null, [{
+        key: "create",
+        value: function create() {
+            return new Float32Array(16);
+        }
+    }, {
+        key: "identity",
+        value: function identity(dest) {
+            dest[0] = 1;dest[1] = 0;dest[2] = 0;dest[3] = 0;
+            dest[4] = 0;dest[5] = 1;dest[6] = 0;dest[7] = 0;
+            dest[8] = 0;dest[9] = 0;dest[10] = 1;dest[11] = 0;
+            dest[12] = 0;dest[13] = 0;dest[14] = 0;dest[15] = 1;
+            return dest;
+        }
+    }, {
+        key: "multiply",
+        value: function multiply(mat1, mat2, dest) {
+            var a = mat1[0],
+                b = mat1[1],
+                c = mat1[2],
+                d = mat1[3],
+                e = mat1[4],
+                f = mat1[5],
+                g = mat1[6],
+                h = mat1[7],
+                i = mat1[8],
+                j = mat1[9],
+                k = mat1[10],
+                l = mat1[11],
+                m = mat1[12],
+                n = mat1[13],
+                o = mat1[14],
+                p = mat1[15],
+                A = mat2[0],
+                B = mat2[1],
+                C = mat2[2],
+                D = mat2[3],
+                E = mat2[4],
+                F = mat2[5],
+                G = mat2[6],
+                H = mat2[7],
+                I = mat2[8],
+                J = mat2[9],
+                K = mat2[10],
+                L = mat2[11],
+                M = mat2[12],
+                N = mat2[13],
+                O = mat2[14],
+                P = mat2[15];
+            dest[0] = A * a + B * e + C * i + D * m;
+            dest[1] = A * b + B * f + C * j + D * n;
+            dest[2] = A * c + B * g + C * k + D * o;
+            dest[3] = A * d + B * h + C * l + D * p;
+            dest[4] = E * a + F * e + G * i + H * m;
+            dest[5] = E * b + F * f + G * j + H * n;
+            dest[6] = E * c + F * g + G * k + H * o;
+            dest[7] = E * d + F * h + G * l + H * p;
+            dest[8] = I * a + J * e + K * i + L * m;
+            dest[9] = I * b + J * f + K * j + L * n;
+            dest[10] = I * c + J * g + K * k + L * o;
+            dest[11] = I * d + J * h + K * l + L * p;
+            dest[12] = M * a + N * e + O * i + P * m;
+            dest[13] = M * b + N * f + O * j + P * n;
+            dest[14] = M * c + N * g + O * k + P * o;
+            dest[15] = M * d + N * h + O * l + P * p;
+            return dest;
+        }
+    }, {
+        key: "scale",
+        value: function scale(mat, vec, dest) {
+            dest[0] = mat[0] * vec[0];
+            dest[1] = mat[1] * vec[0];
+            dest[2] = mat[2] * vec[0];
+            dest[3] = mat[3] * vec[0];
+            dest[4] = mat[4] * vec[1];
+            dest[5] = mat[5] * vec[1];
+            dest[6] = mat[6] * vec[1];
+            dest[7] = mat[7] * vec[1];
+            dest[8] = mat[8] * vec[2];
+            dest[9] = mat[9] * vec[2];
+            dest[10] = mat[10] * vec[2];
+            dest[11] = mat[11] * vec[2];
+            dest[12] = mat[12];
+            dest[13] = mat[13];
+            dest[14] = mat[14];
+            dest[15] = mat[15];
+            return dest;
+        }
+    }, {
+        key: "translate",
+        value: function translate(mat, vec, dest) {
+            dest[0] = mat[0];dest[1] = mat[1];dest[2] = mat[2];dest[3] = mat[3];
+            dest[4] = mat[4];dest[5] = mat[5];dest[6] = mat[6];dest[7] = mat[7];
+            dest[8] = mat[8];dest[9] = mat[9];dest[10] = mat[10];dest[11] = mat[11];
+            dest[12] = mat[0] * vec[0] + mat[4] * vec[1] + mat[8] * vec[2] + mat[12];
+            dest[13] = mat[1] * vec[0] + mat[5] * vec[1] + mat[9] * vec[2] + mat[13];
+            dest[14] = mat[2] * vec[0] + mat[6] * vec[1] + mat[10] * vec[2] + mat[14];
+            dest[15] = mat[3] * vec[0] + mat[7] * vec[1] + mat[11] * vec[2] + mat[15];
+            return dest;
+        }
+    }, {
+        key: "rotate",
+        value: function rotate(mat, angle, axis, dest) {
+            var sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+            if (!sq) {
+                return null;
+            }
+            var a = axis[0],
+                b = axis[1],
+                c = axis[2];
+            if (sq != 1) {
+                sq = 1 / sq;a *= sq;b *= sq;c *= sq;
+            }
+            var d = Math.sin(angle),
+                e = Math.cos(angle),
+                f = 1 - e,
+                g = mat[0],
+                h = mat[1],
+                i = mat[2],
+                j = mat[3],
+                k = mat[4],
+                l = mat[5],
+                m = mat[6],
+                n = mat[7],
+                o = mat[8],
+                p = mat[9],
+                q = mat[10],
+                r = mat[11],
+                s = a * a * f + e,
+                t = b * a * f + c * d,
+                u = c * a * f - b * d,
+                v = a * b * f - c * d,
+                w = b * b * f + e,
+                x = c * b * f + a * d,
+                y = a * c * f + b * d,
+                z = b * c * f - a * d,
+                A = c * c * f + e;
+            if (angle) {
+                if (mat != dest) {
+                    dest[12] = mat[12];dest[13] = mat[13];
+                    dest[14] = mat[14];dest[15] = mat[15];
+                }
+            } else {
+                dest = mat;
+            }
+            dest[0] = g * s + k * t + o * u;
+            dest[1] = h * s + l * t + p * u;
+            dest[2] = i * s + m * t + q * u;
+            dest[3] = j * s + n * t + r * u;
+            dest[4] = g * v + k * w + o * x;
+            dest[5] = h * v + l * w + p * x;
+            dest[6] = i * v + m * w + q * x;
+            dest[7] = j * v + n * w + r * x;
+            dest[8] = g * y + k * z + o * A;
+            dest[9] = h * y + l * z + p * A;
+            dest[10] = i * y + m * z + q * A;
+            dest[11] = j * y + n * z + r * A;
+            return dest;
+        }
+    }, {
+        key: "lookAt",
+        value: function lookAt(eye, center, up, dest) {
+            var eyeX = eye[0],
+                eyeY = eye[1],
+                eyeZ = eye[2],
+                upX = up[0],
+                upY = up[1],
+                upZ = up[2],
+                centerX = center[0],
+                centerY = center[1],
+                centerZ = center[2];
+            if (eyeX == centerX && eyeY == centerY && eyeZ == centerZ) {
+                return Mat4.identity(dest);
+            }
+            var x0 = void 0,
+                x1 = void 0,
+                x2 = void 0,
+                y0 = void 0,
+                y1 = void 0,
+                y2 = void 0,
+                z0 = void 0,
+                z1 = void 0,
+                z2 = void 0,
+                l = void 0;
+            z0 = eyeX - center[0];z1 = eyeY - center[1];z2 = eyeZ - center[2];
+            l = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
+            z0 *= l;z1 *= l;z2 *= l;
+            x0 = upY * z2 - upZ * z1;
+            x1 = upZ * z0 - upX * z2;
+            x2 = upX * z1 - upY * z0;
+            l = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+            if (!l) {
+                x0 = 0;x1 = 0;x2 = 0;
+            } else {
+                l = 1 / l;
+                x0 *= l;x1 *= l;x2 *= l;
+            }
+            y0 = z1 * x2 - z2 * x1;y1 = z2 * x0 - z0 * x2;y2 = z0 * x1 - z1 * x0;
+            l = Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
+            if (!l) {
+                y0 = 0;y1 = 0;y2 = 0;
+            } else {
+                l = 1 / l;
+                y0 *= l;y1 *= l;y2 *= l;
+            }
+            dest[0] = x0;dest[1] = y0;dest[2] = z0;dest[3] = 0;
+            dest[4] = x1;dest[5] = y1;dest[6] = z1;dest[7] = 0;
+            dest[8] = x2;dest[9] = y2;dest[10] = z2;dest[11] = 0;
+            dest[12] = -(x0 * eyeX + x1 * eyeY + x2 * eyeZ);
+            dest[13] = -(y0 * eyeX + y1 * eyeY + y2 * eyeZ);
+            dest[14] = -(z0 * eyeX + z1 * eyeY + z2 * eyeZ);
+            dest[15] = 1;
+            return dest;
+        }
+    }, {
+        key: "perspective",
+        value: function perspective(fovy, aspect, near, far, dest) {
+            var t = near * Math.tan(fovy * Math.PI / 360);
+            var r = t * aspect;
+            var a = r * 2,
+                b = t * 2,
+                c = far - near;
+            dest[0] = near * 2 / a;
+            dest[1] = 0;
+            dest[2] = 0;
+            dest[3] = 0;
+            dest[4] = 0;
+            dest[5] = near * 2 / b;
+            dest[6] = 0;
+            dest[7] = 0;
+            dest[8] = 0;
+            dest[9] = 0;
+            dest[10] = -(far + near) / c;
+            dest[11] = -1;
+            dest[12] = 0;
+            dest[13] = 0;
+            dest[14] = -(far * near * 2) / c;
+            dest[15] = 0;
+            return dest;
+        }
+    }, {
+        key: "ortho",
+        value: function ortho(left, right, top, bottom, near, far, dest) {
+            var h = right - left;
+            var v = top - bottom;
+            var d = far - near;
+            dest[0] = 2 / h;
+            dest[1] = 0;
+            dest[2] = 0;
+            dest[3] = 0;
+            dest[4] = 0;
+            dest[5] = 2 / v;
+            dest[6] = 0;
+            dest[7] = 0;
+            dest[8] = 0;
+            dest[9] = 0;
+            dest[10] = -2 / d;
+            dest[11] = 0;
+            dest[12] = -(left + right) / h;
+            dest[13] = -(top + bottom) / v;
+            dest[14] = -(far + near) / d;
+            dest[15] = 1;
+            return dest;
+        }
+    }, {
+        key: "transpose",
+        value: function transpose(mat, dest) {
+            dest[0] = mat[0];dest[1] = mat[4];
+            dest[2] = mat[8];dest[3] = mat[12];
+            dest[4] = mat[1];dest[5] = mat[5];
+            dest[6] = mat[9];dest[7] = mat[13];
+            dest[8] = mat[2];dest[9] = mat[6];
+            dest[10] = mat[10];dest[11] = mat[14];
+            dest[12] = mat[3];dest[13] = mat[7];
+            dest[14] = mat[11];dest[15] = mat[15];
+            return dest;
+        }
+    }, {
+        key: "inverse",
+        value: function inverse(mat, dest) {
+            var a = mat[0],
+                b = mat[1],
+                c = mat[2],
+                d = mat[3],
+                e = mat[4],
+                f = mat[5],
+                g = mat[6],
+                h = mat[7],
+                i = mat[8],
+                j = mat[9],
+                k = mat[10],
+                l = mat[11],
+                m = mat[12],
+                n = mat[13],
+                o = mat[14],
+                p = mat[15],
+                q = a * f - b * e,
+                r = a * g - c * e,
+                s = a * h - d * e,
+                t = b * g - c * f,
+                u = b * h - d * f,
+                v = c * h - d * g,
+                w = i * n - j * m,
+                x = i * o - k * m,
+                y = i * p - l * m,
+                z = j * o - k * n,
+                A = j * p - l * n,
+                B = k * p - l * o,
+                ivd = 1 / (q * B - r * A + s * z + t * y - u * x + v * w);
+            dest[0] = (f * B - g * A + h * z) * ivd;
+            dest[1] = (-b * B + c * A - d * z) * ivd;
+            dest[2] = (n * v - o * u + p * t) * ivd;
+            dest[3] = (-j * v + k * u - l * t) * ivd;
+            dest[4] = (-e * B + g * y - h * x) * ivd;
+            dest[5] = (a * B - c * y + d * x) * ivd;
+            dest[6] = (-m * v + o * s - p * r) * ivd;
+            dest[7] = (i * v - k * s + l * r) * ivd;
+            dest[8] = (e * A - f * y + h * w) * ivd;
+            dest[9] = (-a * A + b * y - d * w) * ivd;
+            dest[10] = (m * u - n * s + p * q) * ivd;
+            dest[11] = (-i * u + j * s - l * q) * ivd;
+            dest[12] = (-e * z + f * x - g * w) * ivd;
+            dest[13] = (a * z - b * x + c * w) * ivd;
+            dest[14] = (-m * t + n * r - o * q) * ivd;
+            dest[15] = (i * t - j * r + k * q) * ivd;
+            return dest;
+        }
+    }, {
+        key: "toVecIV",
+        value: function toVecIV(mat, vec) {
+            var a = mat[0],
+                b = mat[1],
+                c = mat[2],
+                d = mat[3],
+                e = mat[4],
+                f = mat[5],
+                g = mat[6],
+                h = mat[7],
+                i = mat[8],
+                j = mat[9],
+                k = mat[10],
+                l = mat[11],
+                m = mat[12],
+                n = mat[13],
+                o = mat[14],
+                p = mat[15];
+            var x = vec[0],
+                y = vec[1],
+                z = vec[2],
+                w = vec[3];
+            var dest = [];
+            dest[0] = x * a + y * e + z * i + w * m;
+            dest[1] = x * b + y * f + z * j + w * n;
+            dest[2] = x * c + y * g + z * k + w * o;
+            dest[3] = x * d + y * h + z * l + w * p;
+            return dest;
+        }
+    }, {
+        key: "vpFromCameraProperty",
+        value: function vpFromCameraProperty(position, centerPoint, upDirection, fovy, aspect, near, far, vmat, pmat, dest) {
+            Mat4.lookAt(position, centerPoint, upDirection, vmat);
+            Mat4.perspective(fovy, aspect, near, far, pmat);
+            Mat4.multiply(pmat, vmat, dest);
+        }
+    }, {
+        key: "screenPositionFromMvp",
+        value: function screenPositionFromMvp(mat, vec, width, height) {
+            var halfWidth = width * 0.5;
+            var halfHeight = height * 0.5;
+            var v = Mat4.toVecIV(mat, [vec[0], vec[1], vec[2], 1.0]);
+            if (v[3] <= 0.0) {
+                return [NaN, NaN];
+            }
+            v[0] /= v[3];v[1] /= v[3];v[2] /= v[3];
+            return [halfWidth + v[0] * halfWidth, halfHeight - v[1] * halfHeight];
+        }
+    }]);
+
+    return Mat4;
+}();
+
+var Vec3 = function () {
+    function Vec3() {
+        _classCallCheck(this, Vec3);
+    }
+
+    _createClass(Vec3, null, [{
+        key: "create",
+        value: function create() {
+            return new Float32Array(3);
+        }
+    }, {
+        key: "length",
+        value: function length(v) {
+            return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        }
+    }, {
+        key: "distance",
+        value: function distance(v0, v1) {
+            var n = Vec3.create();
+            n[0] = v1[0] - v0[0];
+            n[1] = v1[1] - v0[1];
+            n[2] = v1[2] - v0[2];
+            return n;
+        }
+    }, {
+        key: "normalize",
+        value: function normalize(v) {
+            var n = Vec3.create();
+            var l = Vec3.length(v);
+            if (l > 0) {
+                var e = 1.0 / l;
+                n[0] = v[0] * e;
+                n[1] = v[1] * e;
+                n[2] = v[2] * e;
+            }
+            return n;
+        }
+    }, {
+        key: "dot",
+        value: function dot(v0, v1) {
+            return v0[0] * v1[0] + v0[1] * v1[1] + v0[2] * v1[2];
+        }
+    }, {
+        key: "cross",
+        value: function cross(v0, v1) {
+            var n = Vec3.create();
+            n[0] = v0[1] * v1[2] - v0[2] * v1[1];
+            n[1] = v0[2] * v1[0] - v0[0] * v1[2];
+            n[2] = v0[0] * v1[1] - v0[1] * v1[0];
+            return n;
+        }
+    }, {
+        key: "faceNormal",
+        value: function faceNormal(v0, v1, v2) {
+            var n = Vec3.create();
+            var vec1 = [v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]];
+            var vec2 = [v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2]];
+            n[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];
+            n[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
+            n[2] = vec1[0] * vec2[1] - vec1[1] * vec2[0];
+            return Vec3.normalize(n);
+        }
+    }]);
+
+    return Vec3;
+}();
+
+var Vec2 = function () {
+    function Vec2() {
+        _classCallCheck(this, Vec2);
+    }
+
+    _createClass(Vec2, null, [{
+        key: "create",
+        value: function create() {
+            return new Float32Array(2);
+        }
+    }, {
+        key: "length",
+        value: function length(v) {
+            return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+        }
+    }, {
+        key: "distance",
+        value: function distance(v0, v1) {
+            var n = Vec2.create();
+            n[0] = v1[0] - v0[0];
+            n[1] = v1[1] - v0[1];
+            return n;
+        }
+    }, {
+        key: "normalize",
+        value: function normalize(v) {
+            var n = Vec2.create();
+            var l = Vec2.length(v);
+            if (l > 0) {
+                var e = 1.0 / l;
+                n[0] = v[0] * e;
+                n[1] = v[1] * e;
+            }
+            return n;
+        }
+    }, {
+        key: "dot",
+        value: function dot(v0, v1) {
+            return v0[0] * v1[0] + v0[1] * v1[1];
+        }
+    }, {
+        key: "cross",
+        value: function cross(v0, v1) {
+            var n = Vec2.create();
+            return v0[0] * v1[1] - v0[1] * v1[0];
+        }
+    }]);
+
+    return Vec2;
+}();
+
+var Qtn = function () {
+    function Qtn() {
+        _classCallCheck(this, Qtn);
+    }
+
+    _createClass(Qtn, null, [{
+        key: "create",
+        value: function create() {
+            return new Float32Array(4);
+        }
+    }, {
+        key: "identity",
+        value: function identity(dest) {
+            dest[0] = 0;dest[1] = 0;dest[2] = 0;dest[3] = 1;
+            return dest;
+        }
+    }, {
+        key: "inverse",
+        value: function inverse(qtn, dest) {
+            dest[0] = -qtn[0];
+            dest[1] = -qtn[1];
+            dest[2] = -qtn[2];
+            dest[3] = qtn[3];
+            return dest;
+        }
+    }, {
+        key: "normalize",
+        value: function normalize(dest) {
+            var x = dest[0],
+                y = dest[1],
+                z = dest[2],
+                w = dest[3];
+            var l = Math.sqrt(x * x + y * y + z * z + w * w);
+            if (l === 0) {
+                dest[0] = 0;
+                dest[1] = 0;
+                dest[2] = 0;
+                dest[3] = 0;
+            } else {
+                l = 1 / l;
+                dest[0] = x * l;
+                dest[1] = y * l;
+                dest[2] = z * l;
+                dest[3] = w * l;
+            }
+            return dest;
+        }
+    }, {
+        key: "multiply",
+        value: function multiply(qtn1, qtn2, dest) {
+            var ax = qtn1[0],
+                ay = qtn1[1],
+                az = qtn1[2],
+                aw = qtn1[3];
+            var bx = qtn2[0],
+                by = qtn2[1],
+                bz = qtn2[2],
+                bw = qtn2[3];
+            dest[0] = ax * bw + aw * bx + ay * bz - az * by;
+            dest[1] = ay * bw + aw * by + az * bx - ax * bz;
+            dest[2] = az * bw + aw * bz + ax * by - ay * bx;
+            dest[3] = aw * bw - ax * bx - ay * by - az * bz;
+            return dest;
+        }
+    }, {
+        key: "rotate",
+        value: function rotate(angle, axis, dest) {
+            var sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+            if (!sq) {
+                return null;
+            }
+            var a = axis[0],
+                b = axis[1],
+                c = axis[2];
+            if (sq != 1) {
+                sq = 1 / sq;a *= sq;b *= sq;c *= sq;
+            }
+            var s = Math.sin(angle * 0.5);
+            dest[0] = a * s;
+            dest[1] = b * s;
+            dest[2] = c * s;
+            dest[3] = Math.cos(angle * 0.5);
+            return dest;
+        }
+    }, {
+        key: "toVecIII",
+        value: function toVecIII(vec, qtn, dest) {
+            var qp = Qtn.create();
+            var qq = Qtn.create();
+            var qr = Qtn.create();
+            Qtn.inverse(qtn, qr);
+            qp[0] = vec[0];
+            qp[1] = vec[1];
+            qp[2] = vec[2];
+            Qtn.multiply(qr, qp, qq);
+            Qtn.multiply(qq, qtn, qr);
+            dest[0] = qr[0];
+            dest[1] = qr[1];
+            dest[2] = qr[2];
+            return dest;
+        }
+    }, {
+        key: "toMatIV",
+        value: function toMatIV(qtn, dest) {
+            var x = qtn[0],
+                y = qtn[1],
+                z = qtn[2],
+                w = qtn[3];
+            var x2 = x + x,
+                y2 = y + y,
+                z2 = z + z;
+            var xx = x * x2,
+                xy = x * y2,
+                xz = x * z2;
+            var yy = y * y2,
+                yz = y * z2,
+                zz = z * z2;
+            var wx = w * x2,
+                wy = w * y2,
+                wz = w * z2;
+            dest[0] = 1 - (yy + zz);
+            dest[1] = xy - wz;
+            dest[2] = xz + wy;
+            dest[3] = 0;
+            dest[4] = xy + wz;
+            dest[5] = 1 - (xx + zz);
+            dest[6] = yz - wx;
+            dest[7] = 0;
+            dest[8] = xz - wy;
+            dest[9] = yz + wx;
+            dest[10] = 1 - (xx + yy);
+            dest[11] = 0;
+            dest[12] = 0;
+            dest[13] = 0;
+            dest[14] = 0;
+            dest[15] = 1;
+            return dest;
+        }
+    }, {
+        key: "slerp",
+        value: function slerp(qtn1, qtn2, time, dest) {
+            var ht = qtn1[0] * qtn2[0] + qtn1[1] * qtn2[1] + qtn1[2] * qtn2[2] + qtn1[3] * qtn2[3];
+            var hs = 1.0 - ht * ht;
+            if (hs <= 0.0) {
+                dest[0] = qtn1[0];
+                dest[1] = qtn1[1];
+                dest[2] = qtn1[2];
+                dest[3] = qtn1[3];
+            } else {
+                hs = Math.sqrt(hs);
+                if (Math.abs(hs) < 0.0001) {
+                    dest[0] = qtn1[0] * 0.5 + qtn2[0] * 0.5;
+                    dest[1] = qtn1[1] * 0.5 + qtn2[1] * 0.5;
+                    dest[2] = qtn1[2] * 0.5 + qtn2[2] * 0.5;
+                    dest[3] = qtn1[3] * 0.5 + qtn2[3] * 0.5;
+                } else {
+                    var ph = Math.acos(ht);
+                    var pt = ph * time;
+                    var t0 = Math.sin(ph - pt) / hs;
+                    var t1 = Math.sin(pt) / hs;
+                    dest[0] = qtn1[0] * t0 + qtn2[0] * t1;
+                    dest[1] = qtn1[1] * t0 + qtn2[1] * t1;
+                    dest[2] = qtn1[2] * t0 + qtn2[2] * t1;
+                    dest[3] = qtn1[3] * t0 + qtn2[3] * t1;
+                }
+            }
+            return dest;
+        }
+    }]);
+
+    return Qtn;
+}();
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * gl3Mesh
+ * @class
+ */
+var gl3Mesh = function () {
+    function gl3Mesh() {
+        _classCallCheck(this, gl3Mesh);
+    }
+
+    _createClass(gl3Mesh, null, [{
+        key: "plane",
+
+        /**
+         * 板ポリゴンの頂点情報を生成する
+         * @param {number} width - 板ポリゴンの一辺の幅
+         * @param {number} height - 板ポリゴンの一辺の高さ
+         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @return {object}
+         * @property {Array.<number>} position - 頂点座標
+         * @property {Array.<number>} normal - 頂点法線
+         * @property {Array.<number>} color - 頂点カラー
+         * @property {Array.<number>} texCoord - テクスチャ座標
+         * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         */
+        value: function plane(width, height, color) {
+            var w = void 0,
+                h = void 0;
+            w = width / 2;
+            h = height / 2;
+            if (color) {
+                tc = color;
+            } else {
+                tc = [1.0, 1.0, 1.0, 1.0];
+            }
+            var pos = [-w, h, 0.0, w, h, 0.0, -w, -h, 0.0, w, -h, 0.0];
+            var nor = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0];
+            var col = [color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3]];
+            var st = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0];
+            var idx = [0, 1, 2, 2, 1, 3];
+            return { position: pos, normal: nor, color: col, texCoord: st, index: idx };
+        }
+
+        /**
+         * トーラスの頂点情報を生成する
+         * @param {number} row - 輪の分割数
+         * @param {number} column - パイプ断面の分割数
+         * @param {number} irad - パイプ断面の半径
+         * @param {number} orad - パイプ全体の半径
+         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @return {object}
+         * @property {Array.<number>} position - 頂点座標
+         * @property {Array.<number>} normal - 頂点法線
+         * @property {Array.<number>} color - 頂点カラー
+         * @property {Array.<number>} texCoord - テクスチャ座標
+         * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         */
+
+    }, {
+        key: "torus",
+        value: function torus(row, column, irad, orad, color) {
+            var i = void 0,
+                j = void 0;
+            var pos = [],
+                nor = [],
+                col = [],
+                st = [],
+                idx = [];
+            for (i = 0; i <= row; i++) {
+                var r = Math.PI * 2 / row * i;
+                var rr = Math.cos(r);
+                var ry = Math.sin(r);
+                for (j = 0; j <= column; j++) {
+                    var tr = Math.PI * 2 / column * j;
+                    var tx = (rr * irad + orad) * Math.cos(tr);
+                    var ty = ry * irad;
+                    var tz = (rr * irad + orad) * Math.sin(tr);
+                    var rx = rr * Math.cos(tr);
+                    var rz = rr * Math.sin(tr);
+                    var rs = 1 / column * j;
+                    var rt = 1 / row * i + 0.5;
+                    if (rt > 1.0) {
+                        rt -= 1.0;
+                    }
+                    rt = 1.0 - rt;
+                    pos.push(tx, ty, tz);
+                    nor.push(rx, ry, rz);
+                    col.push(color[0], color[1], color[2], color[3]);
+                    st.push(rs, rt);
+                }
+            }
+            for (i = 0; i < row; i++) {
+                for (j = 0; j < column; j++) {
+                    var _r = (column + 1) * i + j;
+                    idx.push(_r, _r + column + 1, _r + 1);
+                    idx.push(_r + column + 1, _r + column + 2, _r + 1);
+                }
+            }
+            return { position: pos, normal: nor, color: col, texCoord: st, index: idx };
+        }
+
+        /**
+         * 球体の頂点情報を生成する
+         * @param {number} row - 球の縦方向（緯度方向）の分割数
+         * @param {number} column - 球の横方向（経度方向）の分割数
+         * @param {number} rad - 球の半径
+         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @return {object}
+         * @property {Array.<number>} position - 頂点座標
+         * @property {Array.<number>} normal - 頂点法線
+         * @property {Array.<number>} color - 頂点カラー
+         * @property {Array.<number>} texCoord - テクスチャ座標
+         * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         */
+
+    }, {
+        key: "sphere",
+        value: function sphere(row, column, rad, color) {
+            var i = void 0,
+                j = void 0;
+            var pos = [],
+                nor = [],
+                col = [],
+                st = [],
+                idx = [];
+            for (i = 0; i <= row; i++) {
+                var r = Math.PI / row * i;
+                var ry = Math.cos(r);
+                var rr = Math.sin(r);
+                for (j = 0; j <= column; j++) {
+                    var tr = Math.PI * 2 / column * j;
+                    var tx = rr * rad * Math.cos(tr);
+                    var ty = ry * rad;
+                    var tz = rr * rad * Math.sin(tr);
+                    var rx = rr * Math.cos(tr);
+                    var rz = rr * Math.sin(tr);
+                    pos.push(tx, ty, tz);
+                    nor.push(rx, ry, rz);
+                    col.push(color[0], color[1], color[2], color[3]);
+                    st.push(1 - 1 / column * j, 1 / row * i);
+                }
+            }
+            for (i = 0; i < row; i++) {
+                for (j = 0; j < column; j++) {
+                    var _r2 = (column + 1) * i + j;
+                    idx.push(_r2, _r2 + 1, _r2 + column + 2);
+                    idx.push(_r2, _r2 + column + 2, _r2 + column + 1);
+                }
+            }
+            return { position: pos, normal: nor, color: col, texCoord: st, index: idx };
+        }
+
+        /**
+         * キューブの頂点情報を生成する
+         * @param {number} side - 正立方体の一辺の長さ
+         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @return {object}
+         * @property {Array.<number>} position - 頂点座標
+         * @property {Array.<number>} normal - 頂点法線 ※キューブの中心から各頂点に向かって伸びるベクトルなので注意
+         * @property {Array.<number>} color - 頂点カラー
+         * @property {Array.<number>} texCoord - テクスチャ座標
+         * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         */
+
+    }, {
+        key: "cube",
+        value: function cube(side, color) {
+            var hs = side * 0.5;
+            var pos = [-hs, -hs, hs, hs, -hs, hs, hs, hs, hs, -hs, hs, hs, -hs, -hs, -hs, -hs, hs, -hs, hs, hs, -hs, hs, -hs, -hs, -hs, hs, -hs, -hs, hs, hs, hs, hs, hs, hs, hs, -hs, -hs, -hs, -hs, hs, -hs, -hs, hs, -hs, hs, -hs, -hs, hs, hs, -hs, -hs, hs, hs, -hs, hs, hs, hs, hs, -hs, hs, -hs, -hs, -hs, -hs, -hs, hs, -hs, hs, hs, -hs, hs, -hs];
+            var v = 1.0 / Math.sqrt(3.0);
+            var nor = [-v, -v, v, v, -v, v, v, v, v, -v, v, v, -v, -v, -v, -v, v, -v, v, v, -v, v, -v, -v, -v, v, -v, -v, v, v, v, v, v, v, v, -v, -v, -v, -v, v, -v, -v, v, -v, v, -v, -v, v, v, -v, -v, v, v, -v, v, v, v, v, -v, v, -v, -v, -v, -v, -v, v, -v, v, v, -v, v, -v];
+            var col = [];
+            for (var i = 0; i < pos.length / 3; i++) {
+                col.push(color[0], color[1], color[2], color[3]);
+            }
+            var st = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
+            var idx = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23];
+            return { position: pos, normal: nor, color: col, texCoord: st, index: idx };
+        }
+    }]);
+
+    return gl3Mesh;
+}();
+
+exports.default = gl3Mesh;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * gl3Util
+ * @class gl3Util
+ */
+var gl3Util = function () {
+    function gl3Util() {
+        _classCallCheck(this, gl3Util);
+    }
+
+    _createClass(gl3Util, null, [{
+        key: "hsva",
+
+        /**
+         * HSV カラーを生成して配列で返す
+         * @param {number} h - 色相
+         * @param {number} s - 彩度
+         * @param {number} v - 明度
+         * @param {number} a - アルファ
+         * @return {Array.<number>} RGBA を 0.0 から 1.0 の範囲に正規化した色の配列
+         */
+        value: function hsva(h, s, v, a) {
+            if (s > 1 || v > 1 || a > 1) {
+                return;
+            }
+            var th = h % 360;
+            var i = Math.floor(th / 60);
+            var f = th / 60 - i;
+            var m = v * (1 - s);
+            var n = v * (1 - s * f);
+            var k = v * (1 - s * (1 - f));
+            var color = new Array();
+            if (!s > 0 && !s < 0) {
+                color.push(v, v, v, a);
+            } else {
+                var r = new Array(v, n, m, m, k, v);
+                var g = new Array(k, v, v, n, m, m);
+                var b = new Array(m, m, k, v, v, n);
+                color.push(r[i], g[i], b[i], a);
+            }
+            return color;
+        }
+        /**
+         * イージング
+         * @param {number} t - 0.0 から 1.0 の値
+         */
+
+    }, {
+        key: "easeLiner",
+        value: function easeLiner(t) {
+            return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+        }
+        /**
+         * イージング
+         * @param {number} t - 0.0 から 1.0 の値
+         */
+
+    }, {
+        key: "easeOutCubic",
+        value: function easeOutCubic(t) {
+            return (t = t / 1 - 1) * t * t + 1;
+        }
+        /**
+         * イージング
+         * @param {number} t - 0.0 から 1.0 の値
+         */
+
+    }, {
+        key: "easeQuintic",
+        value: function easeQuintic(t) {
+            var ts = (t = t / 1) * t;
+            var tc = ts * t;
+            return tc * ts;
+        }
+    }]);
+
+    return gl3Util;
+}();
+
+exports.default = gl3Util;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _gl3Audio = __webpack_require__(0);
+
+var _gl3Audio2 = _interopRequireDefault(_gl3Audio);
+
+var _gl3Math = __webpack_require__(2);
+
+var _gl3Math2 = _interopRequireDefault(_gl3Math);
+
+var _gl3Mesh = __webpack_require__(3);
+
+var _gl3Mesh2 = _interopRequireDefault(_gl3Mesh);
+
+var _gl3Util = __webpack_require__(4);
+
+var _gl3Util2 = _interopRequireDefault(_gl3Util);
+
+var _gl3Gui = __webpack_require__(1);
+
+var _gl3Gui2 = _interopRequireDefault(_gl3Gui);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * glcubic
+ * @class gl3
+ */
+var gl3 = function () {
+    /**
+     * @constructor
+     */
+    function gl3() {
+        _classCallCheck(this, gl3);
+
+        /**
+         * version
+         * @const
+         * @type {string}
+         */
+        this.VERSION = '0.1.2';
+        /**
+         * pi * 2
+         * @const
+         * @type {number}
+         */
+        this.PI2 = 6.28318530717958647692528676655900576;
+        /**
+         * pi
+         * @const
+         * @type {number}
+         */
+        this.PI = 3.14159265358979323846264338327950288;
+        /**
+         * pi / 2
+         * @const
+         * @type {number}
+         */
+        this.PIH = 1.57079632679489661923132169163975144;
+        /**
+         * pi / 4
+         * @const
+         * @type {number}
+         */
+        this.PIH2 = 0.78539816339744830961566084581987572;
+        /**
+         * gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS を利用して得られるテクスチャユニットの最大利用可能数
+         * @const
+         * @type {number}
+         */
+        this.TEXTURE_UNIT_COUNT = null;
+
+        /**
+         * glcubic が正しく初期化されたどうかのフラグ
+         * @type {boolean}
+         */
+        this.ready = false;
+        /**
+         * glcubic と紐付いている canvas element
+         * @type {HTMLCanvasElement}
+         */
+        this.canvas = null;
+        /**
+         * glcubic と紐付いている canvas から取得した WebGL Rendering Context
+         * @type {WebGLRenderingContext}
+         */
+        this.gl = null;
+        /**
+         * glcubic が内部的に持っているテクスチャ格納用の配列
+         * @type {Array.<WebGLTexture>}
+         */
+        this.textures = null;
+        /**
+         * WebGL の拡張機能を格納するオブジェクト
+         * @type {Object}
+         */
+        this.ext = null;
+
+        /**
+         * gl3Audio クラスのインスタンス
+         * @type {gl3Audio}
+         */
+        this.Audio = _gl3Audio2.default;
+        /**
+         * gl3Mesh クラスのインスタンス
+         * @type {gl3Mesh}
+         */
+        this.Mesh = _gl3Mesh2.default;
+        /**
+         * gl3Util クラスのインスタンス
+         * @type {gl3Util}
+         */
+        this.Util = _gl3Util2.default;
+        /**
+         * gl3Gui クラスのインスタンス
+         * @type {gl3Gui}
+         */
+        this.Gui = new _gl3Gui2.default();
+        /**
+         * gl3Math クラスのインスタンス
+         * @type {gl3Math}
+         */
+        this.Math = new _gl3Math2.default();
+
+        console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
+    }
+
+    /**
+     * glcubic を初期化する
+     * @param {HTMLCanvasElement|string} canvas - canvas element か canvas に付与されている ID 文字列
+     * @param {Object} options - canvas.getContext で第二引数に渡す初期化時オプション
+     * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値
+     */
+
+
+    _createClass(gl3, [{
+        key: 'init',
+        value: function init(canvas, options) {
+            var opt = options || {};
+            this.ready = false;
+            if (canvas == null) {
+                return false;
+            }
+            if (canvas instanceof HTMLCanvasElement) {
+                this.canvas = canvas;
+            } else if (Object.prototype.toString.call(canvas) === '[object String]') {
+                this.canvas = document.getElementById(canvas);
+            }
+            if (this.canvas == null) {
+                return false;
+            }
+            this.gl = this.canvas.getContext('webgl', opt) || this.canvas.getContext('experimental-webgl', opt);
+            if (this.gl != null) {
+                this.ready = true;
+                this.TEXTURE_UNIT_COUNT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+                this.textures = new Array(this.TEXTURE_UNIT_COUNT);
+            }
+            this.ext = {
+                elementIndexUint: this.gl.getExtension('OES_element_index_uint'),
+                textureFloat: this.gl.getExtension('OES_texture_float'),
+                drawBuffers: this.gl.getExtension('WEBGL_draw_buffers')
+            };
+            return this.ready;
+        }
+
+        /**
+         * フレームバッファをクリアする
+         * @param {Array.<number>} color - クリアする色（0.0 ~ 1.0）
+         * @param {number} [depth] - クリアする深度
+         * @param {number} [stencil] - クリアするステンシル値
+         */
+
+    }, {
+        key: 'sceneClear',
+        value: function sceneClear(color, depth, stencil) {
+            var gl = this.gl;
+            var flg = gl.COLOR_BUFFER_BIT;
+            gl.clearColor(color[0], color[1], color[2], color[3]);
+            if (depth != null) {
+                gl.clearDepth(depth);
+                flg = flg | gl.DEPTH_BUFFER_BIT;
+            }
+            if (stencil != null) {
+                gl.clearStencil(stencil);
+                flg = flg | gl.STENCIL_BUFFER_BIT;
+            }
+            gl.clear(flg);
+        }
+
+        /**
+         * ビューポートを設定する
+         * @param {number} [x] - x（左端原点）
+         * @param {number} [y] - y（下端原点）
+         * @param {number} [width] - 横の幅
+         * @param {number} [height] - 縦の高さ
+         */
+
+    }, {
+        key: 'sceneView',
+        value: function sceneView(x, y, width, height) {
+            var X = x || 0;
+            var Y = y || 0;
+            var w = width || window.innerWidth;
+            var h = height || window.innerHeight;
+            this.gl.viewport(X, Y, w, h);
+        }
+
+        /**
+         * gl.drawArrays をコールするラッパー
+         * @param {number} primitive - プリミティブタイプ
+         * @param {number} vertexCount - 描画する頂点の個数
+         * @param {number} [offset=0] - 描画する頂点の開始オフセット
+         */
+
+    }, {
+        key: 'drawArrays',
+        value: function drawArrays(primitive, vertexCount) {
+            var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+            this.gl.drawArrays(primitive, offset, vertexCount);
+        }
+
+        /**
+         * gl.drawElements をコールするラッパー
+         * @param {number} primitive - プリミティブタイプ
+         * @param {number} indexLength - 描画するインデックスの個数
+         * @param {number} [offset=0] - 描画するインデックスの開始オフセット
+         */
+
+    }, {
+        key: 'drawElements',
+        value: function drawElements(primitive, indexLength) {
+            var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+            this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_SHORT, offset);
+        }
+
+        /**
+         * gl.drawElements をコールするラッパー（gl.UNSIGNED_INT） ※要拡張機能（WebGL 1.0）
+         * @param {number} primitive - プリミティブタイプ
+         * @param {number} indexLength - 描画するインデックスの個数
+         * @param {number} [offset=0] - 描画するインデックスの開始オフセット
+         */
+
+    }, {
+        key: 'drawElementsInt',
+        value: function drawElementsInt(primitive, indexLength) {
+            var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+            this.gl.drawElements(primitive, indexLength, this.gl.UNSIGNED_INT, offset);
+        }
+
+        /**
+         * VBO（Vertex Buffer Object）を生成して返す
+         * @param {Array.<number>} data - 頂点情報を格納した配列
+         * @return {WebGLBuffer} 生成した頂点バッファ
+         */
+
+    }, {
+        key: 'createVbo',
+        value: function createVbo(data) {
+            if (data == null) {
+                return;
+            }
+            var vbo = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+            return vbo;
+        }
+
+        /**
+         * IBO（Index Buffer Object）を生成して返す
+         * @param {Array.<number>} data - インデックス情報を格納した配列
+         * @return {WebGLBuffer} 生成したインデックスバッファ
+         */
+
+    }, {
+        key: 'createIbo',
+        value: function createIbo(data) {
+            if (data == null) {
+                return;
+            }
+            var ibo = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), this.gl.STATIC_DRAW);
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
+            return ibo;
+        }
+
+        /**
+         * IBO（Index Buffer Object）を生成して返す（gl.UNSIGNED_INT） ※要拡張機能（WebGL 1.0）
+         * @param {Array.<number>} data - インデックス情報を格納した配列
+         * @return {WebGLBuffer} 生成したインデックスバッファ
+         */
+
+    }, {
+        key: 'createIboInt',
+        value: function createIboInt(data) {
+            if (data == null) {
+                return;
+            }
+            var ibo = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(data), this.gl.STATIC_DRAW);
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
+            return ibo;
+        }
+
+        /**
+         * ファイルを元にテクスチャを生成して返す
+         * @param {string} source - ファイルパス
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         * @param {function} callback - 画像のロードが完了しテクスチャを生成した後に呼ばれるコールバック
+         */
+
+    }, {
+        key: 'createTextureFromFile',
+        value: function createTextureFromFile(source, number, callback) {
+            var _this = this;
+
+            if (source == null || number == null) {
+                return;
+            }
+            var img = new Image();
+            var gl = this.gl;
+            img.onload = function () {
+                _this.textures[number] = { texture: null, type: null, loaded: false };
+                var tex = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D, tex);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+                gl.generateMipmap(gl.TEXTURE_2D);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                _this.textures[number].texture = tex;
+                _this.textures[number].type = gl.TEXTURE_2D;
+                _this.textures[number].loaded = true;
+                console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                if (callback != null) {
+                    callback(number);
+                }
+            };
+            img.src = source;
+        }
+
+        /**
+         * オブジェクトを元にテクスチャを生成して返す
+         * @param {object} object - ロード済みの Image オブジェクトや Canvas オブジェクト
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         */
+
+    }, {
+        key: 'createTextureFromObject',
+        value: function createTextureFromObject(object, number) {
+            if (object == null || number == null) {
+                return;
+            }
+            var gl = this.gl;
+            var tex = gl.createTexture();
+            this.textures[number] = { texture: null, type: null, loaded: false };
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, object);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            this.textures[number].texture = tex;
+            this.textures[number].type = gl.TEXTURE_2D;
+            this.textures[number].loaded = true;
+            console.log('%c◆%c texture number: %c' + number + '%c, object attached', 'color: crimson', '', 'color: blue', '');
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+
+        /**
+         * 画像を元にキューブマップテクスチャを生成する
+         * @param {Array.<string>} source - ファイルパスを格納した配列
+         * @param {Array.<number>} target - キューブマップテクスチャに設定するターゲットの配列
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         * @param {function} callback - 画像のロードが完了しテクスチャを生成した後に呼ばれるコールバック
+         */
+
+    }, {
+        key: 'createTextureCubeFromFile',
+        value: function createTextureCubeFromFile(source, target, number, callback) {
+            var _this2 = this;
+
+            if (source == null || target == null || number == null) {
+                return;
+            }
+            var cImg = [];
+            var gl = this.gl;
+            this.textures[number] = { texture: null, type: null, loaded: false };
+            for (var i = 0; i < source.length; i++) {
+                cImg[i] = { image: new Image(), loaded: false };
+                cImg[i].image.onload = function (index) {
+                    return function () {
+                        cImg[index].loaded = true;
+                        if (cImg.length === 6) {
+                            var f = true;
+                            cImg.map(function (v) {
+                                f = f && v.loaded;
+                            });
+                            if (f === true) {
+                                var tex = gl.createTexture();
+                                gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
+                                for (var j = 0; j < source.length; j++) {
+                                    gl.texImage2D(target[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cImg[j].image);
+                                }
+                                gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+                                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                                _this2.textures[number].texture = tex;
+                                _this2.textures[number].type = gl.TEXTURE_CUBE_MAP;
+                                _this2.textures[number].loaded = true;
+                                console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                                if (callback != null) {
+                                    callback(number);
+                                }
+                            }
+                        }
+                    };
+                }(i);
+                cImg[i].image.src = source[i];
+            }
+        }
+
+        /**
+         * glcubic が持つ配列のインデックスとテクスチャユニットを指定してテクスチャをバインドする
+         * @param {number} unit - テクスチャユニット
+         * @param {number} number - glcubic が持つ配列のインデックス
+         */
+
+    }, {
+        key: 'bindTexture',
+        value: function bindTexture(unit, number) {
+            if (this.textures[number] == null) {
+                return;
+            }
+            this.gl.activeTexture(this.gl.TEXTURE0 + unit);
+            this.gl.bindTexture(this.textures[number].type, this.textures[number].texture);
+        }
+
+        /**
+         * glcubic が持つ配列内のテクスチャ用画像が全てロード済みかどうか確認する
+         * @return {boolean} ロードが完了しているかどうかのフラグ
+         */
+
+    }, {
+        key: 'isTextureLoaded',
+        value: function isTextureLoaded() {
+            var i = void 0,
+                j = void 0,
+                f = void 0,
+                g = void 0;
+            f = true;g = false;
+            for (i = 0, j = this.textures.length; i < j; i++) {
+                if (this.textures[i] != null) {
+                    g = true;
+                    f = f && this.textures[i].loaded;
+                }
+            }
+            if (g) {
+                return f;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * フレームバッファを生成しカラーバッファにテクスチャを設定してオブジェクトとして返す
+         * @param {number} width - フレームバッファの横幅
+         * @param {number} height - フレームバッファの高さ
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         * @return {object} 生成した各種オブジェクトはラップして返却する
+         * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+         * @property {WebGLRenderbuffer} depthRenderBuffer - 深度バッファとして設定したレンダーバッファ
+         * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+         */
+
+    }, {
+        key: 'createFramebuffer',
+        value: function createFramebuffer(width, height, number) {
+            if (width == null || height == null || number == null) {
+                return;
+            }
+            var gl = this.gl;
+            this.textures[number] = { texture: null, type: null, loaded: false };
+            var frameBuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+            var depthRenderBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderBuffer);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
+            var fTexture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, fTexture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTexture, 0);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            this.textures[number].texture = fTexture;
+            this.textures[number].type = gl.TEXTURE_2D;
+            this.textures[number].loaded = true;
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created', 'color: crimson', '', 'color: blue', '');
+            return { framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture };
+        }
+
+        /**
+         * フレームバッファを生成しカラーバッファにテクスチャを設定、ステンシル有効でオブジェクトとして返す
+         * @param {number} width - フレームバッファの横幅
+         * @param {number} height - フレームバッファの高さ
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         * @return {object} 生成した各種オブジェクトはラップして返却する
+         * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+         * @property {WebGLRenderbuffer} depthStencilRenderbuffer - 深度バッファ兼ステンシルバッファとして設定したレンダーバッファ
+         * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+         */
+
+    }, {
+        key: 'createFramebufferStencil',
+        value: function createFramebufferStencil(width, height, number) {
+            if (width == null || height == null || number == null) {
+                return;
+            }
+            var gl = this.gl;
+            this.textures[number] = { texture: null, type: null, loaded: false };
+            var frameBuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+            var depthStencilRenderBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, depthStencilRenderBuffer);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, depthStencilRenderBuffer);
+            var fTexture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, fTexture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTexture, 0);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            this.textures[number].texture = fTexture;
+            this.textures[number].type = gl.TEXTURE_2D;
+            this.textures[number].loaded = true;
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable stencil)', 'color: crimson', '', 'color: blue', '');
+            return { framebuffer: frameBuffer, depthStencilRenderbuffer: depthStencilRenderBuffer, texture: fTexture };
+        }
+
+        /**
+         * フレームバッファを生成しカラーバッファに浮動小数点テクスチャを設定してオブジェクトとして返す ※要拡張機能（WebGL 1.0）
+         * @param {number} width - フレームバッファの横幅
+         * @param {number} height - フレームバッファの高さ
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         * @return {object} 生成した各種オブジェクトはラップして返却する
+         * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+         * @property {WebGLRenderbuffer} depthRenderBuffer - 深度バッファとして設定したレンダーバッファ
+         * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+         */
+
+    }, {
+        key: 'createFramebufferFloat',
+        value: function createFramebufferFloat(width, height, number) {
+            if (width == null || height == null || number == null) {
+                return;
+            }
+            var gl = this.gl;
+            this.textures[number] = { texture: null, type: null, loaded: false };
+            var frameBuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+            var fTexture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, fTexture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.FLOAT, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTexture, 0);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            this.textures[number].texture = fTexture;
+            this.textures[number].type = gl.TEXTURE_2D;
+            this.textures[number].loaded = true;
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable float)', 'color: crimson', '', 'color: blue', '');
+            return { framebuffer: frameBuffer, depthRenderbuffer: null, texture: fTexture };
+        }
+
+        /**
+         * フレームバッファを生成しカラーバッファにキューブテクスチャを設定してオブジェクトとして返す
+         * @param {number} width - フレームバッファの横幅
+         * @param {number} height - フレームバッファの高さ
+         * @param {Array.<number>} target - キューブマップテクスチャに設定するターゲットの配列
+         * @param {number} number - glcubic が内部的に持つ配列のインデックス ※非テクスチャユニット
+         * @return {object} 生成した各種オブジェクトはラップして返却する
+         * @property {WebGLFramebuffer} framebuffer - フレームバッファ
+         * @property {WebGLRenderbuffer} depthRenderBuffer - 深度バッファとして設定したレンダーバッファ
+         * @property {WebGLTexture} texture - カラーバッファとして設定したテクスチャ
+         */
+
+    }, {
+        key: 'createFramebufferCube',
+        value: function createFramebufferCube(width, height, target, number) {
+            if (width == null || height == null || target == null || number == null) {
+                return;
+            }
+            var gl = this.gl;
+            this.textures[number] = { texture: null, type: null, loaded: false };
+            var frameBuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+            var depthRenderBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderBuffer);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
+            var fTexture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, fTexture);
+            for (var i = 0; i < target.length; i++) {
+                gl.texImage2D(target[i], 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            }
+            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            this.textures[number].texture = fTexture;
+            this.textures[number].type = gl.TEXTURE_CUBE_MAP;
+            this.textures[number].loaded = true;
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer cube created', 'color: crimson', '', 'color: blue', '');
+            return { framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture };
+        }
+
+        /**
+         * HTML 内に存在する ID 文字列から script タグを参照しプログラムオブジェクトを生成する
+         * @param {string} vsId - 頂点シェーダのソースが記述された script タグの ID 文字列
+         * @param {string} fsId - フラグメントシェーダのソースが記述された script タグの ID 文字列
+         * @param {Array.<string>} attLocation - attribute 変数名の配列
+         * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+         * @param {Array.<string>} uniLocation - uniform 変数名の配列
+         * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+         * @return {ProgramManager} プログラムマネージャークラスのインスタンス
+         */
+
+    }, {
+        key: 'createProgramFromId',
+        value: function createProgramFromId(vsId, fsId, attLocation, attStride, uniLocation, uniType) {
+            if (this.gl == null) {
+                return null;
+            }
+            var i = void 0;
+            var mng = new ProgramManager(this.gl);
+            mng.vs = mng.createShaderFromId(vsId);
+            mng.fs = mng.createShaderFromId(fsId);
+            mng.prg = mng.createProgram(mng.vs, mng.fs);
+            mng.attL = new Array(attLocation.length);
+            mng.attS = new Array(attLocation.length);
+            for (i = 0; i < attLocation.length; i++) {
+                mng.attL[i] = this.gl.getAttribLocation(mng.prg, attLocation[i]);
+                mng.attS[i] = attStride[i];
+            }
+            mng.uniL = new Array(uniLocation.length);
+            for (i = 0; i < uniLocation.length; i++) {
+                mng.uniL[i] = this.gl.getUniformLocation(mng.prg, uniLocation[i]);
+            }
+            mng.uniT = uniType;
+            mng.locationCheck(attLocation, uniLocation);
+            return mng;
+        }
+
+        /**
+         * シェーダのソースコード文字列からプログラムオブジェクトを生成する
+         * @param {string} vs - 頂点シェーダのソース
+         * @param {string} fs - フラグメントシェーダのソース
+         * @param {Array.<string>} attLocation - attribute 変数名の配列
+         * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+         * @param {Array.<string>} uniLocation - uniform 変数名の配列
+         * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+         * @return {ProgramManager} プログラムマネージャークラスのインスタンス
+         */
+
+    }, {
+        key: 'createProgramFromSource',
+        value: function createProgramFromSource(vs, fs, attLocation, attStride, uniLocation, uniType) {
+            if (this.gl == null) {
+                return null;
+            }
+            var i = void 0;
+            var mng = new ProgramManager(this.gl);
+            mng.vs = mng.createShaderFromSource(vs, this.gl.VERTEX_SHADER);
+            mng.fs = mng.createShaderFromSource(fs, this.gl.FRAGMENT_SHADER);
+            mng.prg = mng.createProgram(mng.vs, mng.fs);
+            mng.attL = new Array(attLocation.length);
+            mng.attS = new Array(attLocation.length);
+            for (i = 0; i < attLocation.length; i++) {
+                mng.attL[i] = this.gl.getAttribLocation(mng.prg, attLocation[i]);
+                mng.attS[i] = attStride[i];
+            }
+            mng.uniL = new Array(uniLocation.length);
+            for (i = 0; i < uniLocation.length; i++) {
+                mng.uniL[i] = this.gl.getUniformLocation(mng.prg, uniLocation[i]);
+            }
+            mng.uniT = uniType;
+            mng.locationCheck(attLocation, uniLocation);
+            return mng;
+        }
+
+        /**
+         * ファイルからシェーダのソースコードを取得しプログラムオブジェクトを生成する
+         * @param {string} vsPath - 頂点シェーダのソースが記述されたファイルのパス
+         * @param {string} fsPath - フラグメントシェーダのソースが記述されたファイルのパス
+         * @param {Array.<string>} attLocation - attribute 変数名の配列
+         * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+         * @param {Array.<string>} uniLocation - uniform 変数名の配列
+         * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+         * @param {function} callback - ソースコードのロードが完了しプログラムオブジェクトを生成した後に呼ばれるコールバック
+         * @return {ProgramManager} プログラムマネージャークラスのインスタンス ※ロード前にインスタンスは戻り値として返却される
+         */
+
+    }, {
+        key: 'createProgramFromFile',
+        value: function createProgramFromFile(vsPath, fsPath, attLocation, attStride, uniLocation, uniType, callback) {
+            if (this.gl == null) {
+                return null;
+            }
+            var mng = new ProgramManager(this.gl);
+            var src = {
+                vs: {
+                    targetUrl: vsPath,
+                    source: null
+                },
+                fs: {
+                    targetUrl: fsPath,
+                    source: null
+                }
+            };
+            xhr(this.gl, src.vs);
+            xhr(this.gl, src.fs);
+            function xhr(gl, target) {
+                var xml = new XMLHttpRequest();
+                xml.open('GET', target.targetUrl, true);
+                xml.setRequestHeader('Pragma', 'no-cache');
+                xml.setRequestHeader('Cache-Control', 'no-cache');
+                xml.onload = function () {
+                    console.log('%c◆%c shader file loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                    target.source = xml.responseText;
+                    loadCheck(gl);
+                };
+                xml.send();
+            }
+            function loadCheck(gl) {
+                if (src.vs.source == null || src.fs.source == null) {
+                    return;
+                }
+                var i = void 0;
+                mng.vs = mng.createShaderFromSource(src.vs.source, gl.VERTEX_SHADER);
+                mng.fs = mng.createShaderFromSource(src.fs.source, gl.FRAGMENT_SHADER);
+                mng.prg = mng.createProgram(mng.vs, mng.fs);
+                mng.attL = new Array(attLocation.length);
+                mng.attS = new Array(attLocation.length);
+                for (i = 0; i < attLocation.length; i++) {
+                    mng.attL[i] = gl.getAttribLocation(mng.prg, attLocation[i]);
+                    mng.attS[i] = attStride[i];
+                }
+                mng.uniL = new Array(uniLocation.length);
+                for (i = 0; i < uniLocation.length; i++) {
+                    mng.uniL[i] = gl.getUniformLocation(mng.prg, uniLocation[i]);
+                }
+                mng.uniT = uniType;
+                mng.locationCheck(attLocation, uniLocation);
+                callback(mng);
+            }
+            return mng;
+        }
+    }]);
+
+    return gl3;
+}();
+
+/**
+ * プログラムオブジェクトやシェーダを管理するマネージャ
+ * @class ProgramManager
+ */
+
+
+exports.default = gl3;
+
+var ProgramManager = function () {
+    /**
+     * @constructor
+     * @param {WebGLRenderingContext} gl - 自身が属する WebGL Rendering Context
+     */
+    function ProgramManager(gl) {
+        _classCallCheck(this, ProgramManager);
+
+        /**
+         * 自身が属する WebGL Rendering Context
+         * @type {WebGLRenderingContext}
+         */
+        this.gl = gl;
+        /**
+         * 頂点シェーダのシェーダオブジェクト
+         * @type {WebGLShader}
+         */
+        this.vs = null;
+        /**
+         * フラグメントシェーダのシェーダオブジェクト
+         * @type {WebGLShader}
+         */
+        this.fs = null;
+        /**
+         * プログラムオブジェクト
+         * @type {WebGLProgram}
+         */
+        this.prg = null;
+        /**
+         * アトリビュートロケーションの配列
+         * @type {Array.<number>}
+         */
+        this.attL = null;
+        /**
+         * アトリビュート変数のストライドの配列
+         * @type {Array.<number>}
+         */
+        this.attS = null;
+        /**
+         * ユニフォームロケーションの配列
+         * @type {Array.<WebGLUniformLocation>}
+         */
+        this.uniL = null;
+        /**
+         * ユニフォーム変数のタイプの配列
+         * @type {Array.<string>}
+         */
+        this.uniT = null;
+    }
+
+    /**
+     * script タグの ID を元にソースコードを取得しシェーダオブジェクトを生成する
+     * @param {string} id - script タグに付加された ID 文字列
+     * @return {WebGLShader} 生成したシェーダオブジェクト
+     */
+
+
+    _createClass(ProgramManager, [{
+        key: 'createShaderFromId',
+        value: function createShaderFromId(id) {
+            var shader = void 0;
+            var scriptElement = document.getElementById(id);
+            if (!scriptElement) {
+                return;
+            }
+            switch (scriptElement.type) {
+                case 'x-shader/x-vertex':
+                    shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+                    break;
+                case 'x-shader/x-fragment':
+                    shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+                    break;
+                default:
+                    return;
+            }
+            this.gl.shaderSource(shader, scriptElement.text);
+            this.gl.compileShader(shader);
+            if (this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                return shader;
+            } else {
+                console.warn('◆ compile failed of shader: ' + this.gl.getShaderInfoLog(shader));
+            }
+        }
+
+        /**
+         * シェーダのソースコードを文字列で引数から取得しシェーダオブジェクトを生成する
+         * @param {string} source - シェーダのソースコード
+         * @param {number} type - gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+         * @return {WebGLShader} 生成したシェーダオブジェクト
+         */
+
+    }, {
+        key: 'createShaderFromSource',
+        value: function createShaderFromSource(source, type) {
+            var shader = void 0;
+            switch (type) {
+                case this.gl.VERTEX_SHADER:
+                    shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+                    break;
+                case this.gl.FRAGMENT_SHADER:
+                    shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+                    break;
+                default:
+                    return;
+            }
+            this.gl.shaderSource(shader, source);
+            this.gl.compileShader(shader);
+            if (this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                return shader;
+            } else {
+                console.warn('◆ compile failed of shader: ' + this.gl.getShaderInfoLog(shader));
+            }
+        }
+
+        /**
+         * シェーダオブジェクトを引数から取得しプログラムオブジェクトを生成する
+         * @param {WebGLShader} vs - 頂点シェーダのシェーダオブジェクト
+         * @param {WebGLShader} fs - フラグメントシェーダのシェーダオブジェクト
+         * @return {WebGLProgram} 生成したプログラムオブジェクト
+         */
+
+    }, {
+        key: 'createProgram',
+        value: function createProgram(vs, fs) {
+            var program = this.gl.createProgram();
+            this.gl.attachShader(program, vs);
+            this.gl.attachShader(program, fs);
+            this.gl.linkProgram(program);
+            if (this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                this.gl.useProgram(program);
+                return program;
+            } else {
+                console.warn('◆ link program failed: ' + this.gl.getProgramInfoLog(program));
+            }
+        }
+
+        /**
+         * 自身の内部プロパティとして存在するプログラムオブジェクトを設定する
+         */
+
+    }, {
+        key: 'useProgram',
+        value: function useProgram() {
+            this.gl.useProgram(this.prg);
+        }
+
+        /**
+         * VBO と IBO をバインドして有効化する
+         * @param {Array.<WebGLBuffer>} vbo - VBO を格納した配列
+         * @param {WebGLBuffer} [ibo] - IBO
+         */
+
+    }, {
+        key: 'setAttribute',
+        value: function setAttribute(vbo, ibo) {
+            var gl = this.gl;
+            for (var i in vbo) {
+                if (this.attL[i] >= 0) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, vbo[i]);
+                    gl.enableVertexAttribArray(this.attL[i]);
+                    gl.vertexAttribPointer(this.attL[i], this.attS[i], gl.FLOAT, false, 0, 0);
+                }
+            }
+            if (ibo != null) {
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+            }
+        }
+
+        /**
+         * シェーダにユニフォーム変数に設定する値をプッシュする
+         * @param {Array.<mixed>} mixed - ユニフォーム変数に設定する値を格納した配列
+         */
+
+    }, {
+        key: 'pushShader',
+        value: function pushShader(mixed) {
+            var gl = this.gl;
+            for (var i = 0, j = this.uniT.length; i < j; i++) {
+                var uni = 'uniform' + this.uniT[i].replace(/matrix/i, 'Matrix');
+                if (gl[uni] != null) {
+                    if (uni.search(/Matrix/) !== -1) {
+                        gl[uni](this.uniL[i], false, mixed[i]);
+                    } else {
+                        gl[uni](this.uniL[i], mixed[i]);
+                    }
+                } else {
+                    console.warn('◆ not support uniform type: ' + this.uniT[i]);
+                }
+            }
+        }
+
+        /**
+         * アトリビュートロケーションとユニフォームロケーションが正しく取得できたかチェックする
+         * @param {Array.<number>} attLocation - 取得したアトリビュートロケーションの配列
+         * @param {Array.<WebGLUniformLocation>} uniLocation - 取得したユニフォームロケーションの配列
+         */
+
+    }, {
+        key: 'locationCheck',
+        value: function locationCheck(attLocation, uniLocation) {
+            var i = void 0,
+                l = void 0;
+            for (i = 0, l = attLocation.length; i < l; i++) {
+                if (this.attL[i] == null || this.attL[i] < 0) {
+                    console.warn('◆ invalid attribute location: %c"' + attLocation[i] + '"', 'color: crimson');
+                }
+            }
+            for (i = 0, l = uniLocation.length; i < l; i++) {
+                if (this.uniL[i] == null || this.uniL[i] < 0) {
+                    console.warn('◆ invalid uniform location: %c"' + uniLocation[i] + '"', 'color: crimson');
+                }
+            }
+        }
+    }]);
+
+    return ProgramManager;
+}();
+
+window.gl3 = window.gl3 || new gl3();
+
+/***/ })
+/******/ ]);
