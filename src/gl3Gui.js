@@ -527,6 +527,11 @@ class GUIColor extends GUIElement {
          * @type {string}
          */
         this.colorValue = value;
+        /**
+         * クリック時にのみ colorValue を更新するための一時キャッシュ変数
+         * @type {string}
+         */
+        this.tempColorValue = null;
 
         // set
         this.setValue(value);
@@ -534,9 +539,14 @@ class GUIColor extends GUIElement {
         // event
         this.container.addEventListener('mouseover', () => {
             this.control.style.display = 'block';
+            this.tempColorValue = this.colorValue;
         });
         this.container.addEventListener('mouseout', () => {
             this.control.style.display = 'none';
+            if(this.tempColorValue != null){
+                this.setValue(this.tempColorValue);
+                this.tempColorValue = null;
+            }
         });
         this.control.addEventListener('mousemove', (eve) => {
             let imageData = this.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
@@ -547,6 +557,7 @@ class GUIColor extends GUIElement {
         this.control.addEventListener('click', (eve) => {
             let imageData = this.ctx.getImageData(eve.offsetX, eve.offsetY, 1, 1);
             eve.currentTarget.value = this.getColor8bitString(imageData.data);
+            this.tempColorValue = null;
             this.control.style.display = 'none';
             this.emit('change', eve);
         }, false);
