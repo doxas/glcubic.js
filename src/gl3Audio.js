@@ -1,12 +1,13 @@
 
-/*
- * step 1: let a = new gl3Audio(bgmGainValue, soundGainValue) <- float(0 to 1)
+/**
+ * @example
+ * step 1: let a = new gl3Audio(bgmGainValue, soundGainValue) <- float(0.0 to 1.0)
  * step 2: a.load(url, index, loop, background) <- string, int, boolean, boolean
  * step 3: a.src[index].loaded then a.src[index].play()
  */
 
 /**
- * gl3Audio クラス
+ * gl3Audio
  * @class gl3Audio
  */
 export default class gl3Audio {
