@@ -388,27 +388,98 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
+ * @example
+ * let wrapper = new gl3.Gui.Wrapper().getElement();
+ * document.body.appendChild(wrapper);
+ *
+ * let slider = new gl3.Gui.Slider('test', 50, 0, 100, 1);
+ * slider.add('input', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(slider.getElement());
+ *
+ * let check = new gl3.Gui.Checkbox('hoge', false);
+ * check.add('change', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(check.getElement());
+ *
+ * let select = new gl3.Gui.Select('fuga', ['foo', 'baa'], 0);
+ * select.add('change', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(select.getElement());
+ *
+ * let spin = new gl3.Gui.Spin('hoge', 0.0, -1.0, 1.0, 0.1);
+ * spin.add('input', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(spin.getElement());
+ *
+ * let color = new gl3.Gui.Color('fuga', '#ff0000');
+ * color.add('change', (eve, self) => {console.log(self.getValue(), self.getFloatValue());});
+ * wrapper.appendChild(color.getElement());
+ */
+
+/**
  * gl3Gui
  * @class gl3Gui
  */
-var gl3Gui = function gl3Gui() {
+var gl3Gui =
+/**
+ * @constructor
+ */
+function gl3Gui() {
     _classCallCheck(this, gl3Gui);
 
+    /**
+     * GUIWrapper
+     * @type {GUIWrapper}
+     */
     this.Wrapper = GUIWrapper;
+    /**
+     * GUIElement
+     * @type {GUIElement}
+     */
     this.Element = GUIElement;
+    /**
+     * GUISlider
+     * @type {GUISlider}
+     */
     this.Slider = GUISlider;
+    /**
+     * GUICheckbox
+     * @type {GUICheckbox}
+     */
     this.Checkbox = GUICheckbox;
+    /**
+     * GUISelect
+     * @type {GUISelect}
+     */
     this.Select = GUISelect;
+    /**
+     * GUISpin
+     * @type {GUISpin}
+     */
     this.Spin = GUISpin;
+    /**
+     * GUIColor
+     * @type {GUIColor}
+     */
     this.Color = GUIColor;
 };
+
+/**
+ * GUIWrapper
+ * @class GUIWrapper
+ */
+
 
 exports.default = gl3Gui;
 
 var GUIWrapper = function () {
+    /**
+     * @constructor
+     */
     function GUIWrapper() {
         _classCallCheck(this, GUIWrapper);
 
+        /**
+         * GUI 全体を包むラッパー DOM
+         * @type {HTMLDivElement}
+         */
         this.element = document.createElement('div');
         this.element.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
         this.element.style.position = 'absolute';
@@ -416,6 +487,11 @@ var GUIWrapper = function () {
         this.element.style.right = '0px';
         this.element.style.height = '100%';
     }
+    /**
+     * エレメントを返す
+     * @return {HTMLDivElement}
+     */
+
 
     _createClass(GUIWrapper, [{
         key: 'getElement',
@@ -427,12 +503,26 @@ var GUIWrapper = function () {
     return GUIWrapper;
 }();
 
+/**
+ * GUIElement
+ * @class GUIElement
+ */
+
+
 var GUIElement = function () {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     function GUIElement() {
         var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
         _classCallCheck(this, GUIElement);
 
+        /**
+         * エレメントラッパー DOM
+         * @type {HTMLDivElement}
+         */
         this.element = document.createElement('div');
         this.element.style.fontSize = 'small';
         this.element.style.textAlign = 'center';
@@ -442,9 +532,12 @@ var GUIElement = function () {
         this.element.style.display = 'flex';
         this.element.style.flexDirection = 'row';
         this.element.style.justifyContent = 'flex-start';
-        this.text = text;
+        /**
+         * ラベル用エレメント DOM
+         * @type {HTMLSpanElement}
+         */
         this.label = document.createElement('span');
-        this.label.textContent = this.text;
+        this.label.textContent = text;
         this.label.style.color = '#222';
         this.label.style.textShadow = '0px 0px 5px white';
         this.label.style.display = 'inline-block';
@@ -452,6 +545,10 @@ var GUIElement = function () {
         this.label.style.width = '50px';
         this.label.style.overflow = 'hidden';
         this.element.appendChild(this.label);
+        /**
+         * 値表示用 DOM
+         * @type {HTMLSpanElement}
+         */
         this.value = document.createElement('span');
         this.value.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
         this.value.style.color = 'whitesmoke';
@@ -462,9 +559,28 @@ var GUIElement = function () {
         this.value.style.width = '50px';
         this.value.style.overflow = 'hidden';
         this.element.appendChild(this.value);
+        /**
+         * コントロール DOM
+         * @type {HTMLElement}
+         */
         this.control = null;
+        /**
+         * ラベルに設定するテキスト
+         * @type {string}
+         */
+        this.text = text;
+        /**
+         * イベントリスナ
+         * @type {object}
+         */
         this.listeners = {};
     }
+    /**
+     * イベントリスナを登録する
+     * @param {string} type - イベントタイプ
+     * @param {function} func - 登録する関数
+     */
+
 
     _createClass(GUIElement, [{
         key: 'add',
@@ -480,6 +596,12 @@ var GUIElement = function () {
             }
             this.listeners[type] = func;
         }
+        /**
+         * イベントを発火する
+         * @param {string} type - 発火するイベントタイプ
+         * @param {Event} eve - Event オブジェクト
+         */
+
     }, {
         key: 'emit',
         value: function emit(type, eve) {
@@ -488,6 +610,10 @@ var GUIElement = function () {
             }
             this.listeners[type](eve, this);
         }
+        /**
+         * イベントリスナを登録解除する
+         */
+
     }, {
         key: 'remove',
         value: function remove() {
@@ -497,27 +623,52 @@ var GUIElement = function () {
             this.listeners[type] = null;
             delete this.listeners[type];
         }
+        /**
+         * ラベルテキストとコントロールの値を更新する
+         * @param {mixed} value - 設定する値
+         */
+
     }, {
         key: 'setValue',
         value: function setValue(value) {
             this.value.textContent = value;
             this.control.value = value;
         }
+        /**
+         * コントロールに設定されている値を返す
+         * @return {mixed} コントロールに設定されている値
+         */
+
     }, {
         key: 'getValue',
         value: function getValue() {
             return this.control.value;
         }
+        /**
+         * コントロールエレメントを返す
+         * @return {HTMLDivElement}
+         */
+
     }, {
         key: 'getControl',
         value: function getControl() {
             return this.control;
         }
+        /**
+         * ラベルに設定されているテキストを返す
+         * @return {string} ラベルに設定されている値
+         */
+
     }, {
         key: 'getText',
         value: function getText() {
             return this.text;
         }
+        /**
+         * エレメントを返す
+         * @return {HTMLDivElement}
+         */
+
     }, {
         key: 'getElement',
         value: function getElement() {
@@ -528,9 +679,19 @@ var GUIElement = function () {
     return GUIElement;
 }();
 
+/**
+ * GUISlider
+ * @class GUISlider
+ */
+
+
 var GUISlider = function (_GUIElement) {
     _inherits(GUISlider, _GUIElement);
 
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     function GUISlider() {
         var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
         var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -583,9 +744,19 @@ var GUISlider = function (_GUIElement) {
     return GUISlider;
 }(GUIElement);
 
+/**
+ * GUICheckbox
+ * @class GUICheckbox
+ */
+
+
 var GUICheckbox = function (_GUIElement2) {
     _inherits(GUICheckbox, _GUIElement2);
 
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     function GUICheckbox() {
         var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
         var checked = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -628,9 +799,19 @@ var GUICheckbox = function (_GUIElement2) {
     return GUICheckbox;
 }(GUIElement);
 
+/**
+ * GUISelect
+ * @class GUISelect
+ */
+
+
 var GUISelect = function (_GUIElement3) {
     _inherits(GUISelect, _GUIElement3);
 
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     function GUISelect() {
         var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
         var list = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
@@ -677,9 +858,19 @@ var GUISelect = function (_GUIElement3) {
     return GUISelect;
 }(GUIElement);
 
+/**
+ * GUISpin
+ * @class GUISpin
+ */
+
+
 var GUISpin = function (_GUIElement4) {
     _inherits(GUISpin, _GUIElement4);
 
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     function GUISpin() {
         var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
         var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
@@ -732,9 +923,19 @@ var GUISpin = function (_GUIElement4) {
     return GUISpin;
 }(GUIElement);
 
+/**
+ * GUIColor
+ * @class GUIColor
+ */
+
+
 var GUIColor = function (_GUIElement5) {
     _inherits(GUIColor, _GUIElement5);
 
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     function GUIColor() {
         var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
         var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000000';

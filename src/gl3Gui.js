@@ -1,22 +1,90 @@
 
 /**
+ * @example
+ * let wrapper = new gl3.Gui.Wrapper().getElement();
+ * document.body.appendChild(wrapper);
+ *
+ * let slider = new gl3.Gui.Slider('test', 50, 0, 100, 1);
+ * slider.add('input', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(slider.getElement());
+ *
+ * let check = new gl3.Gui.Checkbox('hoge', false);
+ * check.add('change', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(check.getElement());
+ *
+ * let select = new gl3.Gui.Select('fuga', ['foo', 'baa'], 0);
+ * select.add('change', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(select.getElement());
+ *
+ * let spin = new gl3.Gui.Spin('hoge', 0.0, -1.0, 1.0, 0.1);
+ * spin.add('input', (eve, self) => {console.log(self.getValue());});
+ * wrapper.appendChild(spin.getElement());
+ *
+ * let color = new gl3.Gui.Color('fuga', '#ff0000');
+ * color.add('change', (eve, self) => {console.log(self.getValue(), self.getFloatValue());});
+ * wrapper.appendChild(color.getElement());
+ */
+
+/**
  * gl3Gui
  * @class gl3Gui
  */
 export default class gl3Gui {
+    /**
+     * @constructor
+     */
     constructor(){
-        this.Wrapper  = GUIWrapper;
-        this.Element  = GUIElement;
-        this.Slider   = GUISlider;
+        /**
+         * GUIWrapper
+         * @type {GUIWrapper}
+         */
+        this.Wrapper = GUIWrapper;
+        /**
+         * GUIElement
+         * @type {GUIElement}
+         */
+        this.Element = GUIElement;
+        /**
+         * GUISlider
+         * @type {GUISlider}
+         */
+        this.Slider = GUISlider;
+        /**
+         * GUICheckbox
+         * @type {GUICheckbox}
+         */
         this.Checkbox = GUICheckbox;
-        this.Select   = GUISelect;
-        this.Spin     = GUISpin;
-        this.Color    = GUIColor;
+        /**
+         * GUISelect
+         * @type {GUISelect}
+         */
+        this.Select = GUISelect;
+        /**
+         * GUISpin
+         * @type {GUISpin}
+         */
+        this.Spin = GUISpin;
+        /**
+         * GUIColor
+         * @type {GUIColor}
+         */
+        this.Color = GUIColor;
     }
 }
 
+/**
+ * GUIWrapper
+ * @class GUIWrapper
+ */
 class GUIWrapper {
+    /**
+     * @constructor
+     */
     constructor(){
+        /**
+         * GUI 全体を包むラッパー DOM
+         * @type {HTMLDivElement}
+         */
         this.element = document.createElement('div');
         this.element.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
         this.element.style.position = 'absolute';
@@ -24,13 +92,29 @@ class GUIWrapper {
         this.element.style.right = '0px';
         this.element.style.height = '100%';
     }
+    /**
+     * エレメントを返す
+     * @return {HTMLDivElement}
+     */
     getElement(){
         return this.element;
     }
 }
 
+/**
+ * GUIElement
+ * @class GUIElement
+ */
 class GUIElement {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     constructor(text = ''){
+        /**
+         * エレメントラッパー DOM
+         * @type {HTMLDivElement}
+         */
         this.element = document.createElement('div');
         this.element.style.fontSize = 'small';
         this.element.style.textAlign = 'center';
@@ -40,9 +124,12 @@ class GUIElement {
         this.element.style.display = 'flex';
         this.element.style.flexDirection = 'row';
         this.element.style.justifyContent = 'flex-start';
-        this.text = text;
+        /**
+         * ラベル用エレメント DOM
+         * @type {HTMLSpanElement}
+         */
         this.label = document.createElement('span');
-        this.label.textContent = this.text;
+        this.label.textContent = text;
         this.label.style.color = '#222';
         this.label.style.textShadow = '0px 0px 5px white';
         this.label.style.display = 'inline-block';
@@ -50,6 +137,10 @@ class GUIElement {
         this.label.style.width = '50px';
         this.label.style.overflow = 'hidden';
         this.element.appendChild(this.label);
+        /**
+         * 値表示用 DOM
+         * @type {HTMLSpanElement}
+         */
         this.value = document.createElement('span');
         this.value.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
         this.value.style.color = 'whitesmoke';
@@ -60,43 +151,97 @@ class GUIElement {
         this.value.style.width = '50px';
         this.value.style.overflow = 'hidden';
         this.element.appendChild(this.value);
+        /**
+         * コントロール DOM
+         * @type {HTMLElement}
+         */
         this.control = null;
+        /**
+         * ラベルに設定するテキスト
+         * @type {string}
+         */
+        this.text = text;
+        /**
+         * イベントリスナ
+         * @type {object}
+         */
         this.listeners = {};
     }
+    /**
+     * イベントリスナを登録する
+     * @param {string} type - イベントタイプ
+     * @param {function} func - 登録する関数
+     */
     add(type, func){
         if(this.control == null || type == null || func == null){return;}
         if(Object.prototype.toString.call(type) !== '[object String]'){return}
         if(Object.prototype.toString.call(func) !== '[object Function]'){return}
         this.listeners[type] = func;
     }
+    /**
+     * イベントを発火する
+     * @param {string} type - 発火するイベントタイプ
+     * @param {Event} eve - Event オブジェクト
+     */
     emit(type, eve){
         if(this.control == null || !this.listeners.hasOwnProperty(type)){return;}
         this.listeners[type](eve, this);
     }
+    /**
+     * イベントリスナを登録解除する
+     */
     remove(){
         if(this.control == null || !this.listeners.hasOwnProperty(type)){return;}
         this.listeners[type] = null;
         delete this.listeners[type];
     }
+    /**
+     * ラベルテキストとコントロールの値を更新する
+     * @param {mixed} value - 設定する値
+     */
     setValue(value){
         this.value.textContent = value;
         this.control.value = value;
     }
+    /**
+     * コントロールに設定されている値を返す
+     * @return {mixed} コントロールに設定されている値
+     */
     getValue(){
         return this.control.value;
     }
+    /**
+     * コントロールエレメントを返す
+     * @return {HTMLDivElement}
+     */
     getControl(){
         return this.control;
     }
+    /**
+     * ラベルに設定されているテキストを返す
+     * @return {string} ラベルに設定されている値
+     */
     getText(){
         return this.text;
     }
+    /**
+     * エレメントを返す
+     * @return {HTMLDivElement}
+     */
     getElement(){
         return this.element;
     }
 }
 
+/**
+ * GUISlider
+ * @class GUISlider
+ */
 class GUISlider extends GUIElement {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     constructor(text = '', value = 0, min = 0, max = 100, step = 1){
         super(text);
         this.control = document.createElement('input');
@@ -129,7 +274,15 @@ class GUISlider extends GUIElement {
     }
 }
 
+/**
+ * GUICheckbox
+ * @class GUICheckbox
+ */
 class GUICheckbox extends GUIElement {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     constructor(text = '', checked = false){
         super(text);
         this.control = document.createElement('input');
@@ -157,7 +310,15 @@ class GUICheckbox extends GUIElement {
     }
 }
 
+/**
+ * GUISelect
+ * @class GUISelect
+ */
 class GUISelect extends GUIElement {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     constructor(text = '', list = [], selectedIndex = 0){
         super(text);
         this.control = document.createElement('select');
@@ -188,7 +349,15 @@ class GUISelect extends GUIElement {
     }
 }
 
+/**
+ * GUISpin
+ * @class GUISpin
+ */
 class GUISpin extends GUIElement {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     constructor(text = '', value = 0.0, min = -1.0, max = 1.0, step = 0.1){
         super(text);
         this.control = document.createElement('input');
@@ -221,7 +390,15 @@ class GUISpin extends GUIElement {
     }
 }
 
+/**
+ * GUIColor
+ * @class GUIColor
+ */
 class GUIColor extends GUIElement {
+    /**
+     * @constructor
+     * @param {string} text - エレメントに設定するテキスト
+     */
     constructor(text = '', value = '#000000'){
         super(text);
         this.container = document.createElement('div');
