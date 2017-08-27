@@ -707,7 +707,7 @@ var GUISlider = function (_GUIElement) {
 
     /**
      * コントロールエレメント
-     * @param {HTMLInputElement}
+     * @type {HTMLInputElement}
      */
     var _this = _possibleConstructorReturn(this, (GUISlider.__proto__ || Object.getPrototypeOf(GUISlider)).call(this, text));
 
@@ -789,7 +789,7 @@ var GUICheckbox = function (_GUIElement2) {
 
     /**
      * コントロールエレメント
-     * @param {HTMLInputElement}
+     * @type {HTMLInputElement}
      */
     var _this2 = _possibleConstructorReturn(this, (GUICheckbox.__proto__ || Object.getPrototypeOf(GUICheckbox)).call(this, text));
 
@@ -861,7 +861,7 @@ var GUISelect = function (_GUIElement3) {
 
     /**
      * コントロールエレメント
-     * @param {HTMLSelectElement}
+     * @type {HTMLSelectElement}
      */
     var _this3 = _possibleConstructorReturn(this, (GUISelect.__proto__ || Object.getPrototypeOf(GUISelect)).call(this, text));
 
@@ -940,7 +940,7 @@ var GUISpin = function (_GUIElement4) {
 
     /**
      * コントロールエレメント
-     * @param {HTMLInputElement}
+     * @type {HTMLInputElement}
      */
     var _this4 = _possibleConstructorReturn(this, (GUISpin.__proto__ || Object.getPrototypeOf(GUISpin)).call(this, text));
 

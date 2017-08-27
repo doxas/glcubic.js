@@ -250,7 +250,7 @@ class GUISlider extends GUIElement {
         super(text);
         /**
          * コントロールエレメント
-         * @param {HTMLInputElement}
+         * @type {HTMLInputElement}
          */
         this.control = document.createElement('input');
         this.control.setAttribute('type', 'range');
@@ -308,7 +308,7 @@ class GUICheckbox extends GUIElement {
         super(text);
         /**
          * コントロールエレメント
-         * @param {HTMLInputElement}
+         * @type {HTMLInputElement}
          */
         this.control = document.createElement('input');
         this.control.setAttribute('type', 'checkbox');
@@ -358,7 +358,7 @@ class GUISelect extends GUIElement {
         super(text);
         /**
          * コントロールエレメント
-         * @param {HTMLSelectElement}
+         * @type {HTMLSelectElement}
          */
         this.control = document.createElement('select');
         list.map((v) => {
@@ -413,7 +413,7 @@ class GUISpin extends GUIElement {
         super(text);
         /**
          * コントロールエレメント
-         * @param {HTMLInputElement}
+         * @type {HTMLInputElement}
          */
         this.control = document.createElement('input');
         this.control.setAttribute('type', 'number');
