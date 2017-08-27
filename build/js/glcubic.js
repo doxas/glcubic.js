@@ -2620,7 +2620,7 @@ var gl3 = function () {
          * @const
          * @type {string}
          */
-        this.VERSION = '0.1.2';
+        this.VERSION = '0.1.3';
         /**
          * pi * 2
          * @const
