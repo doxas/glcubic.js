@@ -644,6 +644,46 @@ export default class gl3 {
         }
         return mng;
     }
+
+    /**
+     * バッファオブジェクトを削除する
+     * @param {WebGLBuffer} buffer - 削除するバッファオブジェクト
+     */
+    deleteBuffer(buffer){
+        if(this.gl.isBuffer(buffer) !== true){return;}
+        this.gl.deleteBuffer(buffer);
+        buffer = null;
+    }
+
+    /**
+     * テクスチャオブジェクトを削除する
+     * @param {WebGLTexture} texture - 削除するテクスチャオブジェクト
+     */
+    deleteTexture(texture){
+        if(this.gl.isTexture(texture) !== true){return;}
+        this.gl.deleteTexture(texture);
+        texture = null;
+    }
+
+    /**
+     * フレームバッファやレンダーバッファを削除する
+     * @param {object} obj - フレームバッファ生成メソッドが返すオブジェクト
+     */
+    deleteFramebuffer(obj){
+        if(obj == null){return;}
+        for(let v in obj){
+            if(this.gl.isFramebuffer(obj[v]) === true){
+                this.gl.deleteFramebuffer(obj[v]);
+            }
+            if(this.gl.isRenderbuffer(obj[v]) === true){
+                this.gl.deleteRenderbuffer(obj[v]);
+            }
+            if(this.gl.isTexture(obj[v]) === true){
+                this.gl.deleteTexture(obj[v]);
+            }
+        }
+        obj = null;
+    }
 }
 
 /**
