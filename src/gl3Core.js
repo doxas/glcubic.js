@@ -672,17 +672,58 @@ export default class gl3 {
     deleteFramebuffer(obj){
         if(obj == null){return;}
         for(let v in obj){
-            if(this.gl.isFramebuffer(obj[v]) === true){
+            if(obj[v] instanceof WebGLFramebuffer && this.gl.isFramebuffer(obj[v]) === true){
                 this.gl.deleteFramebuffer(obj[v]);
+                obj[v] = null;
+                continue;
             }
-            if(this.gl.isRenderbuffer(obj[v]) === true){
+            if(obj[v] instanceof WebGLRenderbuffer && this.gl.isRenderbuffer(obj[v]) === true){
                 this.gl.deleteRenderbuffer(obj[v]);
+                obj[v] = null;
+                continue;
             }
-            if(this.gl.isTexture(obj[v]) === true){
+            if(obj[v] instanceof WebGLTexture && this.gl.isTexture(obj[v]) === true){
                 this.gl.deleteTexture(obj[v]);
+                obj[v] = null;
             }
         }
         obj = null;
+    }
+
+    /**
+     * シェーダオブジェクトを削除する
+     * @param {WebGLShader} shader - シェーダオブジェクト
+     */
+    deleteShader(shader){
+        if(this.gl.isShader(shader) !== true){return;}
+        this.gl.deleteShader(shader);
+        shader = null;
+    }
+
+    /**
+     * プログラムオブジェクトを削除する
+     * @param {WebGLProgram} program - プログラムオブジェクト
+     */
+    deleteProgram(program){
+        if(this.gl.isProgram(program) !== true){return;}
+        this.gl.deleteProgram(program);
+        program = null;
+    }
+
+    /**
+     * ProgramManager クラスを内部プロパティごと削除する
+     * @param {ProgramManager} prg - ProgramManager クラスのインスタンス
+     */
+    deleteProgramManager(prg){
+        if(prg == null || !(prg instanceof ProgramManager)){return;}
+        this.deleteShader(prg.vs);
+        this.deleteShader(prg.fs);
+        this.deleteProgram(prg.prg);
+        prg.attL = null;
+        prg.attS = null;
+        prg.uniL = null;
+        prg.uniT = null;
+        prg = null;
     }
 }
 

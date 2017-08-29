@@ -178,7 +178,12 @@
             count++;
 
             // animation
-            if(run){requestAnimationFrame(render);}
+            if(run){
+                requestAnimationFrame(render);
+            }else{
+                clean();
+                return;
+            }
 
             // canvas
             canvasWidth   = window.innerWidth;
@@ -226,6 +231,22 @@
 
             // final
             gl.flush();
+        }
+
+        function clean(){
+            torusVBO.map((v) => {
+                gl3.deleteBuffer(v);
+            });
+            gl3.deleteBuffer(torusIBO);
+            planeVBO.map((v) => {
+                gl3.deleteBuffer(v);
+            });
+            gl3.deleteBuffer(planeIBO);
+            gl3.deleteFramebuffer(framebuffer);
+            gl3.textures.map((v) => {
+                if(v == null || v.texture == null){return;}
+                gl3.deleteTexture(v.texture);
+            });
         }
     }
 })();
