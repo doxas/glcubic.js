@@ -1,7 +1,7 @@
 
 (() => {
     // variable ===============================================================
-    let gl, run, mat4, qtn, count, nowTime;
+    let gl, run, mat4, qtn, count, nowTime, framebuffer;
     let canvas, canvasWidth, canvasHeight;
     let audio;
 
@@ -26,13 +26,25 @@
         canvas.width  = canvasWidth;
         canvas.height = canvasHeight;
 
-        window.addEventListener('keydown', function(eve){
+        window.addEventListener('keydown', (eve) => {
             if(eve.keyCode === 27){
                 run = false;
                 if(audio != null && audio.src[0] != null && audio.src[0].loaded){
                     audio.src[0].stop();
                 }
             }
+        }, false);
+        window.addEventListener('resize', () => {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            gl3.deleteFramebuffer(framebuffer);
+            canvasWidth = window.innerWidth;
+            canvasHeight = window.innerHeight;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            framebuffer = gl3.createFramebuffer(canvasWidth, canvasHeight, 1);
+            gl.bindTexture(gl.TEXTURE_2D, framebuffer.texture);
         }, false);
 
         // audio
@@ -132,7 +144,7 @@
         let invMatrix    = mat4.identity(mat4.create());
 
         // framebuffer
-        let framebuffer = gl3.createFramebuffer(canvasWidth, canvasHeight, 1);
+        framebuffer = gl3.createFramebuffer(canvasWidth, canvasHeight, 1);
 
         // texture
         gl3.textures.map((v, i) => {
@@ -156,18 +168,6 @@
         let ambientColor   = [0.1, 0.1, 0.1];
         let targetTexture  = 0;
 
-        // view x proj
-        mat4.vpFromCameraProperty(
-            cameraPosition,
-            centerPoint,
-            upDirection,
-            60,
-            canvasWidth / canvasHeight,
-            0.1,
-            10.0,
-            vMatrix, pMatrix, vpMatrix
-        );
-
         // audio
         audio.src[0].play();
 
@@ -190,6 +190,18 @@
             canvasHeight  = window.innerHeight;
             canvas.width  = canvasWidth;
             canvas.height = canvasHeight;
+
+            // view x proj
+            mat4.vpFromCameraProperty(
+                cameraPosition,
+                centerPoint,
+                upDirection,
+                60,
+                canvasWidth / canvasHeight,
+                0.1,
+                10.0,
+                vMatrix, pMatrix, vpMatrix
+            );
 
             // render to framebuffer ==========================================
             gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer);
