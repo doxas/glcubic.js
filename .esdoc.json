@@ -1,6 +1,9 @@
 {
   "source": "./src",
   "destination": "./doc",
+  "manual": {
+    "example": ["./manual/example.md"]
+  },
   "plugins": [
     {"name": "esdoc-standard-plugin"}
   ]
