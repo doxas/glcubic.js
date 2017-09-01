@@ -26,6 +26,7 @@
         canvas.width  = canvasWidth;
         canvas.height = canvasHeight;
 
+        // event attach
         window.addEventListener('keydown', (eve) => {
             if(eve.keyCode === 27){
                 run = false;
@@ -89,6 +90,7 @@
             ['matrix4fv', 'matrix4fv', 'matrix4fv', '3fv', '3fv', '3fv', '1i'],
             shaderLoadCheck
         );
+        // noise texture program
         noisePrg = gl3.createProgramFromFile(
             'shader/noise.vert',
             'shader/noise.frag',
@@ -98,6 +100,7 @@
             ['1i', '2fv', '1f'],
             shaderLoadCheck
         );
+        // load check
         function shaderLoadCheck(){
             if(
                 basePrg.prg != null &&
@@ -154,7 +157,7 @@
             }
         });
 
-        // flags
+        // gl flags
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
 
@@ -171,6 +174,7 @@
         // audio
         audio.src[0].play();
 
+        // rendering
         render();
         function render(){
             nowTime = Date.now() - beginTime;
