@@ -121,16 +121,6 @@
         ];
         let torusIBO = gl3.createIbo(torusData.index);
 
-        // cylinder
-        let cylinderData = gl3.Mesh.cylinder(16, 1.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
-        let cylinderVBO = [
-            gl3.createVbo(cylinderData.position),
-            gl3.createVbo(cylinderData.normal),
-            gl3.createVbo(cylinderData.color),
-            gl3.createVbo(cylinderData.texCoord)
-        ];
-        let cylinderIBO = gl3.createIbo(cylinderData.index);
-
         // plane
         let planePosition = [
             -1.0,  1.0,  0.0,
@@ -177,8 +167,7 @@
         let cameraPosition = [0.0, 0.0, 5.0];
         let centerPoint    = [0.0, 0.0, 0.0];
         let upDirection    = [0.0, 1.0, 0.0];
-        // let lightPosition  = [2.0, 3.0, 4.0];
-        let lightPosition  = [0.0, 1.0, 2.0];
+        let lightPosition  = [2.0, 3.0, 4.0];
         let ambientColor   = [0.1, 0.1, 0.1];
         let targetTexture  = 0;
 
@@ -219,14 +208,13 @@
             );
 
             // render to framebuffer ==========================================
-            // gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer);
             gl3.sceneView(0, 0, canvasWidth, canvasHeight);
             gl3.sceneClear([0.3, 0.3, 0.4, 1.0], 1.0);
 
             // program
             basePrg.useProgram();
-            // basePrg.setAttribute(torusVBO, torusIBO);
-            basePrg.setAttribute(cylinderVBO, cylinderIBO);
+            basePrg.setAttribute(torusVBO, torusIBO);
 
             // model and draw
             mat4.identity(mMatrix);
@@ -244,33 +232,28 @@
                 ambientColor,
                 targetTexture
             ]);
-            // gl3.drawElements(gl.TRIANGLES, torusData.index.length);
-            gl3.drawElements(gl.TRIANGLES, cylinderData.index.length);
+            gl3.drawElements(gl.TRIANGLES, torusData.index.length);
 
             // render to canvas
-            // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-            // gl3.sceneView(0, 0, canvasWidth, canvasHeight);
-            // gl3.sceneClear([0.0, 0.0, 0.0, 1.0], 1.0);
-            //
-            // // program
-            // noisePrg.useProgram();
-            // noisePrg.setAttribute(planeVBO, planeIBO);
-            // noisePrg.pushShader([1, [canvasWidth, canvasHeight], nowTime]);
-            // gl3.drawElements(gl.TRIANGLES, planeIndex.length);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl3.sceneView(0, 0, canvasWidth, canvasHeight);
+            gl3.sceneClear([0.0, 0.0, 0.0, 1.0], 1.0);
+
+            // program
+            noisePrg.useProgram();
+            noisePrg.setAttribute(planeVBO, planeIBO);
+            noisePrg.pushShader([1, [canvasWidth, canvasHeight], nowTime]);
+            gl3.drawElements(gl.TRIANGLES, planeIndex.length);
 
             // final
             gl.flush();
         }
 
         function clean(){
-            // torusVBO.map((v) => {
-            //     gl3.deleteBuffer(v);
-            // });
-            // gl3.deleteBuffer(torusIBO);
-            cylinderVBO.map((v) => {
+            torusVBO.map((v) => {
                 gl3.deleteBuffer(v);
             });
-            gl3.deleteBuffer(cylinderIBO);
+            gl3.deleteBuffer(torusIBO);
             planeVBO.map((v) => {
                 gl3.deleteBuffer(v);
             });

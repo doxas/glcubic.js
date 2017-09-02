@@ -2322,6 +2322,8 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let planeData = gl3.Mesh.plane(2.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
          */
         value: function plane(width, height, color) {
             var w = void 0,
@@ -2352,6 +2354,8 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let circleData = gl3.Mesh.circle(64, 1.0, [1.0, 1.0, 1.0, 1.0]);
          */
 
     }, {
@@ -2396,6 +2400,8 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let cubeData = gl3.Mesh.cube(2.0, [1.0, 1.0, 1.0, 1.0]);
          */
 
     }, {
@@ -2426,6 +2432,8 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let coneData = gl3.Mesh.cone(64, 1.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
          */
 
     }, {
@@ -2443,7 +2451,7 @@ var gl3Mesh = function () {
             nor.push(0.0, -1.0, 0.0);
             col.push(color[0], color[1], color[2], color[3]);
             st.push(0.5, 0.5);
-            for (i = 0; i < split; i++) {
+            for (i = 0; i <= split; i++) {
                 var r = Math.PI * 2.0 / split * i;
                 var rx = Math.cos(r);
                 var rz = Math.sin(r);
@@ -2451,12 +2459,9 @@ var gl3Mesh = function () {
                 nor.push(0.0, -1.0, 0.0, rx, 0.0, rz);
                 col.push(color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3]);
                 st.push((rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5, (rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5);
-                if (i === split - 1) {
-                    idx.push(0, j + 1, 1);
-                    idx.push(2, j + 2, split * 2 + 1);
-                } else {
+                if (i !== split) {
                     idx.push(0, j + 1, j + 3);
-                    idx.push(j + 4, j + 2, split * 2 + 1);
+                    idx.push(j + 4, j + 2, split * 2 + 3);
                 }
                 j += 2;
             }
@@ -2470,7 +2475,8 @@ var gl3Mesh = function () {
         /**
          * 円柱の頂点情報を生成する
          * @param {number} split - 円柱の円周の分割数
-         * @param {number} rad - 円柱の半径
+         * @param {number} topRad - 円柱の天面の半径
+         * @param {number} bottomRad - 円柱の底面の半径
          * @param {number} height - 円柱の高さ
          * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
          * @return {object}
@@ -2479,11 +2485,13 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let cylinderData = gl3.Mesh.cylinder(64, 0.5, 1.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
          */
 
     }, {
         key: "cylinder",
-        value: function cylinder(split, rad, height, color) {
+        value: function cylinder(split, topRad, bottomRad, height, color) {
             var i = void 0,
                 j = 2;
             var h = height / 2.0;
@@ -2500,7 +2508,7 @@ var gl3Mesh = function () {
                 var r = Math.PI * 2.0 / split * i;
                 var rx = Math.cos(r);
                 var rz = Math.sin(r);
-                pos.push(rx * rad, h, rz * rad, rx * rad, h, rz * rad, rx * rad, -h, rz * rad, rx * rad, -h, rz * rad);
+                pos.push(rx * topRad, h, rz * topRad, rx * topRad, h, rz * topRad, rx * bottomRad, -h, rz * bottomRad, rx * bottomRad, -h, rz * bottomRad);
                 nor.push(0.0, 1.0, 0.0, rx, 0.0, rz, 0.0, -1.0, 0.0, rx, 0.0, rz);
                 col.push(color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3]);
                 st.push((rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5, 1.0 - i / split, 0.0, (rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5, 1.0 - i / split, 1.0);
@@ -2524,6 +2532,8 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let sphereData = gl3.Mesh.sphere(64, 64, 1.0, [1.0, 1.0, 1.0, 1.0]);
          */
 
     }, {
@@ -2576,6 +2586,8 @@ var gl3Mesh = function () {
          * @property {Array.<number>} color - 頂点カラー
          * @property {Array.<number>} texCoord - テクスチャ座標
          * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         * @example
+         * let torusData = gl3.Mesh.torus(64, 64, 0.25, 0.75, [1.0, 1.0, 1.0, 1.0]);
          */
 
     }, {
