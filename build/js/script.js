@@ -121,15 +121,15 @@
         ];
         let torusIBO = gl3.createIbo(torusData.index);
 
-        // cone
-        let coneData = gl3.Mesh.cone(16, 1.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
-        let coneVBO = [
-            gl3.createVbo(coneData.position),
-            gl3.createVbo(coneData.normal),
-            gl3.createVbo(coneData.color),
-            gl3.createVbo(coneData.texCoord)
+        // cylinder
+        let cylinderData = gl3.Mesh.cylinder(16, 1.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
+        let cylinderVBO = [
+            gl3.createVbo(cylinderData.position),
+            gl3.createVbo(cylinderData.normal),
+            gl3.createVbo(cylinderData.color),
+            gl3.createVbo(cylinderData.texCoord)
         ];
-        let coneIBO = gl3.createIbo(coneData.index);
+        let cylinderIBO = gl3.createIbo(cylinderData.index);
 
         // plane
         let planePosition = [
@@ -226,12 +226,12 @@
             // program
             basePrg.useProgram();
             // basePrg.setAttribute(torusVBO, torusIBO);
-            basePrg.setAttribute(coneVBO, coneIBO);
+            basePrg.setAttribute(cylinderVBO, cylinderIBO);
 
             // model and draw
             mat4.identity(mMatrix);
             mat4.translate(mMatrix, [0.0, 0.0, Math.sin(nowTime) * 0.25], mMatrix);
-            mat4.rotate(mMatrix, nowTime, [0.0, 1.0, 0.0], mMatrix);
+            mat4.rotate(mMatrix, nowTime, [1.0, 1.0, 0.0], mMatrix);
             mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
             mat4.inverse(mMatrix, invMatrix);
             mat4.transpose(invMatrix, normalMatrix);
@@ -245,7 +245,7 @@
                 targetTexture
             ]);
             // gl3.drawElements(gl.TRIANGLES, torusData.index.length);
-            gl3.drawElements(gl.TRIANGLES, coneData.index.length);
+            gl3.drawElements(gl.TRIANGLES, cylinderData.index.length);
 
             // render to canvas
             // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -267,10 +267,10 @@
             //     gl3.deleteBuffer(v);
             // });
             // gl3.deleteBuffer(torusIBO);
-            coneVBO.map((v) => {
+            cylinderVBO.map((v) => {
                 gl3.deleteBuffer(v);
             });
-            gl3.deleteBuffer(coneIBO);
+            gl3.deleteBuffer(cylinderIBO);
             planeVBO.map((v) => {
                 gl3.deleteBuffer(v);
             });

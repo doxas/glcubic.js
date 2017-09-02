@@ -162,7 +162,7 @@ export default class gl3Mesh {
      */
     static cone(split, rad, height, color){
         let i, j = 0;
-        let h = height / 2;
+        let h = height / 2.0;
         let pos = [], nor = [],
             col = [], st  = [], idx = [];
         pos.push(0.0, -h, 0.0);
@@ -202,6 +202,72 @@ export default class gl3Mesh {
         nor.push(0.0, 1.0, 0.0);
         col.push(color[0], color[1], color[2], color[3]);
         st.push(0.5, 0.5);
+        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
+    }
+
+    /**
+     * 円柱の頂点情報を生成する
+     * @param {number} split - 円柱の円周の分割数
+     * @param {number} rad - 円柱の半径
+     * @param {number} height - 円柱の高さ
+     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
+    static cylinder(split, rad, height, color){
+        let i, j = 2;
+        let h = height / 2.0;
+        let pos = [], nor = [],
+            col = [], st  = [], idx = [];
+        pos.push(0.0, h, 0.0, 0.0, -h, 0.0,);
+        nor.push(0.0, 1.0, 0.0, 0.0, -1.0, 0.0);
+        col.push(
+            color[0], color[1], color[2], color[3],
+            color[0], color[1], color[2], color[3]
+        );
+        st.push(0.5, 0.5, 0.5, 0.5);
+        for(i = 0; i <= split; i++){
+            let r = Math.PI * 2.0 / split * i;
+            let rx = Math.cos(r);
+            let rz = Math.sin(r);
+            pos.push(
+                rx * rad,  h, rz * rad,
+                rx * rad,  h, rz * rad,
+                rx * rad, -h, rz * rad,
+                rx * rad, -h, rz * rad
+            );
+            nor.push(
+                0.0, 1.0, 0.0,
+                rx, 0.0, rz,
+                0.0, -1.0, 0.0,
+                rx, 0.0, rz
+            );
+            col.push(
+                color[0], color[1], color[2], color[3],
+                color[0], color[1], color[2], color[3],
+                color[0], color[1], color[2], color[3],
+                color[0], color[1], color[2], color[3]
+            );
+            st.push(
+                (rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5,
+                1.0 - i / split, 0.0,
+                (rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5,
+                1.0 - i / split, 1.0
+            );
+            if(i !== split){
+                idx.push(
+                    0, j + 4, j,
+                    1, j + 2, j + 6,
+                    j + 5, j + 7, j + 1,
+                    j + 1, j + 7, j + 3
+                );
+            }
+            j += 4;
+        }
         return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
 
