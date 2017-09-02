@@ -149,8 +149,8 @@ export default class gl3Mesh {
 
     /**
      * 三角錐の頂点情報を生成する
-     * @param {number} split - 円の円周の分割数
-     * @param {number} rad - 円の半径
+     * @param {number} split - 底面円の円周の分割数
+     * @param {number} rad - 底面円の半径
      * @param {number} height - 三角錐の高さ
      * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
      * @return {object}
@@ -173,18 +173,30 @@ export default class gl3Mesh {
             let r = Math.PI * 2.0 / split * i;
             let rx = Math.cos(r);
             let rz = Math.sin(r);
-            pos.push(rx * rad, -h, rz * rad);
-            nor.push(0.0, -1.0, 0.0);
-            col.push(color[0], color[1], color[2], color[3]);
-            st.push((rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5);
+            pos.push(
+                rx * rad, -h, rz * rad,
+                rx * rad, -h, rz * rad
+            );
+            nor.push(
+                0.0, -1.0, 0.0,
+                rx, 0.0, rz
+            );
+            col.push(
+                color[0], color[1], color[2], color[3],
+                color[0], color[1], color[2], color[3]
+            );
+            st.push(
+                (rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5,
+                (rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5
+            );
             if(i === split - 1){
                 idx.push(0, j + 1, 1);
-                idx.push(1, j + 1, split + 1);
+                idx.push(2, j + 2, split * 2 + 1);
             }else{
-                idx.push(0, j + 1, j + 2);
-                idx.push(j + 2, j + 1, split + 1);
+                idx.push(0, j + 1, j + 3);
+                idx.push(j + 4, j + 2, split * 2 + 1);
             }
-            ++j;
+            j += 2;
         }
         pos.push(0.0, h, 0.0);
         nor.push(0.0, 1.0, 0.0);

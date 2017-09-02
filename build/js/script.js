@@ -177,7 +177,8 @@
         let cameraPosition = [0.0, 0.0, 5.0];
         let centerPoint    = [0.0, 0.0, 0.0];
         let upDirection    = [0.0, 1.0, 0.0];
-        let lightPosition  = [2.0, 3.0, 4.0];
+        // let lightPosition  = [2.0, 3.0, 4.0];
+        let lightPosition  = [0.0, 1.0, 2.0];
         let ambientColor   = [0.1, 0.1, 0.1];
         let targetTexture  = 0;
 
@@ -230,7 +231,7 @@
             // model and draw
             mat4.identity(mMatrix);
             mat4.translate(mMatrix, [0.0, 0.0, Math.sin(nowTime) * 0.25], mMatrix);
-            mat4.rotate(mMatrix, nowTime, [1.0, 1.0, 0.0], mMatrix);
+            mat4.rotate(mMatrix, nowTime, [0.0, 1.0, 0.0], mMatrix);
             mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
             mat4.inverse(mMatrix, invMatrix);
             mat4.transpose(invMatrix, normalMatrix);
