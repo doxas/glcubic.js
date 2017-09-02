@@ -2315,7 +2315,7 @@ var gl3Mesh = function () {
          * 板ポリゴンの頂点情報を生成する
          * @param {number} width - 板ポリゴンの一辺の幅
          * @param {number} height - 板ポリゴンの一辺の高さ
-         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
          * @return {object}
          * @property {Array.<number>} position - 頂点座標
          * @property {Array.<number>} normal - 頂点法線
@@ -2347,7 +2347,7 @@ var gl3Mesh = function () {
          * @param {number} column - パイプ断面の分割数
          * @param {number} irad - パイプ断面の半径
          * @param {number} orad - パイプ全体の半径
-         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
          * @return {object}
          * @property {Array.<number>} position - 頂点座標
          * @property {Array.<number>} normal - 頂点法線
@@ -2404,7 +2404,7 @@ var gl3Mesh = function () {
          * @param {number} row - 球の縦方向（緯度方向）の分割数
          * @param {number} column - 球の横方向（経度方向）の分割数
          * @param {number} rad - 球の半径
-         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
          * @return {object}
          * @property {Array.<number>} position - 頂点座標
          * @property {Array.<number>} normal - 頂点法線
@@ -2454,7 +2454,7 @@ var gl3Mesh = function () {
          * 円（XY 平面展開）の頂点情報を生成する
          * @param {number} split - 円の円周の分割数
          * @param {number} rad - 円の半径
-         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
          * @return {object}
          * @property {Array.<number>} position - 頂点座標
          * @property {Array.<number>} normal - 頂点法線
@@ -2498,7 +2498,7 @@ var gl3Mesh = function () {
         /**
          * キューブの頂点情報を生成する
          * @param {number} side - 正立方体の一辺の長さ
-         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
          * @return {object}
          * @property {Array.<number>} position - 頂点座標
          * @property {Array.<number>} normal - 頂点法線 ※キューブの中心から各頂点に向かって伸びるベクトルなので注意
