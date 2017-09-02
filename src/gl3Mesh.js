@@ -152,7 +152,7 @@ export default class gl3Mesh {
     /**
      * 円（XY 平面展開）の頂点情報を生成する
      * @param {number} split - 円の円周の分割数
-     * @param {number} rad - 球の半径
+     * @param {number} rad - 円の半径
      * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
      * @return {object}
      * @property {Array.<number>} position - 頂点座標
@@ -162,34 +162,29 @@ export default class gl3Mesh {
      * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
      */
     static circle(split, rad, color){
-        // let i, j;
-        // let pos = [], nor = [],
-        //     col = [], st  = [], idx = [];
-        // for(i = 0; i <= row; i++){
-        //     let r = Math.PI / row * i;
-        //     let ry = Math.cos(r);
-        //     let rr = Math.sin(r);
-        //     for(j = 0; j <= column; j++){
-        //         let tr = Math.PI * 2 / column * j;
-        //         let tx = rr * rad * Math.cos(tr);
-        //         let ty = ry * rad;
-        //         let tz = rr * rad * Math.sin(tr);
-        //         let rx = rr * Math.cos(tr);
-        //         let rz = rr * Math.sin(tr);
-        //         pos.push(tx, ty, tz);
-        //         nor.push(rx, ry, rz);
-        //         col.push(color[0], color[1], color[2], color[3]);
-        //         st.push(1 - 1 / column * j, 1 / row * i);
-        //     }
-        // }
-        // for(i = 0; i < row; i++){
-        //     for(j = 0; j < column; j++){
-        //         let r = (column + 1) * i + j;
-        //         idx.push(r, r + 1, r + column + 2);
-        //         idx.push(r, r + column + 2, r + column + 1);
-        //     }
-        // }
-        // return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
+        let i, j = 0;
+        let pos = [], nor = [],
+            col = [], st  = [], idx = [];
+        pos.push(0.0, 0.0, 0.0);
+        nor.push(0.0, 0.0, 1.0);
+        col.push(color[0], color[1], color[2], color[3]);
+        st.push(0.5, 0.5);
+        for(i = 0; i < split; i++){
+            let r = Math.PI * 2.0 / split * i;
+            let rx = Math.cos(r);
+            let ry = Math.sin(r);
+            pos.push(rx * rad, ry * rad, 0.0);
+            nor.push(0.0, 0.0, 1.0);
+            col.push(color[0], color[1], color[2], color[3]);
+            st.push((rx + 1.0) * 0.5, 1.0 - (ry + 1.0) * 0.5);
+            if(i === split - 1){
+                idx.push(0, j + 1, 1);
+            }else{
+                idx.push(0, j + 1, j + 2);
+            }
+            ++j;
+        }
+        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
 
     /**

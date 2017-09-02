@@ -121,6 +121,16 @@
         ];
         let torusIBO = gl3.createIbo(torusData.index);
 
+        // circle
+        let circleData = gl3.Mesh.circle(64, 1.0, [1.0, 1.0, 1.0, 1.0]);
+        let circleVBO = [
+            gl3.createVbo(circleData.position),
+            gl3.createVbo(circleData.normal),
+            gl3.createVbo(circleData.color),
+            gl3.createVbo(circleData.texCoord)
+        ];
+        let circleIBO = gl3.createIbo(circleData.index);
+
         // plane
         let planePosition = [
             -1.0,  1.0,  0.0,
@@ -215,6 +225,7 @@
             // program
             basePrg.useProgram();
             basePrg.setAttribute(torusVBO, torusIBO);
+            // basePrg.setAttribute(circleVBO, circleIBO);
 
             // model and draw
             mat4.identity(mMatrix);
@@ -233,6 +244,7 @@
                 targetTexture
             ]);
             gl3.drawElements(gl.TRIANGLES, torusData.index.length);
+            // gl3.drawElements(gl.TRIANGLES, circleData.index.length);
 
             // render to canvas
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -254,6 +266,10 @@
                 gl3.deleteBuffer(v);
             });
             gl3.deleteBuffer(torusIBO);
+            // circleVBO.map((v) => {
+            //     gl3.deleteBuffer(v);
+            // });
+            // gl3.deleteBuffer(circleIBO);
             planeVBO.map((v) => {
                 gl3.deleteBuffer(v);
             });

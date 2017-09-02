@@ -74,7 +74,7 @@
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -93,113 +93,113 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @class gl3Audio
  */
 var gl3Audio = function () {
-    /**
-     * @constructor
-     * @param {number} bgmGainValue - BGM の再生音量
-     * @param {number} soundGainValue - 効果音の再生音量
-     */
-    function gl3Audio(bgmGainValue, soundGainValue) {
-        _classCallCheck(this, gl3Audio);
+  /**
+   * @constructor
+   * @param {number} bgmGainValue - BGM の再生音量
+   * @param {number} soundGainValue - 効果音の再生音量
+   */
+  function gl3Audio(bgmGainValue, soundGainValue) {
+    _classCallCheck(this, gl3Audio);
 
-        /**
-         * オーディオコンテキスト
-         * @type {AudioContext}
-         */
-        this.ctx = null;
-        /**
-         * ダイナミックコンプレッサーノード
-         * @type {DynamicsCompressorNode}
-         */
-        this.comp = null;
-        /**
-         * BGM 用のゲインノード
-         * @type {GainNode}
-         */
-        this.bgmGain = null;
-        /**
-         * 効果音用のゲインノード
-         * @type {GainNode}
-         */
-        this.soundGain = null;
-        /**
-         * オーディオソースをラップしたクラスの配列
-         * @type {Array.<AudioSrc>}
-         */
-        this.src = null;
-        if (typeof AudioContext != 'undefined' || typeof webkitAudioContext != 'undefined') {
-            if (typeof AudioContext != 'undefined') {
-                this.ctx = new AudioContext();
-            } else {
-                this.ctx = new webkitAudioContext();
-            }
-            this.comp = this.ctx.createDynamicsCompressor();
-            this.comp.connect(this.ctx.destination);
-            this.bgmGain = this.ctx.createGain();
-            this.bgmGain.connect(this.comp);
-            this.bgmGain.gain.value = bgmGainValue;
-            this.soundGain = this.ctx.createGain();
-            this.soundGain.connect(this.comp);
-            this.soundGain.gain.value = soundGainValue;
-            this.src = [];
-        } else {
-            throw new Error('not found AudioContext');
-        }
+    /**
+     * オーディオコンテキスト
+     * @type {AudioContext}
+     */
+    this.ctx = null;
+    /**
+     * ダイナミックコンプレッサーノード
+     * @type {DynamicsCompressorNode}
+     */
+    this.comp = null;
+    /**
+     * BGM 用のゲインノード
+     * @type {GainNode}
+     */
+    this.bgmGain = null;
+    /**
+     * 効果音用のゲインノード
+     * @type {GainNode}
+     */
+    this.soundGain = null;
+    /**
+     * オーディオソースをラップしたクラスの配列
+     * @type {Array.<AudioSrc>}
+     */
+    this.src = null;
+    if (typeof AudioContext != 'undefined' || typeof webkitAudioContext != 'undefined') {
+      if (typeof AudioContext != 'undefined') {
+        this.ctx = new AudioContext();
+      } else {
+        this.ctx = new webkitAudioContext();
+      }
+      this.comp = this.ctx.createDynamicsCompressor();
+      this.comp.connect(this.ctx.destination);
+      this.bgmGain = this.ctx.createGain();
+      this.bgmGain.connect(this.comp);
+      this.bgmGain.gain.value = bgmGainValue;
+      this.soundGain = this.ctx.createGain();
+      this.soundGain.connect(this.comp);
+      this.soundGain.gain.value = soundGainValue;
+      this.src = [];
+    } else {
+      throw new Error('not found AudioContext');
+    }
+  }
+
+  /**
+   * ファイルをロードする
+   * @param {string} path - オーディオファイルのパス
+   * @param {number} index - 内部プロパティの配列に格納するインデックス
+   * @param {boolean} loop - ループ再生を設定するかどうか
+   * @param {boolean} background - BGM として設定するかどうか
+   * @param {function} callback - 読み込みと初期化が完了したあと呼ばれるコールバック
+   */
+
+
+  _createClass(gl3Audio, [{
+    key: 'load',
+    value: function load(path, index, loop, background, callback) {
+      var ctx = this.ctx;
+      var gain = background ? this.bgmGain : this.soundGain;
+      var src = this.src;
+      src[index] = null;
+      var xml = new XMLHttpRequest();
+      xml.open('GET', path, true);
+      xml.setRequestHeader('Pragma', 'no-cache');
+      xml.setRequestHeader('Cache-Control', 'no-cache');
+      xml.responseType = 'arraybuffer';
+      xml.onload = function () {
+        ctx.decodeAudioData(xml.response, function (buf) {
+          src[index] = new AudioSrc(ctx, gain, buf, loop, background);
+          src[index].loaded = true;
+          console.log('%c◆%c audio number: %c' + index + '%c, audio loaded: %c' + path, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+          callback();
+        }, function (e) {
+          console.log(e);
+        });
+      };
+      xml.send();
     }
 
     /**
-     * ファイルをロードする
-     * @param {string} path - オーディオファイルのパス
-     * @param {number} index - 内部プロパティの配列に格納するインデックス
-     * @param {boolean} loop - ループ再生を設定するかどうか
-     * @param {boolean} background - BGM として設定するかどうか
-     * @param {function} callback - 読み込みと初期化が完了したあと呼ばれるコールバック
+     * ロードの完了をチェックする
+     * @return {boolean} ロードが完了しているかどうか
      */
 
+  }, {
+    key: 'loadComplete',
+    value: function loadComplete() {
+      var i = void 0,
+          f = void 0;
+      f = true;
+      for (i = 0; i < this.src.length; i++) {
+        f = f && this.src[i] != null && this.src[i].loaded;
+      }
+      return f;
+    }
+  }]);
 
-    _createClass(gl3Audio, [{
-        key: 'load',
-        value: function load(path, index, loop, background, callback) {
-            var ctx = this.ctx;
-            var gain = background ? this.bgmGain : this.soundGain;
-            var src = this.src;
-            src[index] = null;
-            var xml = new XMLHttpRequest();
-            xml.open('GET', path, true);
-            xml.setRequestHeader('Pragma', 'no-cache');
-            xml.setRequestHeader('Cache-Control', 'no-cache');
-            xml.responseType = 'arraybuffer';
-            xml.onload = function () {
-                ctx.decodeAudioData(xml.response, function (buf) {
-                    src[index] = new AudioSrc(ctx, gain, buf, loop, background);
-                    src[index].loaded = true;
-                    console.log('%c◆%c audio number: %c' + index + '%c, audio loaded: %c' + path, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
-                    callback();
-                }, function (e) {
-                    console.log(e);
-                });
-            };
-            xml.send();
-        }
-
-        /**
-         * ロードの完了をチェックする
-         * @return {boolean} ロードが完了しているかどうか
-         */
-
-    }, {
-        key: 'loadComplete',
-        value: function loadComplete() {
-            var i = void 0,
-                f = void 0;
-            f = true;
-            for (i = 0; i < this.src.length; i++) {
-                f = f && this.src[i] != null && this.src[i].loaded;
-            }
-            return f;
-        }
-    }]);
-
-    return gl3Audio;
+  return gl3Audio;
 }();
 
 /**
@@ -211,162 +211,162 @@ var gl3Audio = function () {
 exports.default = gl3Audio;
 
 var AudioSrc = function () {
-    /**
-     * @constructor
-     * @param {AudioContext} ctx - 対象となるオーディオコンテキスト
-     * @param {GainNode} gain - 対象となるゲインノード
-     * @param {ArrayBuffer} audioBuffer - バイナリのオーディオソース
-     * @param {boolean} bool - ループ再生を設定するかどうか
-     * @param {boolean} background - BGM として設定するかどうか
-     */
-    function AudioSrc(ctx, gain, audioBuffer, loop, background) {
-        _classCallCheck(this, AudioSrc);
+  /**
+   * @constructor
+   * @param {AudioContext} ctx - 対象となるオーディオコンテキスト
+   * @param {GainNode} gain - 対象となるゲインノード
+   * @param {ArrayBuffer} audioBuffer - バイナリのオーディオソース
+   * @param {boolean} bool - ループ再生を設定するかどうか
+   * @param {boolean} background - BGM として設定するかどうか
+   */
+  function AudioSrc(ctx, gain, audioBuffer, loop, background) {
+    _classCallCheck(this, AudioSrc);
 
-        /**
-         * 対象となるオーディオコンテキスト
-         * @type {AudioContext}
-         */
-        this.ctx = ctx;
-        /**
-         * 対象となるゲインノード
-         * @type {GainNode}
-         */
-        this.gain = gain;
-        /**
-         * ソースファイルのバイナリデータ
-         * @type {ArrayBuffer}
-         */
-        this.audioBuffer = audioBuffer;
-        /**
-         * オーディオバッファソースノードを格納する配列
-         * @type {Array.<AudioBufferSourceNode>}
-         */
-        this.bufferSource = [];
-        /**
-         * アクティブなバッファソースのインデックス
-         * @type {number}
-         */
-        this.activeBufferSource = 0;
-        /**
-         * ループするかどうかのフラグ
-         * @type {boolean}
-         */
-        this.loop = loop;
-        /**
-         * ロード済みかどうかを示すフラグ
-         * @type {boolean}
-         */
-        this.loaded = false;
-        /**
-         * FFT サイズ
-         * @type {number}
-         */
-        this.fftLoop = 16;
-        /**
-         * このフラグが立っている場合再生中のデータを一度取得する
-         * @type {boolean}
-         */
-        this.update = false;
-        /**
-         * BGM かどうかを示すフラグ
-         * @type {boolean}
-         */
-        this.background = background;
-        /**
-         * スクリプトプロセッサーノード
-         * @type {ScriptProcessorNode}
-         */
-        this.node = this.ctx.createScriptProcessor(2048, 1, 1);
-        /**
-         * アナライザノード
-         * @type {AnalyserNode}
-         */
-        this.analyser = this.ctx.createAnalyser();
-        this.analyser.smoothingTimeConstant = 0.8;
-        this.analyser.fftSize = this.fftLoop * 2;
-        /**
-         * データを取得する際に利用する型付き配列
-         * @type {Uint8Array}
-         */
-        this.onData = new Uint8Array(this.analyser.frequencyBinCount);
+    /**
+     * 対象となるオーディオコンテキスト
+     * @type {AudioContext}
+     */
+    this.ctx = ctx;
+    /**
+     * 対象となるゲインノード
+     * @type {GainNode}
+     */
+    this.gain = gain;
+    /**
+     * ソースファイルのバイナリデータ
+     * @type {ArrayBuffer}
+     */
+    this.audioBuffer = audioBuffer;
+    /**
+     * オーディオバッファソースノードを格納する配列
+     * @type {Array.<AudioBufferSourceNode>}
+     */
+    this.bufferSource = [];
+    /**
+     * アクティブなバッファソースのインデックス
+     * @type {number}
+     */
+    this.activeBufferSource = 0;
+    /**
+     * ループするかどうかのフラグ
+     * @type {boolean}
+     */
+    this.loop = loop;
+    /**
+     * ロード済みかどうかを示すフラグ
+     * @type {boolean}
+     */
+    this.loaded = false;
+    /**
+     * FFT サイズ
+     * @type {number}
+     */
+    this.fftLoop = 16;
+    /**
+     * このフラグが立っている場合再生中のデータを一度取得する
+     * @type {boolean}
+     */
+    this.update = false;
+    /**
+     * BGM かどうかを示すフラグ
+     * @type {boolean}
+     */
+    this.background = background;
+    /**
+     * スクリプトプロセッサーノード
+     * @type {ScriptProcessorNode}
+     */
+    this.node = this.ctx.createScriptProcessor(2048, 1, 1);
+    /**
+     * アナライザノード
+     * @type {AnalyserNode}
+     */
+    this.analyser = this.ctx.createAnalyser();
+    this.analyser.smoothingTimeConstant = 0.8;
+    this.analyser.fftSize = this.fftLoop * 2;
+    /**
+     * データを取得する際に利用する型付き配列
+     * @type {Uint8Array}
+     */
+    this.onData = new Uint8Array(this.analyser.frequencyBinCount);
+  }
+
+  /**
+   * オーディオを再生する
+   */
+
+
+  _createClass(AudioSrc, [{
+    key: 'play',
+    value: function play() {
+      var _this = this;
+
+      var i = void 0,
+          j = void 0,
+          k = void 0;
+      var self = this;
+      i = this.bufferSource.length;
+      k = -1;
+      if (i > 0) {
+        for (j = 0; j < i; j++) {
+          if (!this.bufferSource[j].playnow) {
+            this.bufferSource[j] = null;
+            this.bufferSource[j] = this.ctx.createBufferSource();
+            k = j;
+            break;
+          }
+        }
+        if (k < 0) {
+          this.bufferSource[this.bufferSource.length] = this.ctx.createBufferSource();
+          k = this.bufferSource.length - 1;
+        }
+      } else {
+        this.bufferSource[0] = this.ctx.createBufferSource();
+        k = 0;
+      }
+      this.activeBufferSource = k;
+      this.bufferSource[k].buffer = this.audioBuffer;
+      this.bufferSource[k].loop = this.loop;
+      this.bufferSource[k].playbackRate.value = 1.0;
+      if (!this.loop) {
+        this.bufferSource[k].onended = function () {
+          _this.stop(0);
+          _this.playnow = false;
+        };
+      }
+      if (this.background) {
+        this.bufferSource[k].connect(this.analyser);
+        this.analyser.connect(this.node);
+        this.node.connect(this.ctx.destination);
+        this.node.onaudioprocess = function (eve) {
+          onprocessEvent(eve);
+        };
+      }
+      this.bufferSource[k].connect(this.gain);
+      this.bufferSource[k].start(0);
+      this.bufferSource[k].playnow = true;
+
+      function onprocessEvent(eve) {
+        if (self.update) {
+          self.update = false;
+          self.analyser.getByteFrequencyData(self.onData);
+        }
+      }
     }
 
     /**
-     * オーディオを再生する
+     * オーディオの再生を止める
      */
 
+  }, {
+    key: 'stop',
+    value: function stop() {
+      this.bufferSource[this.activeBufferSource].stop(0);
+      this.playnow = false;
+    }
+  }]);
 
-    _createClass(AudioSrc, [{
-        key: 'play',
-        value: function play() {
-            var _this = this;
-
-            var i = void 0,
-                j = void 0,
-                k = void 0;
-            var self = this;
-            i = this.bufferSource.length;
-            k = -1;
-            if (i > 0) {
-                for (j = 0; j < i; j++) {
-                    if (!this.bufferSource[j].playnow) {
-                        this.bufferSource[j] = null;
-                        this.bufferSource[j] = this.ctx.createBufferSource();
-                        k = j;
-                        break;
-                    }
-                }
-                if (k < 0) {
-                    this.bufferSource[this.bufferSource.length] = this.ctx.createBufferSource();
-                    k = this.bufferSource.length - 1;
-                }
-            } else {
-                this.bufferSource[0] = this.ctx.createBufferSource();
-                k = 0;
-            }
-            this.activeBufferSource = k;
-            this.bufferSource[k].buffer = this.audioBuffer;
-            this.bufferSource[k].loop = this.loop;
-            this.bufferSource[k].playbackRate.value = 1.0;
-            if (!this.loop) {
-                this.bufferSource[k].onended = function () {
-                    _this.stop(0);
-                    _this.playnow = false;
-                };
-            }
-            if (this.background) {
-                this.bufferSource[k].connect(this.analyser);
-                this.analyser.connect(this.node);
-                this.node.connect(this.ctx.destination);
-                this.node.onaudioprocess = function (eve) {
-                    onprocessEvent(eve);
-                };
-            }
-            this.bufferSource[k].connect(this.gain);
-            this.bufferSource[k].start(0);
-            this.bufferSource[k].playnow = true;
-
-            function onprocessEvent(eve) {
-                if (self.update) {
-                    self.update = false;
-                    self.analyser.getByteFrequencyData(self.onData);
-                }
-            }
-        }
-
-        /**
-         * オーディオの再生を止める
-         */
-
-    }, {
-        key: 'stop',
-        value: function stop() {
-            this.bufferSource[this.activeBufferSource].stop(0);
-            this.playnow = false;
-        }
-    }]);
-
-    return AudioSrc;
+  return AudioSrc;
 }();
 
 /***/ }),
@@ -2451,6 +2451,51 @@ var gl3Mesh = function () {
         }
 
         /**
+         * 円（XY 平面展開）の頂点情報を生成する
+         * @param {number} split - 円の円周の分割数
+         * @param {number} rad - 円の半径
+         * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
+         * @return {object}
+         * @property {Array.<number>} position - 頂点座標
+         * @property {Array.<number>} normal - 頂点法線
+         * @property {Array.<number>} color - 頂点カラー
+         * @property {Array.<number>} texCoord - テクスチャ座標
+         * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+         */
+
+    }, {
+        key: "circle",
+        value: function circle(split, rad, color) {
+            var i = void 0,
+                j = 0;
+            var pos = [],
+                nor = [],
+                col = [],
+                st = [],
+                idx = [];
+            pos.push(0.0, 0.0, 0.0);
+            nor.push(0.0, 0.0, 1.0);
+            col.push(color[0], color[1], color[2], color[3]);
+            st.push(0.5, 0.5);
+            for (i = 0; i < split; i++) {
+                var r = Math.PI * 2.0 / split * i;
+                var rx = Math.cos(r);
+                var ry = Math.sin(r);
+                pos.push(rx * rad, ry * rad, 0.0);
+                nor.push(0.0, 0.0, 1.0);
+                col.push(color[0], color[1], color[2], color[3]);
+                st.push((rx + 1.0) * 0.5, 1.0 - (ry + 1.0) * 0.5);
+                if (i === split - 1) {
+                    idx.push(0, j + 1, 1);
+                } else {
+                    idx.push(0, j + 1, j + 2);
+                }
+                ++j;
+            }
+            return { position: pos, normal: nor, color: col, texCoord: st, index: idx };
+        }
+
+        /**
          * キューブの頂点情報を生成する
          * @param {number} side - 正立方体の一辺の長さ
          * @param {Array.<number>} [color] - RGBA を 0.0 から 1.0 の範囲で指定した配列
@@ -2861,8 +2906,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * glcubic
  * @class gl3
- * @example
- * let glcubic = new gl3();
  */
 var gl3 = function () {
     /**
