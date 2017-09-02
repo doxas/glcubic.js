@@ -121,15 +121,15 @@
         ];
         let torusIBO = gl3.createIbo(torusData.index);
 
-        // circle
-        let circleData = gl3.Mesh.circle(64, 1.0, [1.0, 1.0, 1.0, 1.0]);
-        let circleVBO = [
-            gl3.createVbo(circleData.position),
-            gl3.createVbo(circleData.normal),
-            gl3.createVbo(circleData.color),
-            gl3.createVbo(circleData.texCoord)
+        // cone
+        let coneData = gl3.Mesh.cone(16, 1.0, 2.0, [1.0, 1.0, 1.0, 1.0]);
+        let coneVBO = [
+            gl3.createVbo(coneData.position),
+            gl3.createVbo(coneData.normal),
+            gl3.createVbo(coneData.color),
+            gl3.createVbo(coneData.texCoord)
         ];
-        let circleIBO = gl3.createIbo(circleData.index);
+        let coneIBO = gl3.createIbo(coneData.index);
 
         // plane
         let planePosition = [
@@ -218,18 +218,18 @@
             );
 
             // render to framebuffer ==========================================
-            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer);
+            // gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer);
             gl3.sceneView(0, 0, canvasWidth, canvasHeight);
             gl3.sceneClear([0.3, 0.3, 0.4, 1.0], 1.0);
 
             // program
             basePrg.useProgram();
-            basePrg.setAttribute(torusVBO, torusIBO);
-            // basePrg.setAttribute(circleVBO, circleIBO);
+            // basePrg.setAttribute(torusVBO, torusIBO);
+            basePrg.setAttribute(coneVBO, coneIBO);
 
             // model and draw
             mat4.identity(mMatrix);
-            mat4.translate(mMatrix, [0.0, 0.0, Math.sin(nowTime) * 0.5], mMatrix);
+            mat4.translate(mMatrix, [0.0, 0.0, Math.sin(nowTime) * 0.25], mMatrix);
             mat4.rotate(mMatrix, nowTime, [1.0, 1.0, 0.0], mMatrix);
             mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
             mat4.inverse(mMatrix, invMatrix);
@@ -243,33 +243,33 @@
                 ambientColor,
                 targetTexture
             ]);
-            gl3.drawElements(gl.TRIANGLES, torusData.index.length);
-            // gl3.drawElements(gl.TRIANGLES, circleData.index.length);
+            // gl3.drawElements(gl.TRIANGLES, torusData.index.length);
+            gl3.drawElements(gl.TRIANGLES, coneData.index.length);
 
             // render to canvas
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-            gl3.sceneView(0, 0, canvasWidth, canvasHeight);
-            gl3.sceneClear([0.0, 0.0, 0.0, 1.0], 1.0);
-
-            // program
-            noisePrg.useProgram();
-            noisePrg.setAttribute(planeVBO, planeIBO);
-            noisePrg.pushShader([1, [canvasWidth, canvasHeight], nowTime]);
-            gl3.drawElements(gl.TRIANGLES, planeIndex.length);
+            // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            // gl3.sceneView(0, 0, canvasWidth, canvasHeight);
+            // gl3.sceneClear([0.0, 0.0, 0.0, 1.0], 1.0);
+            //
+            // // program
+            // noisePrg.useProgram();
+            // noisePrg.setAttribute(planeVBO, planeIBO);
+            // noisePrg.pushShader([1, [canvasWidth, canvasHeight], nowTime]);
+            // gl3.drawElements(gl.TRIANGLES, planeIndex.length);
 
             // final
             gl.flush();
         }
 
         function clean(){
-            torusVBO.map((v) => {
-                gl3.deleteBuffer(v);
-            });
-            gl3.deleteBuffer(torusIBO);
-            // circleVBO.map((v) => {
+            // torusVBO.map((v) => {
             //     gl3.deleteBuffer(v);
             // });
-            // gl3.deleteBuffer(circleIBO);
+            // gl3.deleteBuffer(torusIBO);
+            coneVBO.map((v) => {
+                gl3.deleteBuffer(v);
+            });
+            gl3.deleteBuffer(coneIBO);
             planeVBO.map((v) => {
                 gl3.deleteBuffer(v);
             });

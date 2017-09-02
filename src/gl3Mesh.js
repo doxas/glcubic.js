@@ -57,99 +57,6 @@ export default class gl3Mesh {
     }
 
     /**
-     * トーラスの頂点情報を生成する
-     * @param {number} row - 輪の分割数
-     * @param {number} column - パイプ断面の分割数
-     * @param {number} irad - パイプ断面の半径
-     * @param {number} orad - パイプ全体の半径
-     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
-     * @return {object}
-     * @property {Array.<number>} position - 頂点座標
-     * @property {Array.<number>} normal - 頂点法線
-     * @property {Array.<number>} color - 頂点カラー
-     * @property {Array.<number>} texCoord - テクスチャ座標
-     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
-     */
-    static torus(row, column, irad, orad, color){
-        let i, j;
-        let pos = [], nor = [],
-            col = [], st  = [], idx = [];
-        for(i = 0; i <= row; i++){
-            let r = Math.PI * 2 / row * i;
-            let rr = Math.cos(r);
-            let ry = Math.sin(r);
-            for(j = 0; j <= column; j++){
-                let tr = Math.PI * 2 / column * j;
-                let tx = (rr * irad + orad) * Math.cos(tr);
-                let ty = ry * irad;
-                let tz = (rr * irad + orad) * Math.sin(tr);
-                let rx = rr * Math.cos(tr);
-                let rz = rr * Math.sin(tr);
-                let rs = 1 / column * j;
-                let rt = 1 / row * i + 0.5;
-                if(rt > 1.0){rt -= 1.0;}
-                rt = 1.0 - rt;
-                pos.push(tx, ty, tz);
-                nor.push(rx, ry, rz);
-                col.push(color[0], color[1], color[2], color[3]);
-                st.push(rs, rt);
-            }
-        }
-        for(i = 0; i < row; i++){
-            for(j = 0; j < column; j++){
-                let r = (column + 1) * i + j;
-                idx.push(r, r + column + 1, r + 1);
-                idx.push(r + column + 1, r + column + 2, r + 1);
-            }
-        }
-        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
-    }
-
-    /**
-     * 球体の頂点情報を生成する
-     * @param {number} row - 球の縦方向（緯度方向）の分割数
-     * @param {number} column - 球の横方向（経度方向）の分割数
-     * @param {number} rad - 球の半径
-     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
-     * @return {object}
-     * @property {Array.<number>} position - 頂点座標
-     * @property {Array.<number>} normal - 頂点法線
-     * @property {Array.<number>} color - 頂点カラー
-     * @property {Array.<number>} texCoord - テクスチャ座標
-     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
-     */
-    static sphere(row, column, rad, color){
-        let i, j;
-        let pos = [], nor = [],
-            col = [], st  = [], idx = [];
-        for(i = 0; i <= row; i++){
-            let r = Math.PI / row * i;
-            let ry = Math.cos(r);
-            let rr = Math.sin(r);
-            for(j = 0; j <= column; j++){
-                let tr = Math.PI * 2 / column * j;
-                let tx = rr * rad * Math.cos(tr);
-                let ty = ry * rad;
-                let tz = rr * rad * Math.sin(tr);
-                let rx = rr * Math.cos(tr);
-                let rz = rr * Math.sin(tr);
-                pos.push(tx, ty, tz);
-                nor.push(rx, ry, rz);
-                col.push(color[0], color[1], color[2], color[3]);
-                st.push(1 - 1 / column * j, 1 / row * i);
-            }
-        }
-        for(i = 0; i < row; i++){
-            for(j = 0; j < column; j++){
-                let r = (column + 1) * i + j;
-                idx.push(r, r + 1, r + column + 2);
-                idx.push(r, r + column + 2, r + column + 1);
-            }
-        }
-        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
-    }
-
-    /**
      * 円（XY 平面展開）の頂点情報を生成する
      * @param {number} split - 円の円周の分割数
      * @param {number} rad - 円の半径
@@ -237,6 +144,145 @@ export default class gl3Mesh {
             16, 17, 18, 16, 18, 19,
             20, 21, 22, 20, 22, 23
         ];
+        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
+    }
+
+    /**
+     * 三角錐の頂点情報を生成する
+     * @param {number} split - 円の円周の分割数
+     * @param {number} rad - 円の半径
+     * @param {number} height - 三角錐の高さ
+     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
+    static cone(split, rad, height, color){
+        let i, j = 0;
+        let h = height / 2;
+        let pos = [], nor = [],
+            col = [], st  = [], idx = [];
+        pos.push(0.0, -h, 0.0);
+        nor.push(0.0, -1.0, 0.0);
+        col.push(color[0], color[1], color[2], color[3]);
+        st.push(0.5, 0.5);
+        for(i = 0; i < split; i++){
+            let r = Math.PI * 2.0 / split * i;
+            let rx = Math.cos(r);
+            let rz = Math.sin(r);
+            pos.push(rx * rad, -h, rz * rad);
+            nor.push(0.0, -1.0, 0.0);
+            col.push(color[0], color[1], color[2], color[3]);
+            st.push((rx + 1.0) * 0.5, 1.0 - (rz + 1.0) * 0.5);
+            if(i === split - 1){
+                idx.push(0, j + 1, 1);
+                idx.push(1, j + 1, split + 1);
+            }else{
+                idx.push(0, j + 1, j + 2);
+                idx.push(j + 2, j + 1, split + 1);
+            }
+            ++j;
+        }
+        pos.push(0.0, h, 0.0);
+        nor.push(0.0, 1.0, 0.0);
+        col.push(color[0], color[1], color[2], color[3]);
+        st.push(0.5, 0.5);
+        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
+    }
+
+    /**
+     * 球体の頂点情報を生成する
+     * @param {number} row - 球の縦方向（緯度方向）の分割数
+     * @param {number} column - 球の横方向（経度方向）の分割数
+     * @param {number} rad - 球の半径
+     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
+    static sphere(row, column, rad, color){
+        let i, j;
+        let pos = [], nor = [],
+            col = [], st  = [], idx = [];
+        for(i = 0; i <= row; i++){
+            let r = Math.PI / row * i;
+            let ry = Math.cos(r);
+            let rr = Math.sin(r);
+            for(j = 0; j <= column; j++){
+                let tr = Math.PI * 2 / column * j;
+                let tx = rr * rad * Math.cos(tr);
+                let ty = ry * rad;
+                let tz = rr * rad * Math.sin(tr);
+                let rx = rr * Math.cos(tr);
+                let rz = rr * Math.sin(tr);
+                pos.push(tx, ty, tz);
+                nor.push(rx, ry, rz);
+                col.push(color[0], color[1], color[2], color[3]);
+                st.push(1 - 1 / column * j, 1 / row * i);
+            }
+        }
+        for(i = 0; i < row; i++){
+            for(j = 0; j < column; j++){
+                let r = (column + 1) * i + j;
+                idx.push(r, r + 1, r + column + 2);
+                idx.push(r, r + column + 2, r + column + 1);
+            }
+        }
+        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
+    }
+
+    /**
+     * トーラスの頂点情報を生成する
+     * @param {number} row - 輪の分割数
+     * @param {number} column - パイプ断面の分割数
+     * @param {number} irad - パイプ断面の半径
+     * @param {number} orad - パイプ全体の半径
+     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     */
+    static torus(row, column, irad, orad, color){
+        let i, j;
+        let pos = [], nor = [],
+            col = [], st  = [], idx = [];
+        for(i = 0; i <= row; i++){
+            let r = Math.PI * 2 / row * i;
+            let rr = Math.cos(r);
+            let ry = Math.sin(r);
+            for(j = 0; j <= column; j++){
+                let tr = Math.PI * 2 / column * j;
+                let tx = (rr * irad + orad) * Math.cos(tr);
+                let ty = ry * irad;
+                let tz = (rr * irad + orad) * Math.sin(tr);
+                let rx = rr * Math.cos(tr);
+                let rz = rr * Math.sin(tr);
+                let rs = 1 / column * j;
+                let rt = 1 / row * i + 0.5;
+                if(rt > 1.0){rt -= 1.0;}
+                rt = 1.0 - rt;
+                pos.push(tx, ty, tz);
+                nor.push(rx, ry, rz);
+                col.push(color[0], color[1], color[2], color[3]);
+                st.push(rs, rt);
+            }
+        }
+        for(i = 0; i < row; i++){
+            for(j = 0; j < column; j++){
+                let r = (column + 1) * i + j;
+                idx.push(r, r + column + 1, r + 1);
+                idx.push(r + column + 1, r + column + 2, r + 1);
+            }
+        }
         return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
 }
