@@ -132,6 +132,7 @@ export default class gl3 {
         this.ext = {
             elementIndexUint: this.gl.getExtension('OES_element_index_uint'),
             textureFloat: this.gl.getExtension('OES_texture_float'),
+            textureHalfFloat: this.gl.getExtension('OES_texture_half_float'),
             drawBuffers: this.gl.getExtension('WEBGL_draw_buffers')
         };
         return this.ready;
@@ -459,13 +460,18 @@ export default class gl3 {
      */
     createFramebufferFloat(width, height, number){
         if(width == null || height == null || number == null){return;}
+        if(this.ext == null || (this.ext.textureFloat == null && this.ext.textureHalfFloat == null)){
+            console.log('float texture not support');
+            return;
+        }
         let gl = this.gl;
+        let flg = (this.ext.textureFloat != null) ? gl.FLOAT : this.ext.textureHalfFloat.HALF_FLOAT_OES;
         this.textures[number] = {texture: null, type: null, loaded: false};
         let frameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         let fTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, fTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.FLOAT, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, flg, null);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
