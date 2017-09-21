@@ -118,7 +118,7 @@ class GUIElement {
         this.element = document.createElement('div');
         this.element.style.fontSize = 'small';
         this.element.style.textAlign = 'center';
-        this.element.style.width = '270px';
+        this.element.style.width = '320px';
         this.element.style.height = '30px';
         this.element.style.lineHeight = '30px';
         this.element.style.display = 'flex';
@@ -134,7 +134,7 @@ class GUIElement {
         this.label.style.textShadow = '0px 0px 5px white';
         this.label.style.display = 'inline-block';
         this.label.style.margin = 'auto 5px';
-        this.label.style.width = '50px';
+        this.label.style.width = '100px';
         this.label.style.overflow = 'hidden';
         this.element.appendChild(this.label);
         /**
