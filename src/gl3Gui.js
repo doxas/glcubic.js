@@ -91,6 +91,7 @@ class GUIWrapper {
         this.element.style.top = '0px';
         this.element.style.right = '0px';
         this.element.style.height = '100%';
+        this.element.style.overflow = 'auto';
     }
     /**
      * エレメントを返す
