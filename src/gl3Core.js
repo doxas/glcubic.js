@@ -19,7 +19,7 @@ export default class gl3 {
          * @const
          * @type {string}
          */
-        this.VERSION = '0.1.6';
+        this.VERSION = '0.1.7';
         /**
          * pi * 2
          * @const
@@ -259,6 +259,7 @@ export default class gl3 {
         img.onload = () => {
             this.textures[number] = {texture: null, type: null, loaded: false};
             let tex = gl.createTexture();
+            gl.activeTexture(gl.TEXTURE0 + number);
             gl.bindTexture(gl.TEXTURE_2D, tex);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
             gl.generateMipmap(gl.TEXTURE_2D);
@@ -286,6 +287,7 @@ export default class gl3 {
         let gl = this.gl;
         let tex = gl.createTexture();
         this.textures[number] = {texture: null, type: null, loaded: false};
+        gl.activeTexture(gl.TEXTURE0 + number);
         gl.bindTexture(gl.TEXTURE_2D, tex);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, object);
         gl.generateMipmap(gl.TEXTURE_2D);
@@ -323,6 +325,7 @@ export default class gl3 {
                     });
                     if(f === true){
                         let tex = gl.createTexture();
+                        gl.activeTexture(gl.TEXTURE0 + number);
                         gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
                         for(let j = 0; j < source.length; j++){
                             gl.texImage2D(target[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cImg[j].image);
@@ -393,6 +396,7 @@ export default class gl3 {
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
         let fTexture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + number);
         gl.bindTexture(gl.TEXTURE_2D, fTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -431,6 +435,7 @@ export default class gl3 {
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, depthStencilRenderBuffer);
         let fTexture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + number);
         gl.bindTexture(gl.TEXTURE_2D, fTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -470,6 +475,7 @@ export default class gl3 {
         let frameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         let fTexture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + number);
         gl.bindTexture(gl.TEXTURE_2D, fTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, flg, null);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -508,6 +514,7 @@ export default class gl3 {
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
         let fTexture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + number);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, fTexture);
         for(let i = 0; i < target.length; i++){
             gl.texImage2D(target[i], 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
