@@ -435,7 +435,7 @@ class Vec3 {
      * @param {Float32Array.<Vec3>} v - 3 つの要素を持つベクトル
      * @return {number} ベクトルの長さ（大きさ）
      */
-    static length(v){
+    static len(v){
         return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     }
     /**
@@ -458,7 +458,7 @@ class Vec3 {
      */
     static normalize(v){
         let n = Vec3.create();
-        let l = Vec3.length(v);
+        let l = Vec3.len(v);
         if(l > 0){
             let e = 1.0 / l;
             n[0] = v[0] * e;
@@ -528,7 +528,7 @@ class Vec2 {
      * @param {Float32Array.<Vec2>} v - 2 つの要素を持つベクトル
      * @return {number} ベクトルの長さ（大きさ）
      */
-    static length(v){
+    static len(v){
         return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
     }
     /**
@@ -550,7 +550,7 @@ class Vec2 {
      */
     static normalize(v){
         let n = Vec2.create();
-        let l = Vec2.length(v);
+        let l = Vec2.len(v);
         if(l > 0){
             let e = 1.0 / l;
             n[0] = v[0] * e;
