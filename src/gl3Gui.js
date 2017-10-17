@@ -6,23 +6,23 @@
  *
  * let slider = new gl3.Gui.Slider('test', 50, 0, 100, 1);
  * slider.add('input', (eve, self) => {console.log(self.getValue());});
- * wrapper.appendChild(slider.getElement());
+ * wrapper.append(slider.getElement());
  *
  * let check = new gl3.Gui.Checkbox('hoge', false);
  * check.add('change', (eve, self) => {console.log(self.getValue());});
- * wrapper.appendChild(check.getElement());
+ * wrapper.append(check.getElement());
  *
  * let select = new gl3.Gui.Select('fuga', ['foo', 'baa'], 0);
  * select.add('change', (eve, self) => {console.log(self.getValue());});
- * wrapper.appendChild(select.getElement());
+ * wrapper.append(select.getElement());
  *
  * let spin = new gl3.Gui.Spin('hoge', 0.0, -1.0, 1.0, 0.1);
  * spin.add('input', (eve, self) => {console.log(self.getValue());});
- * wrapper.appendChild(spin.getElement());
+ * wrapper.append(spin.getElement());
  *
  * let color = new gl3.Gui.Color('fuga', '#ff0000');
  * color.add('change', (eve, self) => {console.log(self.getValue(), self.getFloatValue());});
- * wrapper.appendChild(color.getElement());
+ * wrapper.append(color.getElement());
  */
 
 /**
@@ -86,12 +86,56 @@ class GUIWrapper {
          * @type {HTMLDivElement}
          */
         this.element = document.createElement('div');
-        this.element.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
         this.element.style.position = 'absolute';
         this.element.style.top = '0px';
         this.element.style.right = '0px';
+        this.element.style.width = '340px';
         this.element.style.height = '100%';
-        this.element.style.overflow = 'auto';
+        this.element.style.transition = 'right 0.8s cubic-bezier(0, 0, 0, 1.0)';
+        /**
+         * GUI パーツを包むラッパー DOM
+         * @type {HTMLDivElement}
+         */
+        this.wrapper = document.createElement('div');
+        this.wrapper.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
+        this.wrapper.style.height = '100%';
+        this.wrapper.style.overflow = 'auto';
+        /**
+         * GUI 折りたたみトグル
+         * @type {HTMLDivElement}
+         */
+        this.toggle = document.createElement('div');
+        this.toggle.className = 'visible';
+        this.toggle.textContent = '▶';
+        this.toggle.style.fontSize = '18px';
+        this.toggle.style.lineHeight = '32px';
+        this.toggle.style.color = 'rgba(240, 240, 240, 0.5)';
+        this.toggle.style.backgroundColor = 'rgba(32, 32, 32, 0.5)';
+        this.toggle.style.border = '1px solid rgba(240, 240, 240, 0.2)';
+        this.toggle.style.borderRadius = '25px';
+        this.toggle.style.boxShadow = '0px 0px 2px 2px rgba(8, 8, 8, 0.8)';
+        this.toggle.style.position = 'absolute';
+        this.toggle.style.top = '20px';
+        this.toggle.style.right = '360px';
+        this.toggle.style.width = '32px';
+        this.toggle.style.height = '32px';
+        this.toggle.style.cursor = 'pointer';
+        this.toggle.style.transform = 'rotate(0deg)';
+        this.toggle.style.transition = 'transform 0.5s cubic-bezier(0, 0, 0, 1.0)';
+
+        this.element.appendChild(this.toggle);
+        this.element.appendChild(this.wrapper);
+
+        this.toggle.addEventListener('click', () => {
+            this.toggle.classList.toggle('visible');
+            if(this.toggle.classList.contains('visible')){
+                this.element.style.right = '0px';
+                this.toggle.style.transform = 'rotate(0deg)';
+            }else{
+                this.element.style.right = '-340px';
+                this.toggle.style.transform = 'rotate(-180deg)';
+            }
+        });
     }
     /**
      * エレメントを返す
@@ -99,6 +143,13 @@ class GUIWrapper {
      */
     getElement(){
         return this.element;
+    }
+    /**
+     * 子要素をアペンドする
+     * @param {HTMLElement} element - アペンドする要素
+     */
+    append(element){
+        this.wrapper.appendChild(element);
     }
 }
 
