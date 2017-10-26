@@ -550,6 +550,7 @@ export default class gl3 {
         mng.vs = mng.createShaderFromId(vsId);
         mng.fs = mng.createShaderFromId(fsId);
         mng.prg = mng.createProgram(mng.vs, mng.fs);
+        if(mng.prg == null){return null;}
         mng.attL = new Array(attLocation.length);
         mng.attS = new Array(attLocation.length);
         for(i = 0; i < attLocation.length; i++){
@@ -582,6 +583,7 @@ export default class gl3 {
         mng.vs = mng.createShaderFromSource(vs, this.gl.VERTEX_SHADER);
         mng.fs = mng.createShaderFromSource(fs, this.gl.FRAGMENT_SHADER);
         mng.prg = mng.createProgram(mng.vs, mng.fs);
+        if(mng.prg == null){return null;}
         mng.attL = new Array(attLocation.length);
         mng.attS = new Array(attLocation.length);
         for(i = 0; i < attLocation.length; i++){
@@ -641,6 +643,7 @@ export default class gl3 {
             mng.vs = mng.createShaderFromSource(src.vs.source, gl.VERTEX_SHADER);
             mng.fs = mng.createShaderFromSource(src.fs.source, gl.FRAGMENT_SHADER);
             mng.prg = mng.createProgram(mng.vs, mng.fs);
+            if(mng.prg == null){return null;}
             mng.attL = new Array(attLocation.length);
             mng.attS = new Array(attLocation.length);
             for(i = 0; i < attLocation.length; i++){
@@ -874,6 +877,7 @@ class ProgramManager {
      * @return {WebGLProgram} 生成したプログラムオブジェクト
      */
     createProgram(vs, fs){
+        if(vs == null || fs == null){return null;}
         let program = this.gl.createProgram();
         this.gl.attachShader(program, vs);
         this.gl.attachShader(program, fs);
