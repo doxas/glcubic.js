@@ -790,6 +790,14 @@ class ProgramManager {
          * @type {Array.<string>}
          */
         this.uniT = null;
+        /**
+         * エラー関連情報を格納する
+         * @type {object}
+         * @property {string} vs - 頂点シェーダのコンパイルエラー
+         * @property {string} fs - フラグメントシェーダのコンパイルエラー
+         * @property {string} prg - プログラムオブジェクトのリンクエラー
+         */
+        this.error = {vs: null, fs: null, prg: null};
     }
 
     /**
@@ -816,7 +824,13 @@ class ProgramManager {
         if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
             return shader;
         }else{
-            console.warn('◆ compile failed of shader: ' + this.gl.getShaderInfoLog(shader));
+            let err = this.gl.getShaderInfoLog(shader);
+            if(scriptElement.type === 'x-shader/x-vertex'){
+                this.error.vs = err;
+            }else{
+                this.error.fs = err;
+            }
+            console.warn('◆ compile failed of shader: ' + err);
         }
     }
 
@@ -843,7 +857,13 @@ class ProgramManager {
         if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
             return shader;
         }else{
-            console.warn('◆ compile failed of shader: ' + this.gl.getShaderInfoLog(shader));
+            let err = this.gl.getShaderInfoLog(shader);
+            if(type === this.gl.VERTEX_SHADER){
+                this.error.vs = err;
+            }else{
+                this.error.fs = err;
+            }
+            console.warn('◆ compile failed of shader: ' + err);
         }
     }
 
@@ -862,7 +882,9 @@ class ProgramManager {
             this.gl.useProgram(program);
             return program;
         }else{
-            console.warn('◆ link program failed: ' + this.gl.getProgramInfoLog(program));
+            let err = this.gl.getProgramInfoLog(program);
+            this.error.prg = err;
+            console.warn('◆ link program failed: ' + err);
         }
     }
 
