@@ -55,10 +55,10 @@ export default class gl3Audio {
             this.comp.connect(this.ctx.destination);
             this.bgmGain = this.ctx.createGain();
             this.bgmGain.connect(this.comp);
-            this.bgmGain.gain.value = bgmGainValue;
+            this.bgmGain.gain.setValueAtTime(bgmGainValue, 0);
             this.soundGain = this.ctx.createGain();
             this.soundGain.connect(this.comp);
-            this.soundGain.gain.value = soundGainValue;
+            this.soundGain.gain.setValueAtTime(soundGainValue, 0);
             this.src = [];
         }else{
             throw new Error('not found AudioContext');
