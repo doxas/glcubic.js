@@ -67,6 +67,11 @@ export default class gl3 {
          */
         this.gl = null;
         /**
+         * WebGL2RenderingContext として初期化したかどうかを表す真偽値
+         * @type {bool}
+         */
+        this.isWebGL2 = false;
+        /**
          * glcubic が内部的に持っているテクスチャ格納用の配列
          * @type {Array.<WebGLTexture>}
          */
@@ -109,11 +114,12 @@ export default class gl3 {
     /**
      * glcubic を初期化する
      * @param {HTMLCanvasElement|string} canvas - canvas element か canvas に付与されている ID 文字列
-     * @param {Object} options - canvas.getContext で第二引数に渡す初期化時オプション
+     * @param {Object} initOptions - canvas.getContext で第二引数に渡す初期化時オプション
+     * @param {bool} webgl2Mode - webgl2 を有効化する場合 true
      * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値
      */
-    init(canvas, options){
-        let opt = options || {};
+    init(canvas, initOptions, webgl2Mode){
+        let opt = initOptions || {};
         this.ready = false;
         if(canvas == null){return false;}
         if(canvas instanceof HTMLCanvasElement){
@@ -122,8 +128,14 @@ export default class gl3 {
             this.canvas = document.getElementById(canvas);
         }
         if(this.canvas == null){return false;}
-        this.gl = this.canvas.getContext('webgl', opt) ||
-                  this.canvas.getContext('experimental-webgl', opt);
+        if(webgl2Mode === true){
+            this.gl = this.canvas.getContext('webgl2', opt);
+            this.isWebGL2 = true;
+        }
+        if(this.gl == null){
+            this.gl = this.canvas.getContext('webgl', opt) ||
+                      this.canvas.getContext('experimental-webgl', opt);
+        }
         if(this.gl != null){
             this.ready = true;
             this.TEXTURE_UNIT_COUNT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
@@ -822,7 +834,14 @@ class ProgramManager {
             default :
                 return;
         }
-        this.gl.shaderSource(shader, scriptElement.text);
+        let source = scriptElement.text;
+        if(this.isWebGL2 !== true){
+            if(source.search(/^#version 300 es/) > -1){
+                console.warn('◆ can not use glsl es 3.0');
+                return;
+            }
+        }
+        this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
         if(this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
             return shader;
@@ -854,6 +873,12 @@ class ProgramManager {
                 break;
             default :
                 return;
+        }
+        if(this.isWebGL2 !== true){
+            if(source.search(/^#version 300 es/) > -1){
+                console.warn('◆ can not use glsl es 3.0');
+                return;
+            }
         }
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
