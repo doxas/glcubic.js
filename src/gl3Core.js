@@ -140,13 +140,13 @@ export default class gl3 {
             this.ready = true;
             this.TEXTURE_UNIT_COUNT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
             this.textures = new Array(this.TEXTURE_UNIT_COUNT);
+            this.ext = {
+                elementIndexUint: this.gl.getExtension('OES_element_index_uint'),
+                textureFloat: this.gl.getExtension('OES_texture_float'),
+                textureHalfFloat: this.gl.getExtension('OES_texture_half_float'),
+                drawBuffers: this.gl.getExtension('WEBGL_draw_buffers')
+            };
         }
-        this.ext = {
-            elementIndexUint: this.gl.getExtension('OES_element_index_uint'),
-            textureFloat: this.gl.getExtension('OES_texture_float'),
-            textureHalfFloat: this.gl.getExtension('OES_texture_half_float'),
-            drawBuffers: this.gl.getExtension('WEBGL_draw_buffers')
-        };
         return this.ready;
     }
 
