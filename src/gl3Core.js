@@ -558,7 +558,7 @@ export default class gl3 {
     createProgramFromId(vsId, fsId, attLocation, attStride, uniLocation, uniType){
         if(this.gl == null){return null;}
         let i;
-        let mng = new ProgramManager(this.gl);
+        let mng = new ProgramManager(this.gl, this.isWebGL2);
         mng.vs = mng.createShaderFromId(vsId);
         mng.fs = mng.createShaderFromId(fsId);
         mng.prg = mng.createProgram(mng.vs, mng.fs);
@@ -591,7 +591,7 @@ export default class gl3 {
     createProgramFromSource(vs, fs, attLocation, attStride, uniLocation, uniType){
         if(this.gl == null){return null;}
         let i;
-        let mng = new ProgramManager(this.gl);
+        let mng = new ProgramManager(this.gl, this.isWebGL2);
         mng.vs = mng.createShaderFromSource(vs, this.gl.VERTEX_SHADER);
         mng.fs = mng.createShaderFromSource(fs, this.gl.FRAGMENT_SHADER);
         mng.prg = mng.createProgram(mng.vs, mng.fs);
@@ -624,7 +624,7 @@ export default class gl3 {
      */
     createProgramFromFile(vsPath, fsPath, attLocation, attStride, uniLocation, uniType, callback){
         if(this.gl == null){return null;}
-        let mng = new ProgramManager(this.gl);
+        let mng = new ProgramManager(this.gl, this.isWebGL2);
         let src = {
             vs: {
                 targetUrl: vsPath,
@@ -763,13 +763,19 @@ class ProgramManager {
     /**
      * @constructor
      * @param {WebGLRenderingContext} gl - 自身が属する WebGL Rendering Context
+     * @param {bool} webgl2Mode - webgl2 を有効化したかどうか
      */
-    constructor(gl){
+    constructor(gl, webgl2Mode = false){
         /**
          * 自身が属する WebGL Rendering Context
          * @type {WebGLRenderingContext}
          */
         this.gl = gl;
+        /**
+         * WebGL2RenderingContext として初期化したかどうかを表す真偽値
+         * @type {bool}
+         */
+        this.isWebGL2 = webgl2Mode;
         /**
          * 頂点シェーダのシェーダオブジェクト
          * @type {WebGLShader}
