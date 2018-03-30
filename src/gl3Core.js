@@ -19,7 +19,7 @@ export default class gl3 {
          * @const
          * @type {string}
          */
-        this.VERSION = '0.2.0';
+        this.VERSION = '0.2.1';
         /**
          * pi * 2
          * @const
