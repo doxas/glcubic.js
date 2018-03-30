@@ -1,8 +1,8 @@
 
 /**
  * @example
- * let wrapper = new gl3.Gui.Wrapper().getElement();
- * document.body.appendChild(wrapper);
+ * let wrapper = new gl3.Gui.Wrapper();
+ * document.body.appendChild(wrapper.getElement());
  *
  * let slider = new gl3.Gui.Slider('test', 50, 0, 100, 1);
  * slider.add('input', (eve, self) => {console.log(self.getValue());});
@@ -11,6 +11,10 @@
  * let check = new gl3.Gui.Checkbox('hoge', false);
  * check.add('change', (eve, self) => {console.log(self.getValue());});
  * wrapper.append(check.getElement());
+ *
+ * let radio = new gl3.Gui.Radio('hoge', null, false);
+ * radio.add('change', (eve, self) => {console.log(self.getValue());});
+ * wrapper.append(radio.getElement());
  *
  * let select = new gl3.Gui.Select('fuga', ['foo', 'baa'], 0);
  * select.add('change', (eve, self) => {console.log(self.getValue());});
@@ -54,6 +58,11 @@ export default class gl3Gui {
          * @type {GUICheckbox}
          */
         this.Checkbox = GUICheckbox;
+        /**
+         * GUIRadio
+         * @type {GUIRadio}
+         */
+        this.Radio = GUIRadio;
         /**
          * GUISelect
          * @type {GUISelect}
@@ -384,6 +393,57 @@ class GUICheckbox extends GUIElement {
      */
     setValue(checked){
         this.value.textContent = checked;
+        this.control.checked = checked;
+    }
+    /**
+     * コントロールの値を返す
+     * @return {boolean} コントロールの値
+     */
+    getValue(){
+        return this.control.checked;
+    }
+}
+
+/**
+ * GUIRadio
+ * @class GUIRadio
+ */
+class GUIRadio extends GUIElement {
+    /**
+     * @constructor
+     * @param {string} [text=''] - エレメントに設定するテキスト
+     * @param {string} [name='gl3radio'] - エレメントに設定する名前
+     * @param {boolean} [checked=false] - コントロールに設定する値
+     */
+    constructor(text = '', name = 'gl3radio', checked = false){
+        super(text);
+        /**
+         * コントロールエレメント
+         * @type {HTMLInputElement}
+         */
+        this.control = document.createElement('input');
+        this.control.setAttribute('type', 'radio');
+        this.control.setAttribute('name', name);
+        this.control.checked = checked;
+        this.control.style.margin = 'auto';
+        this.control.style.verticalAlign = 'middle';
+        this.element.appendChild(this.control);
+
+        // set
+        this.setValue(this.control.checked);
+
+        // event
+        this.control.addEventListener('change', (eve) => {
+            this.emit('change', eve);
+            this.setValue(this.control.checked);
+        }, false);
+    }
+    /**
+     * コントロールに値を設定する
+     * @param {boolean} checked - コントロールに設定する値
+     */
+    setValue(checked){
+        this.value.textContent = '---';
         this.control.checked = checked;
     }
     /**

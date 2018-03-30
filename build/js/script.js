@@ -66,6 +66,13 @@
         check.add('change', (eve, self) => {console.log(self.getValue());});
         wrapper.append(check.getElement());
 
+        let radio0 = new gl3.Gui.Radio('hoge', null, false);
+        let radio1 = new gl3.Gui.Radio('fuga', null, false);
+        radio0.add('change', (eve, self) => {console.log(self.getValue());});
+        radio1.add('change', (eve, self) => {console.log(self.getValue());});
+        wrapper.append(radio0.getElement());
+        wrapper.append(radio1.getElement());
+
         let select = new gl3.Gui.Select('fuga', ['foo', 'baa'], 0);
         select.add('change', (eve, self) => {console.log(self.getValue());});
         wrapper.append(select.getElement());
