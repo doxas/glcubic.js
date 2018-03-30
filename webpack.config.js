@@ -2,8 +2,11 @@
 const webpack = require('webpack');
 const path = require('path');
 
-const devmode = false;
-if('--debug' in process.argv){devmode = 'inline-source-map';}
+let devmode = false;
+if(process.argv.includes('--debug')){
+    console.log('debug build');
+    devmode = 'inline-source-map';
+}
 
 module.exports = {
     context: path.resolve(__dirname, 'src'),
