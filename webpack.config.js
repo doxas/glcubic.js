@@ -3,9 +3,12 @@ const webpack = require('webpack');
 const path = require('path');
 
 let devmode = false;
-if(process.argv.includes('--debug')){
-    console.log('debug build');
+
+if(process.env.NODE_ENV === 'release'){
+    console.log('🍶 release build');
+}else{
     devmode = 'inline-source-map';
+    console.log('☕ debug build');
 }
 
 module.exports = {
@@ -22,11 +25,12 @@ module.exports = {
         rules: [{
             test: /\.js$/,
             include: path.resolve(__dirname, 'src'),
+            exclude: /node_modules/,
             use: [{
                 loader: 'babel-loader',
                 options: {
                     presets: [
-                        ['es2015']
+                        ['env']
                     ]
                 }
             }]

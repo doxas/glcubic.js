@@ -18,21 +18,17 @@
     "url": "http://wgld.org"
   },
   "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-loader": "^7.0.0",
-    "babel-preset-es2015": "^6.24.1",
-    "browser-sync": "^2.18.8",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "esdoc": "^0.5.2",
     "esdoc-standard-plugin": "0.0.7",
-    "npm-run-all": "^4.0.2",
-    "webpack": "^2.4.1"
+    "webpack": "^3.10.0"
   },
   "scripts": {
-    "build": "webpack -p",
+    "build": "set NODE_ENV=release&& webpack -p",
     "debug": "webpack --debug -w",
-    "jsdoc": "./node_modules/.bin/esdoc",
-    "browse": "browser-sync start --server ./build/",
-    "start": "npm-run-all -p debug browse"
+    "jsdoc": "./node_modules/.bin/esdoc"
   },
   "license": "MIT"
 }
