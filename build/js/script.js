@@ -11,7 +11,14 @@
     // onload =================================================================
     window.addEventListener('load', () => {
         // initialize ---------------------------------------------------------
-        gl3.init(document.getElementById('canvas')); // or gl3.init('canvas');
+        gl3.init(
+            document.getElementById('canvas'), // or gl3.init('canvas')
+            null,
+            {
+                webgl2Mode: true,
+                consoleMessage: true
+            }
+        );
         if(!gl3.ready){
             console.log('initialize error');
             return;

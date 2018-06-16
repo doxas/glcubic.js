@@ -123,7 +123,7 @@ export default class gl3 {
      * @property {bool} consoleMessage - console に cubic のログを出力するかどうか
      * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値
      */
-    init(canvas, initOptions, webgl2Mode){
+    init(canvas, initOptions, cubicOptions){
         let opt = initOptions || {};
         this.ready = false;
         if(canvas == null){return false;}
@@ -138,7 +138,7 @@ export default class gl3 {
                 this.gl = this.canvas.getContext('webgl2', opt);
                 this.isWebGL2 = true;
             }
-            if(cubicOptions.hasOwnProperty('consoleMessage') === true && cubicOptions.webgl2Mode !== true){
+            if(cubicOptions.hasOwnProperty('consoleMessage') === true && cubicOptions.consoleMessage !== true){
                 this.isConsoleOutput = false;
             }
         }
