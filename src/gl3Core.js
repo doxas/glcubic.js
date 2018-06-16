@@ -72,6 +72,11 @@ export default class gl3 {
          */
         this.isWebGL2 = false;
         /**
+         * cubic としてのログ出力をするかどうか
+         * @type {bool}
+         */
+        this.isConsoleOutput = true;
+        /**
          * glcubic が内部的に持っているテクスチャ格納用の配列
          * @type {Array.<WebGLTexture>}
          */
@@ -107,15 +112,15 @@ export default class gl3 {
          * @type {gl3Math}
          */
         this.Math = new math();
-
-        console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
     }
 
     /**
      * glcubic を初期化する
      * @param {HTMLCanvasElement|string} canvas - canvas element か canvas に付与されている ID 文字列
      * @param {Object} initOptions - canvas.getContext で第二引数に渡す初期化時オプション
-     * @param {bool} webgl2Mode - webgl2 を有効化する場合 true
+     * @param {Object} cubicOptions
+     * @property {bool} webgl2Mode - webgl2 を有効化する場合 true
+     * @property {bool} consoleMessage - console に cubic のログを出力するかどうか
      * @return {boolean} 初期化が正しく行われたかどうかを表す真偽値
      */
     init(canvas, initOptions, webgl2Mode){
@@ -128,9 +133,14 @@ export default class gl3 {
             this.canvas = document.getElementById(canvas);
         }
         if(this.canvas == null){return false;}
-        if(webgl2Mode === true){
-            this.gl = this.canvas.getContext('webgl2', opt);
-            this.isWebGL2 = true;
+        if(cubicOptions != null){
+            if(cubicOptions.hasOwnProperty('webgl2Mode') === true && cubicOptions.webgl2Mode === true){
+                this.gl = this.canvas.getContext('webgl2', opt);
+                this.isWebGL2 = true;
+            }
+            if(cubicOptions.hasOwnProperty('consoleMessage') === true && cubicOptions.webgl2Mode !== true){
+                this.isConsoleOutput = false;
+            }
         }
         if(this.gl == null){
             this.gl = this.canvas.getContext('webgl', opt) ||
@@ -146,6 +156,9 @@ export default class gl3 {
                 textureHalfFloat: this.gl.getExtension('OES_texture_half_float'),
                 drawBuffers: this.gl.getExtension('WEBGL_draw_buffers')
             };
+            if(this.isConsoleOutput === true){
+                console.log('%c◆%c glcubic.js %c◆%c : version %c' + this.VERSION, 'color: crimson', '', 'color: crimson', '', 'color: royalblue');
+            }
         }
         return this.ready;
     }
@@ -282,7 +295,9 @@ export default class gl3 {
             this.textures[number].texture = tex;
             this.textures[number].type = gl.TEXTURE_2D;
             this.textures[number].loaded = true;
-            console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+            if(this.isConsoleOutput === true){
+                console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source, 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+            }
             gl.bindTexture(gl.TEXTURE_2D, null);
             if(callback != null){callback(number);}
         };
@@ -310,7 +325,9 @@ export default class gl3 {
         this.textures[number].texture = tex;
         this.textures[number].type = gl.TEXTURE_2D;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, object attached', 'color: crimson', '', 'color: blue', '');
+        if(this.isConsoleOutput === true){
+            console.log('%c◆%c texture number: %c' + number + '%c, object attached', 'color: crimson', '', 'color: blue', '');
+        }
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
@@ -350,7 +367,9 @@ export default class gl3 {
                         this.textures[number].texture = tex;
                         this.textures[number].type = gl.TEXTURE_CUBE_MAP;
                         this.textures[number].loaded = true;
-                        console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                        if(this.isConsoleOutput === true){
+                            console.log('%c◆%c texture number: %c' + number + '%c, file loaded: %c' + source[0] + '...', 'color: crimson', '', 'color: blue', '', 'color: goldenrod');
+                        }
                         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                         if(callback != null){callback(number);}
                     }
@@ -422,7 +441,9 @@ export default class gl3 {
         this.textures[number].texture = fTexture;
         this.textures[number].type = gl.TEXTURE_2D;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created', 'color: crimson', '', 'color: blue', '');
+        if(this.isConsoleOutput === true){
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created', 'color: crimson', '', 'color: blue', '');
+        }
         return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
     }
 
@@ -461,7 +482,9 @@ export default class gl3 {
         this.textures[number].texture = fTexture;
         this.textures[number].type = gl.TEXTURE_2D;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable stencil)', 'color: crimson', '', 'color: blue', '');
+        if(this.isConsoleOutput === true){
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable stencil)', 'color: crimson', '', 'color: blue', '');
+        }
         return {framebuffer: frameBuffer, depthStencilRenderbuffer: depthStencilRenderBuffer, texture: fTexture};
     }
 
@@ -500,7 +523,9 @@ export default class gl3 {
         this.textures[number].texture = fTexture;
         this.textures[number].type = gl.TEXTURE_2D;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable float)', 'color: crimson', '', 'color: blue', '');
+        if(this.isConsoleOutput === true){
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer created (enable float)', 'color: crimson', '', 'color: blue', '');
+        }
         return {framebuffer: frameBuffer, depthRenderbuffer: null, texture: fTexture};
     }
 
@@ -541,7 +566,9 @@ export default class gl3 {
         this.textures[number].texture = fTexture;
         this.textures[number].type = gl.TEXTURE_CUBE_MAP;
         this.textures[number].loaded = true;
-        console.log('%c◆%c texture number: %c' + number + '%c, framebuffer cube created', 'color: crimson', '', 'color: blue', '');
+        if(this.isConsoleOutput === true){
+            console.log('%c◆%c texture number: %c' + number + '%c, framebuffer cube created', 'color: crimson', '', 'color: blue', '');
+        }
         return {framebuffer: frameBuffer, depthRenderbuffer: depthRenderBuffer, texture: fTexture};
     }
 
@@ -643,7 +670,9 @@ export default class gl3 {
             xml.setRequestHeader('Pragma', 'no-cache');
             xml.setRequestHeader('Cache-Control', 'no-cache');
             xml.onload = function(){
-                console.log('%c◆%c shader file loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                if(this.isConsoleOutput === true){
+                    console.log('%c◆%c shader file loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                }
                 target.source = xml.responseText;
                 loadCheck(gl);
             };
@@ -763,7 +792,7 @@ class ProgramManager {
     /**
      * @constructor
      * @param {WebGLRenderingContext} gl - 自身が属する WebGL Rendering Context
-     * @param {bool} webgl2Mode - webgl2 を有効化したかどうか
+     * @param {bool} [webgl2Mode=false] - webgl2 を有効化したかどうか
      */
     constructor(gl, webgl2Mode = false){
         /**
