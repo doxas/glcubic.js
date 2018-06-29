@@ -375,5 +375,58 @@ export default class gl3Mesh {
         }
         return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
     }
+
+    /**
+     * 正二十面体の頂点情報を生成する
+     * @param {number} rad - サイズ（黄金比に対する比率）
+     * @param {Array.<number>} color - RGBA を 0.0 から 1.0 の範囲で指定した配列
+     * @return {object}
+     * @property {Array.<number>} position - 頂点座標
+     * @property {Array.<number>} normal - 頂点法線
+     * @property {Array.<number>} color - 頂点カラー
+     * @property {Array.<number>} texCoord - テクスチャ座標
+     * @property {Array.<number>} index - 頂点インデックス（gl.TRIANGLES）
+     * @example
+     * let icosaData = gl3.Mesh.icosahedron(1.0, [1.0, 1.0, 1.0, 1.0]);
+     */
+    static icosahedron(rad, color){
+        let i, j;
+        let pos = [], nor = [],
+            col = [], st  = [], idx = [];
+        let c = (1.0 + Math.sqrt(5.0)) / 2.0;
+        let t = c * rad;
+        let l = Math.sqrt(1.0 + c * c);
+        let r = [1.0 / l, c / l];
+        pos = [
+            -rad,    t,  0.0,  rad,    t,  0.0, -rad,   -t,  0.0,  rad,   -t,  0.0,
+             0.0, -rad,    t,  0.0,  rad,    t,  0.0, -rad,   -t,  0.0,  rad,   -t,
+               t,  0.0, -rad,    t,  0.0,  rad,   -t,  0.0, -rad,   -t,  0.0,  rad
+        ];
+        nor = [
+            -r[0],  r[1],   0.0,  r[0],  r[1],   0.0, -r[0], -r[1],   0.0,  r[0], -r[1],   0.0,
+              0.0, -r[0],  r[1],   0.0,  r[0],  r[1],   0.0, -r[0], -r[1],   0.0,  r[0], -r[1],
+             r[1],   0.0, -r[0],  r[1],   0.0,  r[0], -r[1],   0.0, -r[0], -r[1],   0.0,  r[0]
+        ];
+        col = [
+            color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3],
+            color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3],
+            color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3],
+            color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3],
+            color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3],
+            color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3]
+        ];
+        for(let i = 0, j = nor.length; i < j; i += 3){
+            let u = (Math.atan2(nor[i + 2], -nor[i]) + Math.PI) / (Math.PI * 2.0);
+            let v = 1.0 - (nor[i + 1] + 1.0) / 2.0;
+            st.push(u, v);
+        }
+        idx = [
+             0, 11,  5,  0,  5,  1,  0,  1,  7,  0,  7, 10,  0, 10, 11,
+             1,  5,  9,  5, 11,  4, 11, 10,  2, 10,  7,  6,  7,  1,  8,
+             3,  9,  4,  3,  4,  2,  3,  2,  6,  3,  6,  8,  3,  8,  9,
+             4,  9,  5,  2,  4, 11,  6,  2, 10,  8,  6,  7,  9,  8,  1
+        ];
+        return {position: pos, normal: nor, color: col, texCoord: st, index: idx}
+    }
 }
 
