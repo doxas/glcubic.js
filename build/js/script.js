@@ -135,6 +135,16 @@
         ];
         let torusIBO = gl3.createIbo(torusData.index);
 
+        // icosahedron
+        let icosaData = gl3.Mesh.icosahedron(1.0, [1.0, 1.0, 1.0, 1.0]);
+        let icosaVBO = [
+            gl3.createVbo(icosaData.position),
+            gl3.createVbo(icosaData.normal),
+            gl3.createVbo(icosaData.color),
+            gl3.createVbo(icosaData.texCoord)
+        ];
+        let icosaIBO = gl3.createIbo(icosaData.index);
+
         // plane
         let planePosition = [
             -1.0,  1.0,  0.0,
@@ -228,12 +238,13 @@
 
             // program
             basePrg.useProgram();
-            basePrg.setAttribute(torusVBO, torusIBO);
+            basePrg.setAttribute(icosaVBO, icosaIBO);
+            // basePrg.setAttribute(torusVBO, torusIBO);
 
             // model and draw
             mat4.identity(mMatrix);
             mat4.translate(mMatrix, [0.0, 0.0, Math.sin(nowTime) * 0.25], mMatrix);
-            mat4.rotate(mMatrix, nowTime, [1.0, 1.0, 0.0], mMatrix);
+            mat4.rotate(mMatrix, nowTime, [1.0, 1.0, 1.0], mMatrix);
             mat4.multiply(vpMatrix, mMatrix, mvpMatrix);
             mat4.inverse(mMatrix, invMatrix);
             mat4.transpose(invMatrix, normalMatrix);
@@ -246,7 +257,8 @@
                 ambientColor,
                 targetTexture
             ]);
-            gl3.drawElements(gl.TRIANGLES, torusData.index.length);
+            gl3.drawElements(gl.TRIANGLES, icosaData.index.length);
+            // gl3.drawElements(gl.TRIANGLES, torusData.index.length);
 
             // render to canvas
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
