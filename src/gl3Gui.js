@@ -34,6 +34,7 @@
  * @class gl3Gui
  */
 export default class gl3Gui {
+    static get WIDTH(){return 400;}
     /**
      * @constructor
      */
@@ -98,7 +99,7 @@ class GUIWrapper {
         this.element.style.position = 'absolute';
         this.element.style.top = '0px';
         this.element.style.right = '0px';
-        this.element.style.width = '340px';
+        this.element.style.width = `${gl3Gui.WIDTH}px`;
         this.element.style.height = '100%';
         this.element.style.transition = 'right 0.8s cubic-bezier(0, 0, 0, 1.0)';
         /**
@@ -120,12 +121,9 @@ class GUIWrapper {
         this.toggle.style.lineHeight = '32px';
         this.toggle.style.color = 'rgba(240, 240, 240, 0.5)';
         this.toggle.style.backgroundColor = 'rgba(32, 32, 32, 0.5)';
-        this.toggle.style.border = '1px solid rgba(240, 240, 240, 0.2)';
-        this.toggle.style.borderRadius = '25px';
-        this.toggle.style.boxShadow = '0px 0px 2px 2px rgba(8, 8, 8, 0.8)';
         this.toggle.style.position = 'absolute';
-        this.toggle.style.top = '20px';
-        this.toggle.style.right = '360px';
+        this.toggle.style.top = '0px';
+        this.toggle.style.right = `${gl3Gui.WIDTH}px`;
         this.toggle.style.width = '32px';
         this.toggle.style.height = '32px';
         this.toggle.style.cursor = 'pointer';
@@ -141,7 +139,7 @@ class GUIWrapper {
                 this.element.style.right = '0px';
                 this.toggle.style.transform = 'rotate(0deg)';
             }else{
-                this.element.style.right = '-340px';
+                this.element.style.right = `-${gl3Gui.WIDTH}px`;
                 this.toggle.style.transform = 'rotate(-180deg)';
             }
         });
@@ -179,7 +177,7 @@ class GUIElement {
         this.element = document.createElement('div');
         this.element.style.fontSize = 'small';
         this.element.style.textAlign = 'center';
-        this.element.style.width = '320px';
+        this.element.style.width = `${gl3Gui.WIDTH}px`;
         this.element.style.height = '30px';
         this.element.style.lineHeight = '30px';
         this.element.style.display = 'flex';
@@ -195,7 +193,7 @@ class GUIElement {
         this.label.style.textShadow = '0px 0px 5px white';
         this.label.style.display = 'inline-block';
         this.label.style.margin = 'auto 5px';
-        this.label.style.width = '100px';
+        this.label.style.width = '120px';
         this.label.style.overflow = 'hidden';
         this.element.appendChild(this.label);
         /**
@@ -209,7 +207,7 @@ class GUIElement {
         this.value.style.textShadow = '0px 0px 5px black';
         this.value.style.display = 'inline-block';
         this.value.style.margin = 'auto 5px';
-        this.value.style.width = '50px';
+        this.value.style.width = '80px';
         this.value.style.overflow = 'hidden';
         this.element.appendChild(this.value);
         /**
