@@ -1,6 +1,6 @@
 {
   "name": "glcubic.js",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "webgl helper library (webgl2 beta)",
   "keywords": [
     "webgl",
