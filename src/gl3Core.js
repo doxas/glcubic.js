@@ -703,6 +703,71 @@ export default class gl3 {
     }
 
     /**
+     * ファイルからシェーダのソースコードを取得しプログラムオブジェクトを生成する（transform feedback 対応版）
+     * @param {string} vsPath - 頂点シェーダのソースが記述されたファイルのパス
+     * @param {string} fsPath - フラグメントシェーダのソースが記述されたファイルのパス
+     * @param {Array.<string>} attLocation - attribute 変数名の配列
+     * @param {Array.<number>} attStride - attribute 変数のストライドの配列
+     * @param {Array.<string>} uniLocation - uniform 変数名の配列
+     * @param {Array.<string>} uniType - uniform 変数更新メソッドの名前を示す文字列 ※例：'matrix4fv'
+     * @param {Array.<string>} varying - 出力変数名の配列
+     * @param {function} callback - ソースコードのロードが完了しプログラムオブジェクトを生成した後に呼ばれるコールバック
+     * @return {ProgramManager} プログラムマネージャークラスのインスタンス ※ロード前にインスタンスは戻り値として返却される
+     */
+    createProgramFromFileTF(vsPath, fsPath, attLocation, attStride, uniLocation, uniType, varyings, callback){
+        if(this.gl == null){return null;}
+        let mng = new ProgramManager(this.gl, this.isWebGL2);
+        let src = {
+            vs: {
+                targetUrl: vsPath,
+                source: null
+            },
+            fs: {
+                targetUrl: fsPath,
+                source: null
+            }
+        };
+        xhr(this.gl, src.vs);
+        xhr(this.gl, src.fs);
+        function xhr(gl, target){
+            let xml = new XMLHttpRequest();
+            xml.open('GET', target.targetUrl, true);
+            xml.setRequestHeader('Pragma', 'no-cache');
+            xml.setRequestHeader('Cache-Control', 'no-cache');
+            xml.onload = function(){
+                if(this.isConsoleOutput === true){
+                    console.log('%c◆%c shader file loaded: %c' + target.targetUrl, 'color: crimson', '', 'color: goldenrod');
+                }
+                target.source = xml.responseText;
+                loadCheck(gl);
+            };
+            xml.send();
+        }
+        function loadCheck(gl){
+            if(src.vs.source == null || src.fs.source == null){return;}
+            let i;
+            mng.vs = mng.createShaderFromSource(src.vs.source, gl.VERTEX_SHADER);
+            mng.fs = mng.createShaderFromSource(src.fs.source, gl.FRAGMENT_SHADER);
+            mng.prg = mng.createProgramTF(mng.vs, mng.fs, varyings);
+            if(mng.prg == null){return mng;}
+            mng.attL = new Array(attLocation.length);
+            mng.attS = new Array(attLocation.length);
+            for(i = 0; i < attLocation.length; i++){
+                mng.attL[i] = gl.getAttribLocation(mng.prg, attLocation[i]);
+                mng.attS[i] = attStride[i];
+            }
+            mng.uniL = new Array(uniLocation.length);
+            for(i = 0; i < uniLocation.length; i++){
+                mng.uniL[i] = gl.getUniformLocation(mng.prg, uniLocation[i]);
+            }
+            mng.uniT = uniType;
+            mng.locationCheck(attLocation, uniLocation);
+            callback(mng);
+        }
+        return mng;
+    }
+
+    /**
      * バッファオブジェクトを削除する
      * @param {WebGLBuffer} buffer - 削除するバッファオブジェクト
      */
@@ -941,6 +1006,30 @@ class ProgramManager {
         let program = this.gl.createProgram();
         this.gl.attachShader(program, vs);
         this.gl.attachShader(program, fs);
+        this.gl.linkProgram(program);
+        if(this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
+            this.gl.useProgram(program);
+            return program;
+        }else{
+            let err = this.gl.getProgramInfoLog(program);
+            this.error.prg = err;
+            console.warn('◆ link program failed: ' + err);
+        }
+    }
+
+    /**
+     * シェーダオブジェクトを引数から取得しプログラムオブジェクトを生成する
+     * @param {WebGLShader} vs - 頂点シェーダのシェーダオブジェクト
+     * @param {WebGLShader} fs - フラグメントシェーダのシェーダオブジェクト
+     * @param {Array.<string>} varying - 出力変数名の配列
+     * @return {WebGLProgram} 生成したプログラムオブジェクト
+     */
+    createProgramTF(vs, fs, varyings){
+        if(vs == null || fs == null){return null;}
+        let program = this.gl.createProgram();
+        this.gl.attachShader(program, vs);
+        this.gl.attachShader(program, fs);
+        this.gl.transformFeedbackVaryings(program, varyings, this.gl.SEPARATE_ATTRIBS);
         this.gl.linkProgram(program);
         if(this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
             this.gl.useProgram(program);
